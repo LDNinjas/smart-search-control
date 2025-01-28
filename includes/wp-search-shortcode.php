@@ -141,7 +141,7 @@ if (!class_exists('WP_Search')) {
         public function wp_search_template_include($template)
         {
             if (is_search()) {
-                $new_template = plugin_dir_path(__FILE__) . '../templateii-wp-search.php';
+                $new_template = plugin_dir_path(__FILE__) . '../template-wp-search.php';
                 if (file_exists($new_template)) {
                     return $new_template;
                 }
