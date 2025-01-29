@@ -3,7 +3,6 @@
 if (!class_exists('WP_Search')) {
     class WP_Search
     {
-
         public function __construct()
         {
             // Register shortcode
@@ -21,7 +20,6 @@ if (!class_exists('WP_Search')) {
          */
         public function render_search_shortcode($atts)
         {
-
             // Set default placeholder text
             $atts = shortcode_atts(
                 array(
@@ -30,47 +28,47 @@ if (!class_exists('WP_Search')) {
                 $atts,
                 'wp_search_bar'
             );
+
             ob_start();
             // Get all post types
             $post_types = get_post_types(['public' => true], 'objects');
             ?>
-            <div class="search-form p-3">
-                <div class="search-container mt-5 d-flex justify-content-center">
-                    <form action="<?php echo esc_url(home_url('/')); ?>" method="get"
-                        class="search-bar d-flex align-items-center shadow" id="wp-search-form">
+            <div class="search-container">
+                <div class="search-bar-container">
+                    <form action="<?php echo esc_url(home_url('/')); ?>" method="get" class="search-bar" id="wp-search-form">
                         <!-- Search Icon -->
-                        <span class="search-icon bg-white d-flex align-items-center justify-content-center">
-                            <i class="fa fa-search text-muted"></i>
+                        <span class="search-icon">
+                            <span class="dashicons dashicons-search"></span>
                         </span>
                         <!-- Input Field -->
-                        <input type="text" name="s" id="search-query" class="search-input "
+                        <input type="text" name="s" id="search-query" class="search-input"
                             placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Search">
                         <!-- Submit Button -->
-                        <button type="submit" class="search-btn d-flex align-items-center justify-content-center">
-                            <i class="fa fa-arrow-right text-white"></i>
+                        <button type="submit" class="search-btn">
+                            <span class="dashicons dashicons-arrow-right-alt"></span>
                         </button>
                     </form>
                 </div>
+
+                <!-- Button to Toggle Advanced Filters -->
+                <button id="advanced-filters-toggle" class="advance-search-btn mb-3">Advanced Filters</button>
             </div>
 
-            <!-- Button to Toggle Advanced Filters -->
-            <button id="advanced-filters-toggle" class="advance-search-btn mb-3">Advanced Filters</button>
-
             <!-- Advanced Filters -->
-            <div class="container d-flex justify-content-center align-items-center">
-                <div class="advanced-filters card shadow-sm p-4 w-75 mb-4" style="display: none;">
-                    <div class="d-flex flex-column align-items-start text-start">
+            <div class="advance-container">
+                <div class="advanced-filters">
+                    <div>
                         <h3 class="mb-3">Advanced Filters</h3>
 
                         <!-- Filter by Post Types -->
-                        <div class="w-100">
-                            <label for="post-types" class="form-label fw-bold">Filter by Post Types:</label>
-                            <div class="d-flex flex-column border px-2" style="max-height: 80px; overflow-y: auto;">
+                        <div>
+                            <label for="post-types">Filter by Post Types:</label>
+                            <div class="post-types-field">
                                 <?php foreach ($post_types as $post_type_slug => $post_type_obj): ?>
                                     <div class="form-check">
                                         <input type="checkbox" name="post-types[]" value="<?php echo esc_attr($post_type_slug); ?>"
                                             class="form-check-input" id="post-type-<?php echo esc_attr($post_type_slug); ?>">
-                                        <label class="form-check-label mb-2" for="post-type-<?php echo esc_attr($post_type_slug); ?>">
+                                        <label class="form-check-label" for="post-type-<?php echo esc_attr($post_type_slug); ?>">
                                             <?php echo esc_html($post_type_obj->labels->name); ?>
                                         </label>
                                     </div>
@@ -81,23 +79,22 @@ if (!class_exists('WP_Search')) {
 
                         <!-- WooCommerce Filters (if enabled) -->
                         <?php if (class_exists('WooCommerce')): ?>
-                            <div class="woocommerce-filters w-100">
-                                <div class="form-check mb-0">
+                            <div class="woocommerce-filters">
+                                <div class="form-check ">
                                     <input type="checkbox" name="include_variations" id="include-variations" class="form-check-input">
                                     <label class="form-check-label" for="include-variations">
                                         Include WooCommerce Variations
                                     </label>
                                 </div>
-                                <hr>
                             </div>
                         <?php endif; ?>
 
                         <!-- Additional Filters Section -->
                         <hr>
-                        <div id="additional-filters" class="w-100"></div>
+                        <div id="additional-filters"></div>
 
                         <!-- Button to Add New Filter Row -->
-                        <button type="submit" class="add-filter-row btn btn-success">
+                        <button type="submit" class="add-filter-row">
                             Add Filter
                         </button>
                     </div>
@@ -115,25 +112,45 @@ if (!class_exists('WP_Search')) {
             if ($query->is_main_query() && $query->is_search() && !is_admin()) {
                 // Process post types filter
                 if (isset($_GET['post-types'])) {
-                    // Ensure 'post-types' is always an array (split by comma)
-                    $post_types = explode(',', $_GET['post-types']); // Split string into array
-                    $post_types = array_map('sanitize_text_field', $post_types); // Sanitize the array
-                    $query->set('post_type', $post_types); // Set the query to include these post types
-                }
+                    $post_types = explode(',', $_GET['post-types']);
+                    $post_types = array_map('sanitize_text_field', $post_types);
+                    $query->set('post_type', $post_types);
 
+                }
                 // Process WooCommerce product variations
-                if (isset($_GET['include_variations']) && $_GET['include_variations'] === 'on' && class_exists('WooCommerce')) {
-                    $meta_query = $query->get('meta_query') ?: array();
-                    $meta_query[] = array(
-                        'key' => '_is_variation',
-                        'compare' => 'EXISTS',
-                    );
-                    $query->set('meta_query', $meta_query);
+                if (isset($_GET['include_variations']) && $_GET['include_variations'] === '1' && class_exists('WooCommerce')) {
+                    // Include 'product_variation' post type in the search
+                    $query->set('post_type', array('product', 'product_variation'));
+
+                    $search_term = $query->get('s');
+                    if ($search_term) {
+                        add_filter('posts_where', function ($where) use ($search_term) {
+                            global $wpdb;
+
+                            // Get the search term 
+                            $search_term = isset($_GET['s']) ? sanitize_text_field($_GET['s']) : '';
+
+                            // Split the search term into individual words
+                            $search_terms = explode(' ', $search_term);
+
+                            // Escape and prepare search terms for SQL
+                            $search_term_1 = '%' . $wpdb->esc_like($search_terms[0]) . '%';
+                            $search_term_2 = isset($search_terms[1]) ? '%' . $wpdb->esc_like($search_terms[1]) . '%' : '';
+
+                            $where .= $wpdb->prepare(
+                                " AND {$wpdb->posts}.post_title LIKE %s AND {$wpdb->posts}.post_title LIKE %s AND {$wpdb->posts}.post_type = %s",
+                                $search_term_1,
+                                $search_term_2,
+                                'product_variation'
+                            );
+
+                            return $where;
+                        });
+                    }
+
                 }
             }
         }
-
-
 
         /**
          * Include the custom search template.
