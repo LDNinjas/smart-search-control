@@ -3,6 +3,7 @@
 if (!class_exists('WP_Search')) {
     class WP_Search
     {
+        private $atts = []; // Store shortcode attributes globally
         public function __construct()
         {
             // Register shortcode
@@ -20,10 +21,12 @@ if (!class_exists('WP_Search')) {
          */
         public function render_search_shortcode($atts)
         {
-            // Set default placeholder text
-            $atts = shortcode_atts(
+            // Set the global attributes
+            $this->atts = shortcode_atts(
                 array(
                     'placeholder' => 'Enter your search terms...', // Default placeholder
+                    'class' => '',
+                    'type' => '', 
                 ),
                 $atts,
                 'wp_search_bar'
@@ -32,26 +35,37 @@ if (!class_exists('WP_Search')) {
             ob_start();
             // Get all post types
             $post_types = get_post_types(['public' => true], 'objects');
+            // get the post type of short code
+            $type = $this->atts['type'];
+
             ?>
-            <div class="search-container">
+            <div class="search-container <?php echo esc_attr($this->atts['class']); ?>">
                 <div class="search-bar-container">
                     <form action="<?php echo esc_url(home_url('/')); ?>" method="get" class="search-bar" id="wp-search-form">
                         <!-- Search Icon -->
                         <span class="search-icon">
-                            <span class="dashicons dashicons-search"></span>
+                        <span class="dashicons dashicons-search"></span>
                         </span>
                         <!-- Input Field -->
                         <input type="text" name="s" id="search-query" class="search-input"
-                            placeholder="<?php echo esc_attr($atts['placeholder']); ?>" aria-label="Search">
+                            placeholder="<?php echo esc_attr($this->atts['placeholder']); ?>" aria-label="Search">
+                        <!-- post type pass -->
+                        <input type="hidden" name="shortcode_post_type" value="<?php echo esc_attr($type); ?>">
+
                         <!-- Submit Button -->
                         <button type="submit" class="search-btn">
                             <span class="dashicons dashicons-arrow-right-alt"></span>
-                        </button>
-                    </form>
-                </div>
+                            </button>
+                        </form>
+                    </div>
 
-                <!-- Button to Toggle Advanced Filters -->
-                <button id="advanced-filters-toggle" class="advance-search-btn mb-3">Advanced Filters</button>
+
+                        <!-- addvanve btn -->
+                        <button id="advanced-filters-toggle" class="advance-search-btn mb-3" 
+                            style="display: <?php echo empty($type) ? 'block' : 'none'; ?>">
+                            Advanced Filters
+                        </button>
+
             </div>
 
             <!-- Advanced Filters -->
@@ -61,7 +75,7 @@ if (!class_exists('WP_Search')) {
                         <h3 class="mb-3">Advanced Filters</h3>
 
                         <!-- Filter by Post Types -->
-                        <div>
+                        <div >
                             <label for="post-types">Filter by Post Types:</label>
                             <div class="post-types-field">
                                 <?php foreach ($post_types as $post_type_slug => $post_type_obj): ?>
@@ -88,9 +102,6 @@ if (!class_exists('WP_Search')) {
                                 </div>
                             </div>
                         <?php endif; ?>
-
-                        <!-- Additional Filters Section -->
-                        <hr>
                         <div id="additional-filters"></div>
 
                         <!-- Button to Add New Filter Row -->
@@ -110,12 +121,15 @@ if (!class_exists('WP_Search')) {
         public function modify_search_query($query)
         {
             if ($query->is_main_query() && $query->is_search() && !is_admin()) {
-                // Process post types filter
-                if (isset($_GET['post-types'])) {
-                    $post_types = explode(',', $_GET['post-types']);
-                    $post_types = array_map('sanitize_text_field', $post_types);
+                // Process post types
+                $post_types = [];
+                if (!empty($_GET['post-types'])) {
+                    $post_types = explode(',', sanitize_text_field($_GET['post-types']));
+                }
+        
+                // Apply post types to query if available
+                if (!empty($post_types)) {
                     $query->set('post_type', $post_types);
-
                 }
                 // Process WooCommerce product variations
                 if (isset($_GET['include_variations']) && $_GET['include_variations'] === '1' && class_exists('WooCommerce')) {
@@ -151,7 +165,7 @@ if (!class_exists('WP_Search')) {
                 }
             }
         }
-
+        
         /**
          * Include the custom search template.
          */
