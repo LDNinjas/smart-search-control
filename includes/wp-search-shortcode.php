@@ -44,7 +44,7 @@ if (!class_exists('WP_Search')) {
                     <form action="<?php echo esc_url(home_url('/')); ?>" method="get" class="search-bar" id="wp-search-form">
                         <!-- Search Icon -->
                         <span class="search-icon">
-                            <span class="dashicons dashicons-search"></span>
+                        <span class="dashicons dashicons-search"></span>
                         </span>
                         <!-- Input Field -->
                         <input type="text" name="s" id="search-query" class="search-input"
@@ -55,9 +55,9 @@ if (!class_exists('WP_Search')) {
                         <!-- Submit Button -->
                         <button type="submit" class="search-btn">
                             <span class="dashicons dashicons-arrow-right-alt"></span>
-                        </button>
-                    </form>
-                </div>
+                            </button>
+                        </form>
+                    </div>
 
 
                         <!-- addvanve btn -->
@@ -75,7 +75,7 @@ if (!class_exists('WP_Search')) {
                         <h3 class="mb-3">Advanced Filters</h3>
 
                         <!-- Filter by Post Types -->
-                        <div>
+                        <div >
                             <label for="post-types">Filter by Post Types:</label>
                             <div class="post-types-field">
                                 <?php foreach ($post_types as $post_type_slug => $post_type_obj): ?>
@@ -102,9 +102,6 @@ if (!class_exists('WP_Search')) {
                                 </div>
                             </div>
                         <?php endif; ?>
-
-                        <!-- Additional Filters Section -->
-                        <hr>
                         <div id="additional-filters"></div>
 
                         <!-- Button to Add New Filter Row -->
