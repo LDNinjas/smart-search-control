@@ -1,11 +1,11 @@
 <?php
 /**
- * Template Name: Search Results
+ * Template Name: Grid Template
  */
 get_header(); // Include the header
 ?>
 
-<div id="search-results-containerii">
+<div id="search-results-container">
     <div class="search-results-header">
 
         <h1>Search Results for: <span class="text-info">
@@ -13,17 +13,18 @@ get_header(); // Include the header
             </span>
         </h1>
     </div>
-    <div id="wp-search-resultsii">
+    <div id="wp-search-results">
         <?php
         if (have_posts()) {
             while (have_posts()) {
                 the_post();
                 ?>
-                <hr>
-                <div class="wp-search-postii">
-                    <img src="<?= get_the_post_thumbnail_url() ?>" alt=" <?= get_the_title() ?>" class="wp-search-imgii">
-                    <h2><a href="<?= get_permalink() ?>"> <?= get_the_title() ?> </a></h2>
-                    <p class="search-content"><?= get_the_excerpt() ?></p>
+                <div class="wp-search-post">
+                    <img src="<?= get_the_post_thumbnail_url() ?>" alt="<?= get_the_title() ?>" class="wp-search-img">
+                    <div class="wp-search-post-content">
+                        <h2><a href="<?= get_permalink() ?>"><?= get_the_title() ?></a></h2>
+                        <p><?= get_the_excerpt() ?> </p>
+                    </div>
                 </div>
                 <?php
             }
@@ -38,7 +39,9 @@ get_header(); // Include the header
         <?php
         }
         ?>
-</div>
-<?php
-get_footer(); // Include the footer
-?>
+
+
+
+    <?php
+    get_footer(); // Include the footer
+    ?>
