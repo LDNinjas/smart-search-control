@@ -2,7 +2,7 @@
 /**
  * Template Name: Row Template
  */
-get_header(); // Include the header
+get_header();
 ?>
 
 <div id="search-results-container-row">
@@ -13,10 +13,11 @@ get_header(); // Include the header
             </span>
         </h1>
     </div>
+
     <div id="wp-search-results-row">
         <?php
-        if (have_posts()) {
-            while (have_posts()) {
+        if ( have_posts() ) {
+            while ( have_posts() ) {
                 the_post();
                 ?>
                 <hr>
@@ -29,16 +30,12 @@ get_header(); // Include the header
             }
         } else {
             ?>
-        </div>
-        <div class="msg-container">
-            <h2>
-                <?php echo __('No post found'); ?>
-            </h2>
-        </div>
-        <?php
+            </div>
+            <div class="msg-container">
+                <h2>
+                    <?php echo __('No post found'); ?>
+                </h2>
+            </div>
+            <?php
         }
-        ?>
-</div>
-<?php
-get_footer(); // Include the footer
-?>
+get_footer();

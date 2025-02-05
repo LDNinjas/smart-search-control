@@ -2,7 +2,8 @@
 /**
  * Template Name: Grid Template
  */
-get_header(); // Include the header
+
+get_header();
 ?>
 
 <div id="search-results-container">
@@ -15,8 +16,8 @@ get_header(); // Include the header
     </div>
     <div id="wp-search-results">
         <?php
-        if (have_posts()) {
-            while (have_posts()) {
+        if ( have_posts() ) {
+            while ( have_posts() ) {
                 the_post();
                 ?>
                 <div class="wp-search-post">
@@ -30,18 +31,12 @@ get_header(); // Include the header
             }
         } else {
             ?>
-        </div>
-        <div class="msg-container">
-            <h2>
-                <?php echo __('No post found'); ?>
-            </h2>
-        </div>
-        <?php
+            </div>
+            <div class="msg-container">
+                <h2>
+                    <?php echo __('No post found'); ?>
+                </h2>
+            </div>
+            <?php
         }
-        ?>
-
-
-
-    <?php
-    get_footer(); // Include the footer
-    ?>
+get_footer();
