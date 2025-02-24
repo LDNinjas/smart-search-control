@@ -59,37 +59,38 @@ class WP_Search {
             add_filter( 'template_include', [$this, 'wp_search_template_include'] );
         }
 
-    /**
-     * Check if the search is triggered by shortcode
-     */
-    public function is_shortcode_search() {
-        global $post;
-
         /**
-         * Check if the shortcode is present in the current post
+         * Check if the search is triggered by shortcode
          */
-        if ( isset( $post->post_content ) && has_shortcode( $post->post_content, 'wp_search_bar' ) ) {
-            return true;
-        }
-    
-        /**
-         * Query all posts/pages where the shortcode is used
-         */
-        $query = new WP_Query( [
-            'post_type'      => 'page',
-            'posts_per_page' => -1,
-            's'             => '[wp_search_bar]',
-        ] );
-    
-        if ( $query->have_posts() ) {
+        public function is_shortcode_search() {
+            global $post;
+            if ( isset( $post->post_content ) && has_shortcode( $post->post_content, 'wp_search_bar' ) ) {
+                return true;
+            }
+        
+            $query = new WP_Query( [
+                'post_type'      => 'page',
+                'posts_per_page' => -1,
+                'meta_query'     => [
+                    [
+                        'key'     => '_wp_page_template',
+                        'compare' => 'EXISTS',
+                    ],
+                ],
+            ]);
+            if ( $query->have_posts() ) {
+                foreach ( $query->posts as $p ) {
+                    if ( has_shortcode( $p->post_content, 'wp_search_bar' ) ) {
+                        wp_reset_postdata();
+                        return true;
+                    }
+                }
+            }
+        
+            wp_reset_postdata();
 
-            return true;
+            return false;
         }
-    
-        wp_reset_postdata();
-        return isset( $_GET['wp_search'] ) && $_GET['wp_search'] == 1;
-    }
-    
     
     
 
@@ -324,9 +325,10 @@ class WP_Search {
 
                 public function wp_search_template_include( $template ) {
 
+
                     if ( $this->is_shortcode_search() && is_search() ) {
 
-                        $new_template = plugin_dir_path( __FILE__ ) . '../templates/template-wp-search.php';
+                        $new_template = plugin_dir_path( __FILE__ ) . '../templates/template-row-wp-search.php';
                         if ( file_exists( $new_template ) ) {
 
                             return $new_template;
