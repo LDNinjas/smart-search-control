@@ -23,7 +23,6 @@ class ld_wp_search {
             self::$instance = new self;
             self::$instance->constants_setup(); 
             self::$instance->includes_files();
-            self::$instance->setup_excerpt_length();
             
         }
 
@@ -53,19 +52,6 @@ class ld_wp_search {
         require_once WP_SEARCH_INCLUDES_PATH . 'wp-search-script.php';
         require_once WP_SEARCH_INCLUDES_PATH . 'wp-search-shortcode.php';
 
-    }
-
-    /**
-     * Setup and set excerpt length
-     */
-
-    private function setup_excerpt_length() {
-
-        add_filter('excerpt_length', function($length) {
-
-            return 20;
-
-        });
     }
 }
 

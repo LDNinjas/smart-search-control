@@ -31,7 +31,13 @@ class Wp_search_script {
      */
 
     public function hooks() {
+    /**
+     * Script
+     */
+
+
         add_action( 'wp_enqueue_scripts', [$this,'WP_Search_Assets'] );
+
     }
 
     /**
