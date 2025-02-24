@@ -18,6 +18,7 @@ class WP_Search {
         private $atts = [];
 
         public static function instance() {
+
             if ( is_null( self::$instance ) && ! ( self::$instance instanceof WP_Search ) ) {
                 self::$instance = new self;
                 self::$instance->hooks();
@@ -38,11 +39,18 @@ class WP_Search {
 
             add_shortcode( 'wp_search_bar', [$this, 'render_search_shortcode'] );
 
+
             /**
              * Add filter to process the search query
              */
 
             add_action( 'pre_get_posts', [$this, 'modify_search_query'] );
+
+            /**
+             * set the content length
+             */
+
+            add_filter( 'get_the_excerpt', [$this,'setup_excerpt_length'] );
 
             /**
              * Include the template
@@ -51,10 +59,44 @@ class WP_Search {
             add_filter( 'template_include', [$this, 'wp_search_template_include'] );
         }
 
+    /**
+     * Check if the search is triggered by shortcode
+     */
+    public function is_shortcode_search() {
+        global $post;
+
+        /**
+         * Check if the shortcode is present in the current post
+         */
+        if ( isset( $post->post_content ) && has_shortcode( $post->post_content, 'wp_search_bar' ) ) {
+            return true;
+        }
+    
+        /**
+         * Query all posts/pages where the shortcode is used
+         */
+        $query = new WP_Query( [
+            'post_type'      => 'page',
+            'posts_per_page' => -1,
+            's'             => '[wp_search_bar]',
+        ] );
+    
+        if ( $query->have_posts() ) {
+
+            return true;
+        }
+    
+        wp_reset_postdata();
+        return isset( $_GET['wp_search'] ) && $_GET['wp_search'] == 1;
+    }
+    
+    
+    
+
+
         /**
          * Render the search shortcode
          */
-
         public function render_search_shortcode( $atts ) {
 
             /**
@@ -62,6 +104,7 @@ class WP_Search {
              */
 
             $this->atts = shortcode_atts(
+
                 [
                     'placeholder' => 'Enter your search terms...',
                     'class'       => '',
@@ -109,6 +152,10 @@ class WP_Search {
                     -->
 
                     <input type="hidden" name="shortcode_post_type" value="<?php echo esc_attr( $type ); ?>">
+
+                    <!-- Set wp_search=1 -->
+                    <input type="hidden" name="wp_search" value="1"> 
+
 
                     <!--
                     Submit Button 
@@ -194,8 +241,7 @@ class WP_Search {
                  */
 
                 public function modify_search_query( $query ) {
-                    if ( $query->is_main_query() && $query->is_search() && ! is_admin() ) {
-                        // Process post types
+                    if ( $query->is_main_query() && $query->is_search() && ! is_admin() && $this->is_shortcode_search() ) {
                         $post_types = [];
                         if (! empty( $_GET['post-types'] )) {
                             $post_types = explode(  ',', sanitize_text_field( $_GET['post-types'] ) );
@@ -258,6 +304,18 @@ class WP_Search {
 
                         }
                     }
+            }
+                /**
+                * Set the Excerpt Length
+                */
+
+                public function setup_excerpt_length( $excerpt ) {
+                    if ( $this->is_shortcode_search() && is_search() ) {
+                        return wp_trim_words( $excerpt, 10, '...' );
+                    }
+
+                    return $excerpt;
+
                 }
 
                 /**
@@ -265,9 +323,11 @@ class WP_Search {
                  */
 
                 public function wp_search_template_include( $template ) {
-                    if ( is_search() ) {
-                        $new_template = plugin_dir_path( __FILE__ ) . '../templates/template-row-wp-search.php';
-                        if (file_exists( $new_template )) {
+
+                    if ( $this->is_shortcode_search() && is_search() ) {
+
+                        $new_template = plugin_dir_path( __FILE__ ) . '../templates/template-wp-search.php';
+                        if ( file_exists( $new_template ) ) {
 
                             return $new_template;
                         }
