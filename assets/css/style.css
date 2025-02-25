@@ -289,17 +289,15 @@
 .alert {
     width: 400px;
     color: #D8000C;
-    background-color: #FFD2D2;
+    background-color: #f8d7da;
     border: 1px solid #D8000C;
     border-radius: 8px;
     font-size: 16px;
-    margin: 10px;
+    margin: 10px auto;
     padding: 1rem;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.4);
-
-
+    text-align: center;
 }
-
 /*  
 * Class define for Shortcode class test
 */
@@ -312,10 +310,18 @@
  *Responsive  
 */
 
-@media ( max-width: 768px ) {
-    .search-bar {
-        width: 400px !important;
+@media ( max-width: 992px ) {
+    .search-bar,.search-bar-container  {
+        width: 80% !important;
     }
+
+}
+
+@media ( max-width: 768px ) {
+    .search-bar,.search-bar-container  {
+        width: 80% !important;
+    }
+  
 
     .advanced-filters {
         width: 80%;
@@ -345,8 +351,8 @@
 }
 
 @media ( max-width: 480px ) {
-    .search-bar {
-        width: 300px !important;
+    .search-bar , .search-bar-container{
+        width: 100% !important;
     }
 
     #search-query{
