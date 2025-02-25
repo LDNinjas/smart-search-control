@@ -36,10 +36,12 @@ class ld_wp_search {
 
     private function constants_setup() {
 
-        define('WP_SEARCH_DIR', plugin_dir_path(__FILE__));
-        define('WP_SEARCH_URL', plugin_dir_url(__FILE__));
-        define('WP_SEARCH_INCLUDES_PATH', WP_SEARCH_DIR . 'includes/');
-        define('WP_SEARCH_ASSETS_URL', WP_SEARCH_URL . 'assets/');
+        define( 'WP_SEARCH_DIR', plugin_dir_path( __FILE__ ) );
+        define( 'WP_SEARCH_URL', plugin_dir_url( __FILE__ ) );
+        define( 'WP_SEARCH_INCLUDES_DIR', WP_SEARCH_DIR . 'includes/' );
+        define( 'WP_SEARCH_TEMPLATES_DIR', WP_SEARCH_DIR . 'templates/' );
+        define( 'WP_SEARCH_ASSETS_URL', WP_SEARCH_URL . 'assets/' );
+        
 
     }
 
@@ -48,9 +50,11 @@ class ld_wp_search {
      */
 
     private function includes_files() {
-
-        require_once WP_SEARCH_INCLUDES_PATH . 'wp-search-script.php';
-        require_once WP_SEARCH_INCLUDES_PATH . 'wp-search-shortcode.php';
+        
+        if( !is_admin() ){
+            require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-script.php';
+            require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-shortcode.php';
+        }
 
     }
 }
