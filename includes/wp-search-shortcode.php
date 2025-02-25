@@ -37,26 +37,26 @@ class WP_Search {
              * Register shortcode
              */
 
-            add_shortcode( 'wp_search_bar', [$this, 'render_search_shortcode'] );
+            add_shortcode( 'wp_search_bar', [ $this, 'render_search_shortcode' ] );
 
 
             /**
              * Add filter to process the search query
              */
 
-            add_action( 'pre_get_posts', [$this, 'modify_search_query'] );
+            add_action( 'pre_get_posts', [ $this, 'modify_search_query' ] );
 
             /**
              * set the content length
              */
 
-            add_filter( 'get_the_excerpt', [$this,'setup_excerpt_length'] );
+            add_filter( 'get_the_excerpt', [ $this,'setup_excerpt_length' ] );
 
             /**
              * Include the template
              */
 
-            add_filter( 'template_include', [$this, 'wp_search_template_include'] );
+            add_filter( 'template_include', [ $this, 'wp_search_template_include' ] );
         }
 
         /**
@@ -121,118 +121,25 @@ class WP_Search {
              * Get all post types
              */
 
-            $post_types = get_post_types( ['public' => true], 'objects' );
+            $post_types = get_post_types( [ 'public' => true ], 'objects' );
 
             /**
              * get the post type of short code
              */
 
-            $type = $this->atts['type'];
-        ?>
-        <div class="search-container<?php echo esc_attr( $this->atts['class'] ); ?>">
-            <div class="search-bar-container">
-                <form action="<?php echo esc_url( home_url('/') ); ?>" method="get" class="search-bar" id="wp-search-form">
-                    
-                <!--
-                Search Icon
-                -->
+            $type = $this->atts[ 'type' ];
 
-                    <span class="search-icon">
-                    <span class="dashicons dashicons-search"></span>
-                    </span>
+            /**
+             * Define template path
+             */
+            $template_path = WP_SEARCH_TEMPLATES_DIR . 'template-wp-search-bar.php';
 
-                    <!--
-                    Input Field 
-                    -->
-
-                    <input type="text" name="s" id="search-query" class="search-input"
-                        placeholder="<?php echo esc_attr( $this->atts['placeholder'] ); ?>" aria-label="Search">
-                    
-                    <!-- 
-                    post type pass 
-                    -->
-
-                    <input type="hidden" name="shortcode_post_type" value="<?php echo esc_attr( $type ); ?>">
-
-                    <!-- Set wp_search=1 -->
-                    <input type="hidden" name="wp_search" value="1"> 
-
-
-                    <!--
-                    Submit Button 
-                    -->
-                    <button type="submit" class="search-btn">
-                        <span class="dashicons dashicons-arrow-right-alt"></span>
-                    </button>
-                </form>
-            </div>
-
-            <!--
-            addvanve btn 
-            -->
-
-            <button id="advanced-filters-toggle" class="advance-search-btn mb-3"
-            style="display: <?php echo empty( $type ) ? 'block' : 'none'; ?>">
-                Advanced Filters
-            </button>
-        </div>
-
-        <!-- 
-        Advanced Filters 
-        -->
-
-        <div class="advance-container">
-            <div class="advanced-filters">
-                <div>
-                    <h3 class="mb-3">Advanced Filters</h3>
-
-                    <!-- 
-                    Filter by Post Types 
-                    -->
-                    
-                    <div >
-                        <label for="post-types">Filter by Post Types:</label>
-                        <div class="post-types-field">
-                            <?php foreach ( $post_types as $post_type_slug => $post_type_obj ): ?>
-                                <div class="form-check">
-                                    <input type="checkbox" name="post-types[]" value="<?php echo esc_attr( $post_type_slug ); ?>"
-                                        class="form-check-input" id="post-type-<?php echo esc_attr( $post_type_slug ); ?>">
-                                    <label class="form-check-label" for="post-type-<?php echo esc_attr( $post_type_slug ); ?>">
-                                        <?php echo esc_html( $post_type_obj->labels->name ); ?>
-                                    </label>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <hr>
-                    </div>
-                    
-                    <!-- 
-                    WooCommerce Filters (if enabled) 
-                    -->
-
-                    <?php if ( class_exists('WooCommerce') ) { ?>
-                        <div class="woocommerce-filters">
-                            <div class="form-check ">
-                                <input type="checkbox" name="include_variations" id="include-variations" class="form-check-input">
-                                <label class="form-check-label" for="include-variations">
-                                    Include WooCommerce Variations
-                                </label>
-                            </div>
-                        </div>
-                    <?php } ?>
-                    <div id="additional-filters"></div>
-
-                    <!-- 
-                    Button to Add New Filter Row 
-                    -->
-                    
-                    <button type="submit" class="add-filter-row">
-                    Add Filter
-                    </button>
-                </div>
-            </div>
-        </div>
-        <?php
+            /**
+             * Check if file exists before including
+             */
+            if ( file_exists( $template_path ) ) {
+                include $template_path;
+            }
 
             return ob_get_clean();
                 }
