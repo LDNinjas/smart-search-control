@@ -33,31 +33,31 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100% !important;
+    width: 100% ;
 }
 
 .search-bar-container  {
     display: flex;
     justify-content: center;
     width: 70%;
-    height: 5rem !important;
+    height: 5rem ;
     margin-bottom: 1.5rem;
 }
 
 .search-bar {
-    width: 60% !important;
-    background: #fff !important;
+    width: 60% ;
+    background: #fff ;
     border-radius: 50px;
     overflow: hidden;
     display: flex;
     margin: 1rem 0;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    padding: auto !important;
+    padding: auto ;
 }
 
 .search-icon {
-    width: 50px !important;
-    display: flex !important;
+    width: 50px ;
+    display: flex ;
     justify-content: center;
     align-items: center;
     background: #fff;
@@ -68,30 +68,30 @@
 
 .search-icon span {
     font-size: 1.5rem;
-    color: #17a2b8 !important;
+    color: #17a2b8 ;
 }
 
 .search-input {
     flex-grow: 1;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
+    border: none ;
+    outline: none ;
+    box-shadow: none ;
     height: 50px;
-    padding: 0 !important;
+    padding: 0 ;
     font-size: 1rem;
-    background-color: white !important;
+    background-color: white ;
 }
 
 .search-btn {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 37px !important;
+    display: flex ;
+    align-items: center ;
+    justify-content: center ;
+    width: 37px ;
     cursor: pointer;
-    background: #17a2b8 !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 50% !important;
+    background: #17a2b8 ;
+    color: white ;
+    border: none ;
+    border-radius: 50% ;
     margin: 0.5rem;
     transition: all 0.3s ease;
 }
@@ -102,8 +102,8 @@
 }
 
 .search-btn:hover {
-    background: #138496 !important;
-    text-decoration: none !important;
+    background: #138496 ;
+    text-decoration: none ;
 }
 
 /* 
@@ -111,15 +111,15 @@
 */
 
 .advance-search-btn {
-    border: none !important;
-    background: none !important;
-    color: #17a2b8 !important;
+    border: none ;
+    background: none ;
+    color: #17a2b8 ;
 }
 
 .advance-search-btn:hover {
     border: none;
     background: none;
-    color: #17a2b8 !important;
+    color: #17a2b8 ;
     text-decoration: underline;
 }
 
@@ -165,15 +165,15 @@
 */
 
 .add-filter-row {
-    color: #17a2b8 !important;
-    border: 1px solid #17a2b8 !important;
-    background: none !important;
+    color: #17a2b8 ;
+    border: 1px solid #17a2b8 ;
+    background: none ;
     transition: all 0.3s ease;
 }
 
 .add-filter-row:hover {
-    color: white !important;
-    background-color: #17a2b8 !important;
+    color: white ;
+    background-color: #17a2b8 ;
 }
 
 /* 
@@ -190,15 +190,15 @@
     width: 77%;
 }
 .remove-filter {
-    color: #17a2b8 !important;
-    border: 1px solid #17a2b8 !important;
-    background: none !important;
+    color: #17a2b8 ;
+    border: 1px solid #17a2b8 ;
+    background: none ;
     transition: all 0.3s ease;
 }
 
 .remove-filter:hover {
-    color: white !important;
-    background-color: #17a2b8 !important;
+    color: white ;
+    background-color: #17a2b8 ;
 }
 
 /* 
@@ -266,7 +266,7 @@
 */
 
 .text-info {
-    color: #17a2b8 !important;
+    color: #17a2b8 ;
 }
 
 .search-results-header {
@@ -276,7 +276,7 @@
 }
 
 .msg-container {
-    width: 100% !important;
+    width: 100% ;
     display: flex;
     justify-content: center;
 }
@@ -312,14 +312,14 @@
 
 @media ( max-width: 992px ) {
     .search-bar,.search-bar-container  {
-        width: 80% !important;
+        width: 80% ;
     }
 
 }
 
 @media ( max-width: 768px ) {
     .search-bar,.search-bar-container  {
-        width: 80% !important;
+        width: 80% ;
     }
   
 
@@ -352,11 +352,11 @@
 
 @media ( max-width: 480px ) {
     .search-bar , .search-bar-container{
-        width: 100% !important;
+        width: 100% ;
     }
 
     #search-query{
-        width: 150px !important;
+        width: 150px ;
     }
 
     .advanced-filters {
