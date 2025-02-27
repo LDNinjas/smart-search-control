@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name: WP Search
  * Plugin URI: http://www.wpsearch.com
@@ -11,11 +10,8 @@
  */
 
 if ( !defined( 'ABSPATH' ) ) exit;
-
 class ld_wp_search {
-
     private static $instance = null;
-
     public static function instance() {
 
         if ( is_null( self::$instance ) && !( self::$instance instanceof ld_wp_search ) ) {
@@ -33,7 +29,6 @@ class ld_wp_search {
     /**
      * Define plugin constants 
      */
-
     private function constants_setup() {
 
         define( 'WP_SEARCH_DIR', plugin_dir_path( __FILE__ ) );
@@ -48,15 +43,12 @@ class ld_wp_search {
     /**
      * Include necessary files
      */
-
     private function includes_files() {
         
         if( !is_admin() ){
-            require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-script.php';
             require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-shortcode.php';
         }
 
     }
 }
-
 ld_wp_search::instance();

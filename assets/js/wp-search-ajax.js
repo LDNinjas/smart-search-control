@@ -12,8 +12,8 @@
                 $( '#wp-search-form').on( 'submit', function( e ) {
                     e.preventDefault();
 
-                    var searchQuery = $( '#search-query' ).val();
-                    var postTypes = [];
+                    let searchQuery = $( '#search-query' ).val();
+                    let postTypes = [];
                     
                     /**
                      * Add post types from user checked
@@ -25,7 +25,8 @@
                     /**
                      * Add post types from the shortcode if available
                      */
-                    var shortcodePostTypes = $( 'input[ name="shortcode_post_type" ]' ).val(); 
+
+                    let shortcodePostTypes = $( 'input[ name="shortcode_post_type" ]' ).val();
                     if ( shortcodePostTypes ) {
                         postTypes = postTypes.concat( shortcodePostTypes.split( ',' ) );
                     }
@@ -34,7 +35,7 @@
                      * Construct the URL
                      */
                     if ( searchQuery.trim() !== '' ) {
-                        var url = myAjax.site_url + '?s=' + encodeURIComponent( searchQuery );
+                        let url = myAjax.site_url + '?s=' + encodeURIComponent( searchQuery );
                         
                         /**
                          * Append post types if selected
@@ -52,8 +53,8 @@
                         /**
                          * Show alert if no search query
                          */
-                        var form = $( '.search-bar-container' );
-                        var alertMessage = $( '<div class="alert">Please enter a search query</div>' )
+                        let form = $( '.search-bar-container' );
+                        let alertMessage = $( '<div class="alert">Please enter a search query</div>' )
                             .insertBefore( form );
 
                         /**

@@ -2,19 +2,17 @@
     /**
      * Wp Search Shortcode
      */
-
 class WP_Search {
-
         /**
          * Summary of instance
          * @var 
          */
         private static $instance = null;
-
         /**
          * Summary of atts
          * @var array
          */
+        private $has_search_code = false;
         private $atts = [];
 
         public static function instance() {
@@ -30,70 +28,53 @@ class WP_Search {
         /**
          * Hooks
          */
+        private function hooks() {
+            add_shortcode('wp_search_bar', [$this, 'render_search_shortcode']);
+            add_filter('get_the_excerpt', [$this, 'setup_excerpt_length']);
+            // add_filter('template_include', [$this, 'wp_search_template_include']);
+            add_action('wp_enqueue_scripts', [$this, 'WP_Search_Assets']);
+            add_action('template_redirect', [$this, 'check_has_shortcode']);
+            add_action('wp_ajax_modify_search_query', [$this, 'modify_search_query']);
+            add_action('wp_ajax_nopriv_modify_search_query', [$this, 'modify_search_query']);
+        }
+        
+        /**
+         * Check if the shortcode exist
+         */
+        public function check_has_shortcode() {
 
-        public function hooks() {
-
-            /**
-             * Register shortcode
-             */
-
-            add_shortcode( 'wp_search_bar', [ $this, 'render_search_shortcode' ] );
-
-
-            /**
-             * Add filter to process the search query
-             */
-
-            add_action( 'pre_get_posts', [ $this, 'modify_search_query' ] );
-
-            /**
-             * set the content length
-             */
-
-            add_filter( 'get_the_excerpt', [ $this,'setup_excerpt_length' ] );
-
-            /**
-             * Include the template
-             */
-
-            add_filter( 'template_include', [ $this, 'wp_search_template_include' ] );
+            global $post;
+            if ( isset( $post->post_content ) && has_shortcode( $post->post_content, 'wp_search_bar' ) ) {
+                $this->has_search_code = true;
+            } 
         }
 
         /**
-         * Check if the search is triggered by shortcode
+         * Load the Assets
          */
-        public function is_shortcode_search() {
-            global $post;
-            if ( isset( $post->post_content ) && has_shortcode( $post->post_content, 'wp_search_bar' ) ) {
-                return true;
-            }
-        
-            $query = new WP_Query( [
-                'post_type'      => 'page',
-                'posts_per_page' => -1,
-                'meta_query'     => [
-                    [
-                        'key'     => '_wp_page_template',
-                        'compare' => 'EXISTS',
-                    ],
-                ],
-            ]);
-            if ( $query->have_posts() ) {
-                foreach ( $query->posts as $p ) {
-                    if ( has_shortcode( $p->post_content, 'wp_search_bar' ) ) {
-                        wp_reset_postdata();
-                        return true;
-                    }
-                }
-            }
-        
-            wp_reset_postdata();
+        public function WP_Search_Assets() {
 
-            return false;
+            if ( !$this->has_search_code ) {
+                return false;
+            }
+            wp_enqueue_style(
+                'wp-search-style',
+                WP_SEARCH_ASSETS_URL . '/css/style.css'
+            );
+            wp_enqueue_script(
+                'wp-search-ajax',
+                WP_SEARCH_ASSETS_URL . '/js/wp-search-ajax.js',
+                array( 'jquery' ),
+                '1.0',
+                true 
+            );
+            wp_localize_script( 'wp-search-ajax', 'SEARCH_FORM', array(
+                'ajax_url'        => admin_url( 'admin-ajax.php' ),
+                'site_url'        => get_site_url(),
+                'error'           => __( 'Please enter a search query', 'wp_search' ),
+                'search_nonce'    => wp_create_nonce( 'create_search_nonce' ),
+            ));
         }
-    
-    
-
 
         /**
          * Render the search shortcode
@@ -103,9 +84,7 @@ class WP_Search {
             /**
              * Set the global attributes
              */
-
             $this->atts = shortcode_atts(
-
                 [
                     'placeholder' => 'Enter your search terms...',
                     'class'       => '',
@@ -120,12 +99,7 @@ class WP_Search {
             /**
              * Get all post types
              */
-
             $post_types = get_post_types( [ 'public' => true ], 'objects' );
-
-            /**
-             * get the post type of short code
-             */
 
             $type = $this->atts[ 'type' ];
 
@@ -142,108 +116,67 @@ class WP_Search {
             }
 
             return ob_get_clean();
+        }
+
+        /**
+        * Modify the search query
+        */
+        public function modify_search_query() {
+
+            wp_send_json_error( [ 'message' => 'Search query is empty.' ] );
+
+
+            check_ajax_referer( 'create_search_nonce', 'nonce' );
+
+                if ( empty( $_POST[ 'search_query' ] ) ) {
+                    wp_send_json_error( [ 'message' => 'Search query is empty.' ] );
+                    wp_die();
                 }
+            
+                $search_query = sanitize_text_field( $_POST[ 'search_query' ] );    
+                $post_types = isset( $_POST[ 'post_types' ] ) ? array_map( 'sanitize_text_field', $_POST[ 'post_types' ] ) : [ 'post' ];
 
                 /**
-                 * Modify the search query
+                 * If 'product' is in the post types array, also include 'product_variation' 
                  */
-
-                public function modify_search_query( $query ) {
-                    if ( $query->is_main_query() && $query->is_search() && ! is_admin() && $this->is_shortcode_search() ) {
-                        $post_types = [];
-                        if (! empty( $_GET['post-types'] )) {
-                            $post_types = explode(  ',', sanitize_text_field( $_GET['post-types'] ) );
-                        }
-
-                        /**
-                         * Apply post types to query if available
-                         */
-
-                        if (! empty ($post_types) ) {
-                            $query->set( 'post_type', $post_types );
-                        }
-
-                        /**
-                         *Process WooCommerce product variations 
-                         */
-
-                        if (isset( $_GET['include_variations'] ) && $_GET['include_variations'] === '1' && class_exists( 'WooCommerce') ) {
-                            
-                            /**
-                             * Include 'product_variation' post type in the search
-                             */
-
-                            $query->set( 'post_type', ['product', 'product_variation'] );
-
-                            $search_term = $query->get( 's' );
-                            if ( $search_term ) {
-                                add_filter( 'posts_where', function ( $where ) use ( $search_term ) {
-                                    global $wpdb;
-                        
-                                    /**
-                                     * Get the search term
-                                     */
-                        
-                                    $search_term = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
-                                    
-                                    /**
-                                     * Split the search term into individual words
-                                     */
-                                    
-                                    $search_terms = explode( ' ', $search_term );
-
-                                    /**
-                                     *Escape and prepare search terms for SQL
-                                     */
-
-                                    $search_term_1 = '%' . $wpdb->esc_like( $search_terms[0] ) . '%';
-                                    $search_term_2 = isset( $search_terms[1] ) ? '%' . $wpdb->esc_like( $search_terms[1] ) . '%' : '';
-
-                                    $where .= $wpdb->prepare(
-                                        " AND {$wpdb->posts}.post_title LIKE %s AND {$wpdb->posts}.post_title LIKE %s AND {$wpdb->posts}.post_type = %s",
-                                        $search_term_1,
-                                        $search_term_2,
-                                        'product_variation'
-                                    );
-
-                                    return $where;
-                                });
-                            }
-
-                        }
-                    }
-            }
-                /**
-                * Set the Excerpt Length
-                */
-
-                public function setup_excerpt_length( $excerpt ) {
-                    if ( $this->is_shortcode_search() && is_search() ) {
-                        return wp_trim_words( $excerpt, 10, '...' );
-                    }
-
-                    return $excerpt;
-
+                if ( in_array( 'product', $post_types ) ) {
+                    $post_types[] = 'product_variation';
                 }
-
-                /**
-                 * Include the template
-                 */
-
-                public function wp_search_template_include( $template ) {
-
-
-                    if ( $this->is_shortcode_search() && is_search() ) {
-
-                        $new_template = plugin_dir_path( __FILE__ ) . '../templates/template-row-wp-search.php';
-                        if ( file_exists( $new_template ) ) {
-
-                            return $new_template;
-                        }
+                
+                $args = [
+                    's' => $search_query,
+                    'post_type' => $post_types,
+                ];
+                
+                $query = new WP_Query( $args );
+            
+                if ( $query->have_posts() ) {
+                    ob_start();
+                    while ( $query->have_posts() ) {
+                        $query->the_post();
+                        echo '<div class="search-item"><a href="' . get_permalink() . '">' . get_the_title() . '</a></div>';
                     }
-
-                    return $template;
+                    wp_reset_postdata();
+                    wp_send_json_success(['html' => ob_get_clean()]);
+                } else {
+                    wp_send_json_error(['message' => 'No results found.']);
                 }
+                
+                wp_die();
+        }
 
+        /**
+        * Set the Excerpt Length
+        */
+        public function setup_excerpt_length( $excerpt ) {
+            if ( !$this->has_search_code ) {
+                return false;
             }
+            if ( is_search() ) {
+                return wp_trim_words( $excerpt, 10, '...' );
+            }
+
+            return $excerpt;
+        }
+}
 WP_Search::instance();
