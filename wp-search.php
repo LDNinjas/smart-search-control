@@ -6,6 +6,7 @@
  * Version: 1.0
  * Author: LDNinjas
  * Author URI: http://www.ldninjas.com
+ * Text Domain: wp-search
  * License: GPL2
  */
 
@@ -36,7 +37,6 @@ class ld_wp_search {
         define( 'WP_SEARCH_INCLUDES_DIR', WP_SEARCH_DIR . 'includes/' );
         define( 'WP_SEARCH_TEMPLATES_DIR', WP_SEARCH_DIR . 'templates/' );
         define( 'WP_SEARCH_ASSETS_URL', WP_SEARCH_URL . 'assets/' );
-        
 
     }
 
@@ -44,10 +44,10 @@ class ld_wp_search {
      * Include necessary files
      */
     private function includes_files() {
-        
-        if( !is_admin() ){
-            require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-shortcode.php';
-        }
+
+            if( !is_admin() || ( defined('DOING_AJAX') && DOING_AJAX ) ){
+                require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-shortcode.php';
+            }
 
     }
 }
