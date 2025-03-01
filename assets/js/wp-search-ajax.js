@@ -1,71 +1,46 @@
-( function( $ ) { 'use strict';
-    $( document ).ready( function() {
+( function ( $ ) { 
+    'use strict';
+    $( document ).ready( function () {
         let SearchForm = {
-            init: function() {
+            init: function () {
                 this.handleSearchFormSubmit();
             },
 
-            /**
-             * Handle Search Form Submit
-             */
-            handleSearchFormSubmit: function() {
-                $( '#wp-search-form').on( 'submit', function( e ) {
+            handleSearchFormSubmit: function () {
+                $( '.search-btn' ).on( 'click', function ( e ) {
                     e.preventDefault();
-
                     let searchQuery = $( '#search-query' ).val();
-                    let postTypes = [];
-                    
-                    /**
-                     * Add post types from user checked
-                     */
-                    $(' input[ name="post-types[]" ]:checked' ).each( function() {
-                        postTypes.push( $( this ).val() );
-                    });
+                    let postTypes = $( 'input[name="post_type"]' ).val();
+                    console.log( postTypes );
+                    // let searchResultsContainer = $( "#search-result" );
+                    // console.log( searchResultsContainer.val(  ) );
 
-                    /**
-                     * Add post types from the shortcode if available
-                     */
-
-                    let shortcodePostTypes = $( 'input[ name="shortcode_post_type" ]' ).val();
-                    if ( shortcodePostTypes ) {
-                        postTypes = postTypes.concat( shortcodePostTypes.split( ',' ) );
-                    }
-
-                    /**
-                     * Construct the URL
-                     */
-                    if ( searchQuery.trim() !== '' ) {
-                        let url = myAjax.site_url + '?s=' + encodeURIComponent( searchQuery );
-                        
-                        /**
-                         * Append post types if selected
-                         */
-                        if ( postTypes.length > 0 ) {
-                            url += '&post-types=' + encodeURIComponent( postTypes.join( ',' ) );
+                    console.log( 'response send' )
+                    $.ajax({
+                        url: WP_SEARCH.ajaxurl,
+                        type: 'POST',
+                        data: {
+                            action: 'wp_search_result',
+                            nonce: WP_SEARCH.nonce,
+                            search_query: searchQuery,
+                            post_types: postTypes,
+                        },
+                        success: function( response ) {
+                            
+                            if ( response.success && response.data ) {
+                                console.log( "Response Success:", response.data.html );
+                                // searchResultsContainer.html( response.data.html );
+                            } else {
+                                console.log( "Response Failed:", response );
+                                // searchResultsContainer.html( '<p>' + ( response?.data?.message || "No results found." ) + '</p>' );
+                            }
+                        },
+                        error: function( xhr, status, error ) {
+                            console.error( "AJAX Error:", status, error );
+                            // searchResultsContainer.html( '<p>Error fetching results.</p>' );
                         }
-
-                        /**
-                         * Redirect to result page
-                         */
-                        window.location.href = url;
-                    } else {
-
-                        /**
-                         * Show alert if no search query
-                         */
-                        let form = $( '.search-bar-container' );
-                        let alertMessage = $( '<div class="alert">Please enter a search query</div>' )
-                            .insertBefore( form );
-
-                        /**
-                         * Hide alert after 5 seconds
-                         */
-                        setTimeout( function() {
-                            alertMessage.fadeOut(function() {
-                                $( this ).remove();
-                            });
-                        }, 5000);
-                    }                   
+                    });
+                    
                 });
             }
         };
