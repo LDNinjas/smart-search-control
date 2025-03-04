@@ -165,41 +165,15 @@
     color: #17a2b8 ;
 }
 
-.search-results-header {
+.search-results-header, .no-search-results {
     display: flex;
     justify-content: center;
-    margin: 1rem 5rem;
 }
 
 .msg-container {
     width: 100% ;
     display: flex;
     justify-content: center;
-}
-
-
-/* 
-* Alert Message 
-*/
-
-.alert {
-    width: 400px;
-    color: #D8000C;
-    background-color: #f8d7da;
-    border: 1px solid #D8000C;
-    border-radius: 8px;
-    font-size: 16px;
-    margin: 10px auto;
-    padding: 1rem;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.4);
-    text-align: center;
-}
-/*  
-* Class define for Shortcode class test
-*/
-
-.black {
-    background-color: #000;
 }
 
 /* 
