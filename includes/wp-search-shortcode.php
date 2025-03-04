@@ -79,10 +79,10 @@ class WP_Search {
              */
             $this->atts = shortcode_atts(
                 [
-                    'placeholder' => 'Enter your search terms...',
-                    'class'       => '',
-                    'include'        => '',
-                    'exclude'        => '',
+                    'placeholder'              => 'Enter your search terms...',
+                    'class'                    => '',
+                    'include_post_type'        => '',
+                    'exclude_post_type'        => '',
                 ],
                 $atts,
                 'wp_search_bar'
@@ -94,8 +94,8 @@ class WP_Search {
              * Get all post types
              */
             $all_post_types = get_post_types( [ 'public' => true ], 'names' );
-            $include = !empty( $this->atts[ 'include' ] ) ? explode( ',', $this->atts[ 'include' ] ) : [];
-            $exclude = !empty( $this->atts[ 'exclude' ] ) ? explode( ',', $this->atts[ 'exclude' ] ) : [];
+            $include = !empty( $this->atts[ 'include_post_type' ] ) ? explode( ',', $this->atts[ 'include_post_type' ] ) : [];
+            $exclude = !empty( $this->atts[ 'exclude_post_type' ] ) ? explode( ',', $this->atts[ 'exclude_post_type' ] ) : [];
 
             if ( !empty( $include ) ) {
 
@@ -108,11 +108,14 @@ class WP_Search {
                 $post_types = $all_post_types;
             }
             
+            if (in_array('product', $post_types) && !in_array('product_variation', $post_types)) {
+                $post_types[] = 'product_variation';
+            }
             /**
              * Define template path
              */
             $template_path = WP_SEARCH_TEMPLATES_DIR . 'template-wp-search-bar.php';
-
+            
             /**
              * Check if file exists before including
              */
@@ -140,15 +143,48 @@ class WP_Search {
             $args = [
                 's'              => $search_query,
                 'post_type'      => $post_types,
+                'posts_per_page' => -1,
             ];
-        
             $query = new WP_Query( $args );
-        
+            
             if ( $query->have_posts() ) {
-                ob_start();
-                include WP_SEARCH_TEMPLATES_DIR . 'template-grid-wp-search.php';
-                $html_output = ob_get_clean();
-                wp_send_json_success( [ 'html' => $html_output ] );
+                $posts = [];
+                
+                $posts = [];
+
+                while ( $query->have_posts() ) {
+                    $query->the_post();
+                
+                    $post_id = get_the_ID();
+                    $post_type = get_post_type( $post_id );
+
+                    $thumbnail = get_the_post_thumbnail_url( $post_id );
+                    if ( !$thumbnail ) {
+                        $thumbnail = WP_SEARCH_ASSETS_URL . 'image/dummyImg.png';
+                    }
+                
+                    $post_data = [
+                        'id'        => $post_id,
+                        'title'     => get_the_title(),
+                        'content'   => get_the_excerpt(),
+                        'permalink' => get_permalink(),
+                        'thumbnail' => $thumbnail,
+                    ];
+                
+                    if ( $post_type === 'product' ) {
+                        $post_data[ 'categories' ] = wp_list_pluck( get_the_terms( $post_id, 'product_cat' ), 'name' );
+                        $post_data[ 'tags' ] = wp_list_pluck( get_the_terms( $post_id, 'product_tag' ), 'name' );
+                    } else {
+                        $post_data[ 'categories' ] = wp_list_pluck( get_the_category(), 'name' );
+                        $post_data[ 'tags' ] = wp_list_pluck( get_the_tags(), 'name' );
+                    }
+                
+                    
+                    $posts[] = $post_data;
+                }
+                wp_reset_postdata();
+            
+                wp_send_json_success( [ 'search' => $posts ] );
             } else {
                 wp_send_json_error( [ 'message' => 'No results found.' ] );
             }

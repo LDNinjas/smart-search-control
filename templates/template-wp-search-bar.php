@@ -29,3 +29,4 @@ if ( !defined( 'ABSPATH' ) )
         </form>
     </div>
 </div>
+<div id="search-results"></div>

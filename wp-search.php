@@ -45,7 +45,7 @@ class ld_wp_search {
      */
     private function includes_files() {
 
-            if( !is_admin() || ( defined('DOING_AJAX') && DOING_AJAX ) ){
+            if( !is_admin() || ( defined( 'DOING_AJAX') && DOING_AJAX ) ){
                 require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-shortcode.php';
             }
 

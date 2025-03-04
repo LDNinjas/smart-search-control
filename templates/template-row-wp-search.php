@@ -2,7 +2,7 @@
 if ( !defined( 'ABSPATH' ) ) 
 exit;
 if ( $query->have_posts() ) { ?>
-    <div id="search-results-container-row" class="column">
+    <div id="search-results-container-row">
         <div class="search-results-header">
             <h1>Search Results for: <span class="text-info">
                 <?php echo esc_html( $search_query ); ?>
