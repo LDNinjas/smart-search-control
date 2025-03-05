@@ -80,7 +80,7 @@ class WP_Search {
             $this->atts = shortcode_atts(
                 [
                     'placeholder'              => 'Enter your search terms...',
-                    'class'                    => '',
+                    'class'                    => 'default-search',
                     'include_post_type'        => '',
                     'exclude_post_type'        => '',
                 ],
@@ -96,7 +96,7 @@ class WP_Search {
             $all_post_types = get_post_types( [ 'public' => true ], 'names' );
             $include = !empty( $this->atts[ 'include_post_type' ] ) ? explode( ',', $this->atts[ 'include_post_type' ] ) : [];
             $exclude = !empty( $this->atts[ 'exclude_post_type' ] ) ? explode( ',', $this->atts[ 'exclude_post_type' ] ) : [];
-
+            $class = $this->atts[ 'class' ];
             if ( !empty( $include ) ) {
 
                 $post_types = array_intersect( $all_post_types, $include );
