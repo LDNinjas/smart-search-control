@@ -2,45 +2,59 @@
     'use strict';
     $( document ).ready( function () {
         let SearchForm = {
+            lastQuery: '',
+            ajaxRequest: null,
+            searchTimer: null,
+
             init: function () {
                 this.handleSearchFormSubmit();
                 this.autoSearch();
             },
 
             autoSearch: function () {
-                let searchTimer;
-                let lastQuery = '';
-                
                 $( '#search-query' ).on( 'input', function () {
                     let searchQuery = $( this ).val().trim();
 
                     if ( searchQuery.length <= 2 ) {
-                        $( '#search-results' ).empty();
-                        lastQuery = '';
-                        clearTimeout(   searchTimer );
-                        return
-                    }
-
-                    if ( searchQuery.length === 3 && searchQuery !== lastQuery ) {
-                        lastQuery = searchQuery;
-                        SearchForm.performSearch( searchQuery );
+                        $( '#search-results' ).empty(); 
+                        SearchForm.lastQuery = '';
+                        clearTimeout( SearchForm.searchTimer );
+            
+                        if ( SearchForm.ajaxRequest ) {
+                            SearchForm.ajaxRequest.abort();
+                            SearchForm.ajaxRequest = null;
+                        }
                         return;
                     }
 
-                    clearTimeout( searchTimer );
-                    searchTimer = setTimeout(() => {
-                        if ( searchQuery !== lastQuery ) {
-                            lastQuery = searchQuery;
+                    clearTimeout( SearchForm.searchTimer );
+
+                    if ( searchQuery.length === 3 ) {
+                        if ( searchQuery !== SearchForm.lastQuery ) {
+                            SearchForm.lastQuery = searchQuery;
                             SearchForm.performSearch( searchQuery );
                         }
-                    }, 2000);
+                        return;
+                    }
+
+                    SearchForm.searchTimer = setTimeout(() => {
+                        if ( searchQuery !== SearchForm.lastQuery && searchQuery.length > 3 ) {
+                            SearchForm.lastQuery = searchQuery;
+                            SearchForm.performSearch( searchQuery );
+                        }
+                    }, 2000 );
                 });
             },
 
             handleSearchFormSubmit: function () {
-                $( '.search-btn' ).on( 'click', function ( e ) {
+                $( '.search-result-btn' ).on( 'click', function ( e ) {
                     e.preventDefault();
                     let searchQuery = $( '#search-query' ).val().trim();
+                    if ( searchQuery === SearchForm.lastQuery ) {
+                        return;
+                    }
+
+                    SearchForm.lastQuery = searchQuery;
                     SearchForm.performSearch( searchQuery );
                 });
             },
@@ -50,8 +64,12 @@
                     return;
                 }
                 let postTypes = $( 'input[ name="post_type" ]' ).val();
+
+                if ( SearchForm.ajaxRequest ) {
+                    SearchForm.ajaxRequest.abort();
+                }
                 
-                $.ajax({
+                SearchForm.ajaxRequest = $.ajax({
                     url: WP_SEARCH.ajaxurl,
                     type: 'POST',
                     data: {
@@ -77,7 +95,7 @@
                                 <div id="search-results-container-row">
                                     <div class="search-results-header">
                                         <h4>Search Results for : 
-                                        <span class="text-info">${searchQuery}</span>
+                                        <span class="text-info">${ searchQuery }</span>
                                         </h4>
                                     </div>
                                     <hr>
@@ -100,12 +118,11 @@
                             searchResultsContainer.html(
                                 `<div class="no-search-results">
                                     <h4>No results found for : 
-                                    <span class="text-info">${searchQuery}</span>
+                                    <span class="text-info">${ searchQuery }</span>
                                     </h4>
                                     </div>
                                     <hr>`
                             );
-                            
                         }
                     },
                     error: function ( xhr, status, error ) {
@@ -116,6 +133,7 @@
                 });
             }
         };
+
         SearchForm.init();
     });
 })( jQuery );
