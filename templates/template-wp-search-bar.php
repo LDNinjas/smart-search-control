@@ -6,12 +6,7 @@ if ( !defined( 'ABSPATH' ) )
 <div class="<?php echo $class; ?>-container">
 
     <div class="<?php echo $class; ?>-bar-container">
-        <form action="<?php echo esc_url( home_url( '/' ) ) ; ?>" method="POST" class="<?php echo $class; ?>-bar" id="wp-search-form">
-
-            <!-- Search Icon -->
-            <span class="<?php echo $class; ?>-icon">
-                <span class="dashicons dashicons-search"></span>
-            </span>
+        <form action="#" method="POST" class="<?php echo $class; ?>-bar" id="wp-search-form">
 
             <!-- Input Field -->
             <input type="text" name="s" id="search-query" class="<?php echo $class; ?>-input"
@@ -20,11 +15,11 @@ if ( !defined( 'ABSPATH' ) )
             <!-- Post Type Hidden Input -->
             <input type="hidden" name="post_type" value="<?php echo esc_attr( implode( ',', $post_types ) ); ?>">
 
-            <!-- Submit Button -->
-            <button class="<?php echo $class; ?>-btn search-result-btn">
-                <span class="dashicons dashicons-arrow-right-alt"></span>
-            </button>
+            <!-- Search Icon -->
+            <span class="<?php echo $class; ?>-icon">
+                <span class="dashicons dashicons-search"></span>
+            </span>
         </form>
     </div>
+    <div id="search-results"></div>
 </div>
-<div id="search-results"></div>

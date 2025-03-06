@@ -1,22 +1,42 @@
 ( function ( $ ) {
+    
     'use strict';
+    
     $( document ).ready( function () {
+        
         let SearchForm = {
+            
             lastQuery: '',
             ajaxRequest: null,
             searchTimer: null,
 
             init: function () {
+                
                 this.handleSearchFormSubmit();
                 this.autoSearch();
+                this.searchTimer();
             },
 
+            /**
+             * check every 2 sec whether search should be initiated.
+             */
+            searchTimer: function() {
+
+                SearchForm.searchTimer = setTimeout(() => {    
+                        
+                }, 2000 );
+            },
+
+            
             autoSearch: function () {
+                
                 $( '#search-query' ).on( 'input', function () {
-                    let searchQuery = $( this ).val().trim();
+                    
+                    let self = $( this );
+                    let searchQuery = self.val().trim();
 
                     if ( searchQuery.length <= 2 ) {
-                        $( '#search-results' ).empty(); 
+                        $( '#search-results' ).empty().change(); 
                         SearchForm.lastQuery = '';
                         clearTimeout( SearchForm.searchTimer );
             
@@ -29,23 +49,16 @@
 
                     clearTimeout( SearchForm.searchTimer );
 
-                    if ( searchQuery.length === 3 ) {
-                        if ( searchQuery !== SearchForm.lastQuery ) {
-                            SearchForm.lastQuery = searchQuery;
-                            SearchForm.performSearch( searchQuery );
-                        }
-                        return;
+                    if ( searchQuery !== SearchForm.lastQuery && searchQuery.length >= 3 ) {
+                        SearchForm.lastQuery = searchQuery;
+                        SearchForm.performSearch( searchQuery );
                     }
-
-                    SearchForm.searchTimer = setTimeout(() => {
-                        if ( searchQuery !== SearchForm.lastQuery && searchQuery.length > 3 ) {
-                            SearchForm.lastQuery = searchQuery;
-                            SearchForm.performSearch( searchQuery );
-                        }
-                    }, 2000 );
                 });
             },
 
+            /**
+             * Handles search submissions.
+             */
             handleSearchFormSubmit: function () {
                 $( '.search-result-btn' ).on( 'click', function ( e ) {
                     e.preventDefault();
@@ -60,9 +73,11 @@
             },
 
             performSearch: function ( searchQuery ) {
+                
                 if ( !searchQuery ) {
                     return;
                 }
+
                 let postTypes = $( 'input[ name="post_type" ]' ).val();
 
                 if ( SearchForm.ajaxRequest ) {
