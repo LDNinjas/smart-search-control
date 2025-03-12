@@ -97,10 +97,6 @@ class WP_Search {
             $post_types = $all_post_types;
 
         }
-        
-        if ( in_array( 'product', $post_types ) && !in_array( 'product_variation', $post_types ) ) {
-            $post_types[] = 'product_variation';
-        }
 
         wp_enqueue_style( 'wp-search-style' );
         wp_enqueue_script( 'wp-search-js' );
@@ -110,6 +106,7 @@ class WP_Search {
         include $template_path;
         $content = ob_get_clean();
         return $content;
+        
     }
 
     /**
@@ -130,35 +127,47 @@ class WP_Search {
 
         }
 
-        $search_query = sanitize_text_field( $_POST['search_query'] );
-        $post_types = !empty( $_POST['post_types'] ) ? array_map( 'trim', explode( ',', sanitize_text_field( $_POST['post_types'] ) ) ) : [ 'post' ];
+        $search_query = sanitize_text_field( $_POST[ 'search_query' ] );
+        $post_types = !empty( $_POST[ 'post_types' ] ) ? 
+            array_map( 'trim', explode( ',', sanitize_text_field( $_POST[ 'post_types' ] ) ) ) : 
+            [];
+
         $args = [
-            's'              => $search_query,
-            'post_type'      => $post_types,
+            's' => $search_query,
+            'post_type' => $post_types,
             'posts_per_page' => -1,
-            ];
+        ];
 
         $query = new WP_Query( $args );
-        
+
+        if ( !$query->have_posts() ) {
+
+            if ( in_array( 'product', $post_types ) && !in_array( 'product_variation', $post_types ) ) {
+
+                $modified_post_types = array_merge( $post_types, [ 'product_variation' ] );
+                
+                $args[ 'post_type' ] = $modified_post_types;
+                $query = new WP_Query( $args );
+            }
+        }
+
+        // Process results
+        $posts = [];
         if ( $query->have_posts() ) {
-            $posts = [];
             while ( $query->have_posts() ) {
                 $query->the_post();
                 $post_id = get_the_ID();
-                $post_type = get_post_type( $post_id );
-                $thumbnail = get_the_post_thumbnail_url( $post_id ) ?: WP_SEARCH_ASSETS_URL . 'image/dummyImg.png';
-                $post_data = [
+                
+                $posts[] = [
                     'id'        => $post_id,
                     'title'     => get_the_title(),
                     'content'   => get_the_excerpt(),
                     'permalink' => get_permalink(),
-                    'thumbnail' => $thumbnail,
+                    'thumbnail' => get_the_post_thumbnail_url($post_id) ?: WP_SEARCH_ASSETS_URL . 'image/dummyImg.png',
                 ];
-                
-                $posts[] = $post_data;
             }
             wp_reset_postdata();
-
+        
             ob_start();
             include WP_SEARCH_TEMPLATES_DIR.'template-row-wp-search.php';
             $html = ob_get_clean();
