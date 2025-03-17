@@ -1,100 +1,191 @@
 ( function ( $ ) {
-    
     'use strict';
-    
+
     $( document ).ready( function () {
-        
+
         let SearchForm = {
 
             lastQuery: '',
             ajaxRequest: null,
             timer: null,
+            selectedIndex: -1,
 
             init: function () {
+
                 this.handleSearchFormSubmit();
-                this.searchTimer();
+                this.handleSearchInput();
+                this.handleSuggestionNavigation();
             },
 
             /**
-             * Check every 2 sec whether search should be initiated.
+             * Handle search input field interactions
              */
-            searchTimer: function() {
-                SearchForm.timer = setTimeout(() => {  
+            handleSearchInput: function () {
 
-                    $( '.search-query' ).on( 'keyup', function () {
+                $( '.search-query' ).on( 'input', function () {
 
-                        let self = $( this );
-                        let parentContainer = self.closest( '.parent-container' );
-                        let searchResults = parentContainer.find( '.search-results' );
-
-                        let searchQuery = self.val().trim();
-
-                        if ( searchQuery.length === 0 ) {
-                            searchResults.empty().change();
-                            return;
-                        }
-
-                        if ( searchQuery.length <= 2 ) {
-                            searchResults.empty().change();
-                            SearchForm.lastQuery = '';
-                            clearTimeout( SearchForm.timer );
-
-                            if ( SearchForm.ajaxRequest ) {
-                                SearchForm.ajaxRequest.abort();
-                                SearchForm.ajaxRequest = null;
-                            }
-                            return;
-                        }
-
-                        clearTimeout( SearchForm.timer );
-
-                        if ( searchQuery !== SearchForm.lastQuery && searchQuery.length >= 3 ) {
-                            SearchForm.lastQuery = searchQuery;
-                            SearchForm.performSearch( searchQuery, searchResults );
-                        }
-                    });
-
-                }, 2000 );
-            },
-
-            /**
-             * Handles search submissions.
-             */
-            handleSearchFormSubmit: function () {
-
-                $( '.search-btn' ).on( 'click', function ( e ) {
-
-                    e.preventDefault();
                     let self = $( this );
                     let parentContainer = self.closest( '.parent-container' );
-                    let searchResults = parentContainer.find( '.search-results' );
-                    let searchQuery = parentContainer.find( '.search-query' ).val().trim();
+                    let searchSuggestion = parentContainer.find( '.search-suggestions' );
+                    let searchQuery = self.val().trim();
 
-                    if ( searchQuery === SearchForm.lastQuery ) {
+                    if ( searchQuery.length === 0 ) {
+
+                        searchSuggestion.empty().hide();
                         return;
                     }
 
-                    SearchForm.lastQuery = searchQuery;
-                    SearchForm.performSearch( searchQuery, searchResults );
+                    if ( searchQuery.length <= 2 ) {
+
+                        searchSuggestion.empty().hide();
+                        SearchForm.lastQuery = '';
+                        clearTimeout( SearchForm.timer );
+
+                        if ( SearchForm.ajaxRequest ) {
+
+                            SearchForm.ajaxRequest.abort();
+                            SearchForm.ajaxRequest = null;
+                        }
+
+                        return;
+                    }
+
+                    clearTimeout( SearchForm.timer );
+
+                    if ( searchQuery !== SearchForm.lastQuery && searchQuery.length >= 3 ) {
+
+                        SearchForm.lastQuery = searchQuery;
+                        SearchForm.performSearchSuggestion( searchQuery, searchSuggestion , parentContainer );
+                    }
+                
                 });
             },
 
             /**
-             * 
-             * Search perform here
+             * Handles search form submission
              */
-            performSearch: function ( searchQuery, searchResultsContainer ) {
-                
-                if ( !searchQuery ) {
-                    return;
-                }
+            handleSearchFormSubmit: function () {
 
-                let postTypes = $( 'input[name="post_type"]' ).val();
+                $( document ).on( 'click', '.search-btn', function () {
+
+                    e.preventDefault();
+
+                    let self = $( this );
+                    let parentContainer = self.closest( '.parent-container' );
+                    let searchQuery = parentContainer.find( '.search-query' ).val().trim();
+
+                        SearchForm.lastQuery = searchQuery;
+                        SearchForm.performSearch( searchQuery, parentContainer );
+
+                });
+
+                /**
+                 * Handle clicking on search suggestions
+                 */
+                $( document ).on( 'click', '.suggestion-item', function () {
+
+                    let selectedText = $( this ).text();
+                    let selectedLink = $( this ).find( 'a' ).attr( 'href' );
+
+                    $( '.search-query' ).val( selectedText );
+                    $( '.search-suggestions' ).fadeOut( 200 );
+
+                    if ( selectedLink ) {
+
+                        window.location.href = selectedLink;
+                    }
+                });
+
+                /**
+                 * Close suggestions when clicking outside
+                 */
+                $( document ).on( 'click', function ( e ) {
+
+                    if ( !$( e.target ).closest( '.search-container' )) {
+
+                        $( '.search-suggestions' ).fadeOut( 200 );
+                    }
+                });
+            },
+
+            /**
+             * Perform AJAX search Suggestions
+             */
+            performSearchSuggestion: function ( searchQuery , searchSuggestionContainer , parentContainer ) {
+
+                if ( !searchQuery ) return;
+
+                let postTypes = parentContainer.find(  'input[ name="post_type" ]' ).val() ;
+
 
                 if ( SearchForm.ajaxRequest ) {
+
                     SearchForm.ajaxRequest.abort();
                 }
-                
+
+                SearchForm.ajaxRequest = $.ajax( {
+                    url: WP_SEARCH.ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'wp_search_suggestion',
+                        nonce: WP_SEARCH.nonce,
+                        search_query: searchQuery,
+                        post_types: postTypes,
+                    },
+
+                    beforeSend: function () {
+                        searchSuggestionContainer.html(
+                            `<div class="no-results">Searching...</div>` 
+                        ).show();
+                    },
+
+                    success: function  (response ) {
+
+                        searchSuggestionContainer.empty();
+                        SearchForm.selectedIndex = -1;
+
+                        if ( response.success && response.data.search_results ) {
+
+                            let suggestionsHTML = response.data.search_results
+                                .map(
+                                    ( item ) =>
+
+                                        `<li class="suggestion-item"><a href="${ item.permalink }">${ item.title }</a></li>`
+                                )
+                                .join( '' );
+                            searchSuggestionContainer.html( `<ul class="suggestions-list">${ suggestionsHTML }</ul>`).show();
+
+                        } else {
+
+                            let errorMessage = response.data.message;
+                            searchSuggestionContainer.html( `<div class="no-results">${ errorMessage }</div>` ).show();
+                        }
+                    },
+
+                    error: function ( xhr, status, error ) {
+
+                        if ( status !== 'abort' ) {
+                            console.error( 'AJAX Error:', xhr, status, error );
+                        }
+                    },
+                });
+            },
+
+            /**
+             * Perform AJAX search Result
+             */
+            performSearch: function ( searchQuery, parentContainer) {
+
+                if ( !searchQuery ) return;
+
+                let postTypes = parentContainer.find(  'input[ name="post_type" ]' ).val() ;
+
+
+                if ( SearchForm.ajaxRequest ) {
+
+                    SearchForm.ajaxRequest.abort();
+                }
+
                 SearchForm.ajaxRequest = $.ajax( {
                     url: WP_SEARCH.ajaxurl,
                     type: 'POST',
@@ -105,38 +196,58 @@
                         post_types: postTypes,
                     },
 
-                    beforeSend: function () {
-                        searchResultsContainer.html(
-                            `<div class="no-search-results">
-                                <h4 class="text-info">Searching...</h4>
-                            </div>`
-                        );
-                    },
-
-                    success: function ( response ) {
-                        searchResultsContainer.empty();
-                        
-                        if ( response.success && response.data.search ) {
-                            console.log("Search Query : " + searchQuery)
-                            console.log("Posts Includes :" + postTypes)
-                            console.log("Result of "+ searchQuery + " is : " + response.data.search);
-                            searchResultsContainer.append( response.data.search ).change();
+                    success: function  (response ) {
+                        console.log( response.data );
+                        if ( response.success ) {
+                            $( '#search-results' ).html(response.data.search );
                         } else {
-                            searchResultsContainer.append(`
-                                <div class="no-search-results">
-                                    <p>No result found for "${ searchQuery }"</p>
-                                </div>
-                            `).change();
+                            $( '#search-results' ).html( '<p>No results found.</p>' );
                         }
                     },
 
                     error: function ( xhr, status, error ) {
+
                         if ( status !== 'abort' ) {
-                            console.error( "AJAX Error:", xhr, status, error );
+                            console.error( 'AJAX Error:', xhr, status, error );
                         }
-                    }
+                    },
                 });
-            }
+            },
+
+
+            /**
+             * Handle keyboard navigation in search suggestions
+             */
+            handleSuggestionNavigation: function () {
+
+                $( '.search-query' ).on( 'keydown', function ( e ) {
+
+                    let searchSuggestions = $( this ).closest( '.parent-container' ).find( '.search-suggestions' );
+                    let items = searchSuggestions.find( '.suggestion-item' );
+
+                    if ( items.length === 0 ) return;
+
+                    if ( e.key === 'ArrowDown' ) {
+
+                        e.preventDefault();
+                        SearchForm.selectedIndex = ( SearchForm.selectedIndex + 1 ) % items.length;
+                    } else if ( e.key === 'ArrowUp' ) {
+
+                        e.preventDefault();
+                        SearchForm.selectedIndex = ( SearchForm.selectedIndex - 1 + items.length ) % items.length;
+                    } 
+
+                    items.removeClass( 'highlighted' );
+
+                    if ( SearchForm.selectedIndex >= 0 ) {
+
+                        $( items[ SearchForm.selectedIndex ] ).addClass( 'highlighted' );
+                        $( this ).val( $( items[ SearchForm.selectedIndex ] ).text() );
+                    }
+
+                });
+
+            },
         };
 
         SearchForm.init();

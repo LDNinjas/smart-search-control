@@ -36,6 +36,8 @@ class WP_Search {
         add_action( 'wp_enqueue_scripts', [ $this, 'wp_search_assets' ] );
         add_action( 'wp_ajax_wp_search_result', [ $this , 'wp_search_result' ] );
         add_action( 'wp_ajax_nopriv_wp_search_result', [ $this , 'wp_search_result' ] );
+        add_action( 'wp_ajax_wp_search_suggestion', [ $this, 'wp_search_suggestion' ] );
+        add_action( 'wp_ajax_nopriv_wp_search_suggestion', [ $this, 'wp_search_suggestion' ] );
         add_shortcode( 'wp_search_bar', [ $this, 'render_search_shortcode' ] );
 
     }
@@ -78,11 +80,11 @@ class WP_Search {
         }
 
         $all_post_types = get_post_types( [ 'public' => true ], 'names' );
-        $include = !empty( $this->atts['include_post_type'] ) ? explode( ',', $this->atts['include_post_type'] ) : [];
-        $exclude = !empty( $this->atts['exclude_post_type'] ) ? explode( ',', $this->atts['exclude_post_type'] ) : [];
+        $include = !empty( $this->atts[ 'include_post_type' ] ) ? explode( ',', $this->atts[ 'include_post_type' ] ) : [];
+        $exclude = !empty( $this->atts[ 'exclude_post_type' ] ) ? explode( ',', $this->atts[ 'exclude_post_type' ] ) : [];
         
-        $class = esc_attr( $this->atts['class'] );
-        $placeholder = esc_attr( $this->atts['placeholder'] );
+        $class = esc_attr( $this->atts[ 'class' ] );
+        $placeholder = esc_attr( $this->atts[ 'placeholder' ] );
         
         if ( !empty( $include ) ) {
 
@@ -108,6 +110,77 @@ class WP_Search {
         return $content;
         
     }
+
+    /**
+     * Summary of wp_search_suggestion
+     * @return void
+     */
+    function wp_search_suggestion() {
+
+        if ( !isset( $_POST['nonce'] ) || !check_ajax_referer( 'wp_search_result_nonce', 'nonce', false ) ) {
+
+            wp_send_json_error( [ 'message' => 'Nonce verification failed' ] );
+
+        }
+
+        if ( empty( $_POST['search_query'] ) ) {
+
+            wp_send_json_error( [ 'message' => 'Search query is empty.' ] );
+
+        }
+
+        $search_query = sanitize_text_field( $_POST[ 'search_query' ] );
+        $post_types = !empty( $_POST[ 'post_types' ] ) ? 
+            array_map( 'trim', explode( ',', sanitize_text_field( $_POST[ 'post_types' ] ) ) ) : 
+            [];
+
+        $args = [
+            's' => $search_query,
+            'post_type' => $post_types,
+            'posts_per_page' => -1,
+        ];
+
+        $query = new WP_Query( $args );
+
+        if ( !$query->have_posts() ) {
+
+            if ( in_array( 'product', $post_types ) && !in_array( 'product_variation', $post_types ) ) {
+
+                $modified_post_types = array_merge( $post_types, [ 'product_variation' ] );
+                
+                $args[ 'post_type' ] = $modified_post_types;
+                $query = new WP_Query( $args );
+            }
+        }
+
+        // Process results
+        $posts = [];
+        if ( $query->have_posts() ) {
+            while ( $query->have_posts() ) {
+                $query->the_post();
+                $post_id = get_the_ID();
+                
+                $posts[] = [
+                    'id'        => $post_id,
+                    'title'     => get_the_title(),
+                    'permalink' => get_permalink(),
+                ];
+
+
+            }
+            wp_reset_postdata();
+
+        }
+
+        if ( !empty( $posts ) ) {
+            wp_send_json_success( [ 'search_results' => $posts ] );
+        } else {
+            wp_send_json_error(  [ 'message' => __( 'No results found.' )  ]  );
+        }
+
+        wp_die();
+    }
+
 
     /**
      * Summary of wp_search_result
@@ -165,19 +238,23 @@ class WP_Search {
                     'permalink' => get_permalink(),
                     'thumbnail' => get_the_post_thumbnail_url($post_id) ?: WP_SEARCH_ASSETS_URL . 'image/dummyImg.png',
                 ];
-            }
-            wp_reset_postdata();
-        
-            ob_start();
-            include WP_SEARCH_TEMPLATES_DIR.'template-row-wp-search.php';
-            $html = ob_get_clean();
 
-            wp_send_json_success( [ 'search' => $html ] );
+
+            }
+
+            wp_reset_postdata();
+            ob_start();
+
+            if(is_search(  )){
+                $template_path = WP_SEARCH_TEMPLATES_DIR . 'template-row-wp-search.php';
+                include $template_path;
+                $html = ob_get_clean();
+                wp_send_json_success( [ 'search' => $html ] );
+            }
         } else {
             wp_send_json_error( [ 'message' => 'No results found.' ] );
         }
         wp_die();
     }
 }
-
 WP_Search::instance();
