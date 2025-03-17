@@ -23,5 +23,9 @@ if ( !defined( 'ABSPATH' ) )
             </button>
         </form>
     </div>
-    <div class="search-results"></div>
+    <!-- Search Suggestions Dropdown -->
+    <div class="search-suggestions">
+
+    
+    </div>
 </div>
