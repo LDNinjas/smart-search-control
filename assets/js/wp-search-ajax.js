@@ -66,19 +66,6 @@
              */
             handleSearchFormSubmit: function () {
 
-                $( document ).on( 'click', '.search-btn', function () {
-
-                    e.preventDefault();
-
-                    let self = $( this );
-                    let parentContainer = self.closest( '.parent-container' );
-                    let searchQuery = parentContainer.find( '.search-query' ).val().trim();
-
-                        SearchForm.lastQuery = searchQuery;
-                        SearchForm.performSearch( searchQuery, parentContainer );
-
-                });
-
                 /**
                  * Handle clicking on search suggestions
                  */
@@ -170,50 +157,6 @@
                     },
                 });
             },
-
-            /**
-             * Perform AJAX search Result
-             */
-            performSearch: function ( searchQuery, parentContainer) {
-
-                if ( !searchQuery ) return;
-
-                let postTypes = parentContainer.find(  'input[ name="post_type" ]' ).val() ;
-
-
-                if ( SearchForm.ajaxRequest ) {
-
-                    SearchForm.ajaxRequest.abort();
-                }
-
-                SearchForm.ajaxRequest = $.ajax( {
-                    url: WP_SEARCH.ajaxurl,
-                    type: 'POST',
-                    data: {
-                        action: 'wp_search_result',
-                        nonce: WP_SEARCH.nonce,
-                        search_query: searchQuery,
-                        post_types: postTypes,
-                    },
-
-                    success: function  (response ) {
-                        console.log( response.data );
-                        if ( response.success ) {
-                            $( '#search-results' ).html(response.data.search );
-                        } else {
-                            $( '#search-results' ).html( '<p>No results found.</p>' );
-                        }
-                    },
-
-                    error: function ( xhr, status, error ) {
-
-                        if ( status !== 'abort' ) {
-                            console.error( 'AJAX Error:', xhr, status, error );
-                        }
-                    },
-                });
-            },
-
 
             /**
              * Handle keyboard navigation in search suggestions

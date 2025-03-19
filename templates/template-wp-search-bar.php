@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) )
 <div class="<?php echo $class; ?>-container parent-container">
 
     <div class="<?php echo $class; ?>-bar-container">
-        <form  method="POST" class="<?php echo $class; ?>-bar wp-search-form" >
+        <form  action="<?php echo esc_url( home_url( '/' ) ); ?>"  method="POST" class="<?php echo $class; ?>-bar wp-search-form" >
 
             <!-- Input Field -->
             <input type="text" name="s" class="<?php echo $class; ?>-input search-query"
@@ -24,8 +24,5 @@ if ( !defined( 'ABSPATH' ) )
         </form>
     </div>
     <!-- Search Suggestions Dropdown -->
-    <div class="search-suggestions">
-
-    
-    </div>
+    <div class="search-suggestions"></div>
 </div>
