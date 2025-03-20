@@ -1,18 +1,10 @@
 /*
 *==========================================
-*   Search Bar (31 - 107)
+*   Default Search  ( 11 - 68 )
 *==========================================
-*   Grid Template (208 - 231)
+*   Search suggestions ( 70 - 111 )
 *==========================================
-*   Row Template (237 - 262)
-*==========================================
-*   Msg Conatainer (268 - 282)
-*==========================================
-*   Alert Message (289 - 301)
-*==========================================
-*   Shortcode Class (307 - 309)
-*==========================================
-*   Responsive (315 - 376)
+*   Responsive ( 113 - 142 )
 *==========================================
 */
 
@@ -45,6 +37,7 @@
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     padding: auto ;
 }
+
 .default-search-btn{
     width: 30px ;
 }
@@ -74,6 +67,9 @@
     background-color: white ;
 }
 
+/*
+ * Search suggestions
+*/
 .search-suggestions {
     width: 60% ;
     min-width: 250px;
@@ -95,6 +91,7 @@
     cursor: pointer;
     border-bottom: 1px solid #eee;
 }
+
 .search-suggestions li a{
     text-decoration: none;
 }
@@ -107,112 +104,39 @@
     padding: 10px;
     color: #5DADE2;
 }
+
 .highlighted {
     background-color: #D6EAF8 ;
     border-left: 2px solid #5DADE2 ;
 }
 
 /* 
- * Grid template 
-*/
-.wp-search-results {
-    display: grid;
-    grid-template-columns: repeat( auto-fill, minmax( 300px, 1fr ) );
-    gap: 16px;
-    margin: 1px 50px;
-}
-
-.wp-search-post {
-    background: #fff;
-    border-radius: 5px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
-    margin: 16px;
-    overflow: hidden;
-}
-
-.wp-search-img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-}
-
-.wp-search-post-content {
-    padding: 16px 24px;
-}
-
-/* 
- * Row template 
-*/
-
-.wp-search-results-row {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
-
-.wp-search-img-row {
-    float: left;
-    width: 200px;
-    height: 100px;
-    object-fit: cover;
-    margin: 16px;
-}
-
-.search-content {
-    margin: 16px;
-    width: 100%;
-}
-
-/* 
- * Msg Container
-*/
-.search-results-header, .no-search-results {
-    display: flex;
-    justify-content: center;
-}
-
-/* 
  *Responsive  
 */
 @media ( max-width: 992px ) {
-    .default-search-bar,.default-search-bar-container ,.search-suggestions {
+
+    .default-search-bar,
+    .default-search-bar-container,
+    .search-suggestions {
+
         width: 80% ;
     }
 
 }
 
 @media ( max-width: 768px ) {
-    .default-search-bar,.default-search-bar-container ,.search-suggestions  {
+
+    .default-search-bar,
+    .default-search-bar-container,
+    .search-suggestions  {
+
         width: 100% ;
-    }
-    .wp-search-results {
-        margin: 1px 16px;
-    }
-    .wp-search-post {
-        margin: 8px;
-    }
-    .wp-search-img-row {
-        width: 150px;
-        height: 75px;
-    }
-    .search-results-header {
-        margin: 16px 16px;
     }
 }
 
 @media ( max-width: 480px ) {
+
     .default-search-input{
         width: 130px ;
-    }
-    .wp-search-results {
-        grid-template-columns: repeat( auto-fill, minmax( 250px, 1fr ) );
-    }
-    .wp-search-img-row{
-        width: 100px;
-        height: 50px;
-    }
-    .search-results-header {
-        margin: 16px 8px;
     }
 }

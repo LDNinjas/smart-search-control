@@ -3,7 +3,7 @@
  * Plugin Name: WP Search
  * Plugin URI: http://www.wpsearch.com
  * Description: A simple search plugin for WordPress
- * Version: 1.0
+ * Version: 1.0.0
  * Author: LDNinjas
  * Author URI: http://www.ldninjas.com
  * Text Domain: wp-search
@@ -48,7 +48,6 @@ class LD_WP_Search {
         define( 'WP_SEARCH_INCLUDES_DIR', WP_SEARCH_DIR . 'includes/' );
         define( 'WP_SEARCH_TEMPLATES_DIR', WP_SEARCH_DIR . 'templates/' );
         define( 'WP_SEARCH_ASSETS_URL', WP_SEARCH_URL . 'assets/' );
-
         define( 'WP_SEARCH_VERSION', '1.0.0' );
     }
 

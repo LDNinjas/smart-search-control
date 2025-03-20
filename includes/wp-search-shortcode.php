@@ -22,9 +22,11 @@ class WP_Search {
     public static function instance() {
 
         if ( is_null( self::$instance ) && ! ( self::$instance instanceof WP_Search ) ) {
+
             self::$instance = new self;
             self::$instance->hooks();
         }
+
         return self::$instance;
     }
 
@@ -50,7 +52,7 @@ class WP_Search {
             'wp-search-style',
             WP_SEARCH_ASSETS_URL . '/css/wp-search-style.css'
         );
-        wp_register_script( 'wp-search-js', WP_SEARCH_ASSETS_URL . 'js/wp-search-ajax.js', ['jquery'], WP_SEARCH_VERSION, true );
+        wp_register_script( 'wp-search-js', WP_SEARCH_ASSETS_URL . 'js/wp-search-ajax.js', [ 'jquery' ], WP_SEARCH_VERSION, true );
         wp_localize_script( 'wp-search-js', 'WP_SEARCH', [
             'ajaxurl' => admin_url( 'admin-ajax.php' ),
             'nonce'   => wp_create_nonce( 'wp_search_result_nonce' ),
@@ -112,7 +114,6 @@ class WP_Search {
 
     /**
      * Summary of wp_search_suggestion
-     * @return void
      */
     function wp_search_suggestion() {
 
@@ -191,7 +192,9 @@ class WP_Search {
             if ( isset( $_POST[ 'post_type' ] ) && !empty( $_POST[ 'post_type' ] ) ) {
 
                 $post_types = array_map( 'trim', explode( ',', sanitize_text_field( $_POST[ 'post_type' ] ) ) );
+
                 if ( in_array( 'product', $post_types ) && !in_array( 'product_variation', $post_types ) ) {
+                    
                     $post_types[] = 'product_variation';
                 }
     
