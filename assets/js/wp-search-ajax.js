@@ -7,13 +7,15 @@
 
             lastQuery: '',
             ajaxRequest: null,
-            timer: null,
             selectedIndex: -1,
 
+            /**
+             * Initialize functions
+             */
             init: function () {
 
-                this.handleSearchFormSubmit();
                 this.handleSearchInput();
+                this.handleSearchFormSubmit();
                 this.handleSuggestionNavigation();
             },
 
@@ -39,7 +41,6 @@
 
                         searchSuggestion.empty().hide();
                         SearchForm.lastQuery = '';
-                        clearTimeout( SearchForm.timer );
 
                         if ( SearchForm.ajaxRequest ) {
 
@@ -49,8 +50,6 @@
 
                         return;
                     }
-
-                    clearTimeout( SearchForm.timer );
 
                     if ( searchQuery !== SearchForm.lastQuery && searchQuery.length >= 3 ) {
 
@@ -103,7 +102,6 @@
                 if ( !searchQuery ) return;
 
                 let postTypes = parentContainer.find(  'input[ name="post_type" ]' ).val() ;
-
 
                 if ( SearchForm.ajaxRequest ) {
 
@@ -174,6 +172,7 @@
 
                         e.preventDefault();
                         SearchForm.selectedIndex = ( SearchForm.selectedIndex + 1 ) % items.length;
+
                     } else if ( e.key === 'ArrowUp' ) {
 
                         e.preventDefault();
@@ -191,6 +190,7 @@
                 });
 
             },
+            
         };
 
         SearchForm.init();
