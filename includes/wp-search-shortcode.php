@@ -67,40 +67,40 @@ class WP_Search {
 
         $sanitized_atts = shortcode_atts(
             [
-                'placeholder'       => 'Enter your search terms...',
-                'class'             => 'default-search',
-                'include_post_type' => '',
-                'exclude_post_type' => '',
+                'id' => '1',
             ],
             $atts,
             'wp_search_bar'
         );
         
-        foreach ( $sanitized_atts as $key => $value ) {
-            $this->atts[ $key ] = sanitize_text_field( $value );
-        }
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'search_parameters';
+        $query = "SELECT * FROM $table_name WHERE id = %d";
+        $result = $wpdb->get_row( $wpdb->prepare( $query, $sanitized_atts[ 'id' ] ) );
+        
 
         $all_post_types = get_post_types( [ 'public' => true ], 'names' );
-        $include = !empty( $this->atts[ 'include_post_type' ] ) ? explode( ',', $this->atts[ 'include_post_type' ] ) : [];
-        $exclude = !empty( $this->atts[ 'exclude_post_type' ] ) ? explode( ',', $this->atts[ 'exclude_post_type' ] ) : [];
+
+        $class = isset( $result->class ) ? $result->class : '';
+        $placeholder = isset( $result->place_holder ) ? $result->place_holder : '';
         
-        $class = esc_attr( $this->atts[ 'class' ] );
-        $placeholder = esc_attr( $this->atts[ 'placeholder' ] );
+        $posts_types = isset( $result->post_type ) ? ( is_array( $result->post_type ) ? $result->post_type : explode( ',', $result->post_type ) ) : [];
         
-        if ( !empty( $include ) ) {
+        $posts_types = array_map( 'trim', $posts_types );
+        
+        if ( $result->type === 'include' ) {
 
-            $post_types = array_intersect( $all_post_types, $include );
+            $post_types = array_intersect( $all_post_types, $posts_types );
 
-        } elseif ( !empty( $exclude ) ) {
+        } elseif ( $result->type === 'exclude' ) {
 
-            $post_types = array_diff( $all_post_types, $exclude );
+            $post_types = array_diff( $all_post_types, $posts_types );
 
         } else {
-
             $post_types = $all_post_types;
-
         }
-
+        
+        wp_enqueue_style( 'dashicons' );
         wp_enqueue_style( 'wp-search-style' );
         wp_enqueue_script( 'wp-search-js' );
         
