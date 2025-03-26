@@ -57,8 +57,9 @@ class LD_WP_Search {
      */
     private function includes_files() {
 
-        require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-admin-menu.php';
-        // require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-admin-form-handler.php';
+        if ( is_admin() ) {
+            require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-admin-menu.php';
+        }
 
         if( !is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ){
             require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-shortcode.php';
@@ -94,9 +95,6 @@ class LD_WP_Search {
 
         require_once WP_SEARCH_INCLUDES_DIR . 'wp-search-database.php';
     
-        if ( class_exists( 'WP_Search_Database' ) ) {
-            WP_Search_Database::instance(); 
-        }
     }
     
 }

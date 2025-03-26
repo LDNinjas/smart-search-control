@@ -119,11 +119,11 @@
 
                     beforeSend: function () {
                         searchSuggestionContainer.html(
-                            `<div class="no-results">Searching...</div>` 
+                            `<div class="no-results">${ WP_SEARCH.search_msg }</div>` 
                         ).show();
                     },
 
-                    success: function  (response ) {
+                    success: function( response ) {
 
                         searchSuggestionContainer.empty();
                         SearchForm.selectedIndex = -1;
@@ -137,7 +137,7 @@
                                         `<li class="suggestion-item"><a href="${ item.permalink }">${ item.title }</a></li>`
                                 )
                                 .join( '' );
-                            searchSuggestionContainer.html( `<ul class="suggestions-list">${ suggestionsHTML }</ul>`).show();
+                            searchSuggestionContainer.html( `<ul class="suggestions-list">${ suggestionsHTML }</ul>` ).show();
 
                         } else {
 

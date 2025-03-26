@@ -54,8 +54,9 @@ class WP_Search {
         );
         wp_register_script( 'wp-search-js', WP_SEARCH_ASSETS_URL . 'js/wp-search-ajax.js', [ 'jquery' ], WP_SEARCH_VERSION, true );
         wp_localize_script( 'wp-search-js', 'WP_SEARCH', [
-            'ajaxurl' => admin_url( 'admin-ajax.php' ),
-            'nonce'   => wp_create_nonce( 'wp_search_result_nonce' ),
+            'ajaxurl'    => admin_url( 'admin-ajax.php' ),
+            'nonce'      => wp_create_nonce( 'wp_search_result_nonce' ),
+            'search_msg' => __( 'Searching...' ),
         ]);   
         
     }
@@ -65,6 +66,7 @@ class WP_Search {
      */
     public function render_search_shortcode( $atts ) {
 
+        global $wpdb;
         $sanitized_atts = shortcode_atts(
             [
                 'id' => '1',
@@ -73,12 +75,10 @@ class WP_Search {
             'wp_search_bar'
         );
         
-        global $wpdb;
         $table_name = $wpdb->prefix . 'search_parameters';
         $query = "SELECT * FROM $table_name WHERE id = %d";
         $result = $wpdb->get_row( $wpdb->prepare( $query, $sanitized_atts[ 'id' ] ) );
         
-
         $all_post_types = get_post_types( [ 'public' => true ], 'names' );
 
         $class = isset( $result->class ) ? $result->class : '';
@@ -119,20 +119,20 @@ class WP_Search {
 
         if ( !isset( $_POST['nonce'] ) || !check_ajax_referer( 'wp_search_result_nonce', 'nonce', false ) ) {
 
-            wp_send_json_error( [ 'message' => 'Nonce verification failed' ] );
+            wp_send_json_error( [ 'message' => __( 'Nonce verification failed' ) ] );
 
         }
 
         if ( empty( $_POST['search_query'] ) ) {
 
-            wp_send_json_error( [ 'message' => 'Search query is empty.' ] );
+            wp_send_json_error( [ 'message' => __( 'Search query is empty.' ) ] );
 
         }
 
         $search_query = sanitize_text_field( $_POST[ 'search_query' ] );
         $post_types = !empty( $_POST[ 'post_types' ] ) ? 
             array_map( 'trim', explode( ',', sanitize_text_field( $_POST[ 'post_types' ] ) ) ) : 
-            [];
+            [ 'post' ];
 
         $args = [
             's' => $search_query,
@@ -186,22 +186,24 @@ class WP_Search {
      * Override the default WordPress search page to custom search
      */
     function wp_custom_search_query( $query ) {
-
         if ( !is_admin() && $query->is_main_query() && $query->is_search() ) {
 
-            if ( isset( $_POST[ 'post_type' ] ) && !empty( $_POST[ 'post_type' ] ) ) {
+            if ( !isset( $_POST['post_type'] ) || empty( $_POST['post_type'] ) ) {
 
-                $post_types = array_map( 'trim', explode( ',', sanitize_text_field( $_POST[ 'post_type' ] ) ) );
-
-                if ( in_array( 'product', $post_types ) && !in_array( 'product_variation', $post_types ) ) {
-                    
-                    $post_types[] = 'product_variation';
-                }
-    
-                $query->set( 'post_type', $post_types );
+                $query->set( 'post_type', array( 'post' ) ); 
+                return;
             }
+
+            $post_types = array_map( 'trim', explode( ',', sanitize_text_field( $_POST['post_type'] ) ) );
+
+            if ( in_array( 'product', $post_types ) && !in_array( 'product_variation', $post_types ) ) {
+                $post_types[] = 'product_variation';
+            }
+
+            $query->set( 'post_type', $post_types );
         }
     }
+
 }
 
 WP_Search::instance();
