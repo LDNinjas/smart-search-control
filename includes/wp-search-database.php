@@ -26,6 +26,8 @@ class WP_Search_Database {
     /**
      * Creates the search parameters database table if it doesn't exist.
      */
+    
+
     private function create_database_table() {
 
         global $wpdb;

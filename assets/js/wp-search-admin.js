@@ -2,16 +2,49 @@
     'use strict';
     $( document ).ready( function () {
 
-        window.AdminSearchSetting = {
+        let AdminSearchSetting = {
 
             /**
              * Initialize functions
              */
             init: function () {
-                this.addNewSetting();
-                this.deleteSetting();
-                this.viewSetting();
-                this.editSetting();
+
+                this.cacheSelectors();
+                this.bindEvents();
+            },
+
+            /**
+             * Cache DOM selectors
+             */
+            cacheSelectors: function () {
+                
+                this.createtable      = $( ".create-table" );
+
+                this.addBtn           = $( "#openModal" );
+                this.editBtn          = $( ".edit-setting" );
+                this.deleteBtn        = $( ".delete-setting" );
+
+                this.modal            = $( "#searchModal" );
+                this.closeModal       = $( "#closeModal" );
+                this.modalTitle       = $( ".model-title" );
+                this.modelPlaceHolder = $( "#place_holder" );
+                this.modelClass       = $( "#class" );
+                this.modelType        = $( 'input[name="type"]' );
+                this.modelPostType    = $( 'input[name="post_type[]"]' );
+                this.modelBtn         = $( ".model-btn" );
+                this.modalForm        = $( "#searchForm" );
+            },
+
+            /**
+             * Bind events
+             */
+            bindEvents: function () {
+                
+                this.addBtn.on( "click", this.addNewSetting.bind( this ) );
+                this.editBtn.on( "click", this.editSetting.bind( this ) );
+                this.deleteBtn.on( "click", this.deleteSetting.bind( this ) );
+                this.closeModal.on( "click", this.closeModalHandler.bind( this ) );
+                this.createtable.on( "click", this.createDatabaseTable.bind( this ) );
             },
 
             /**
@@ -19,180 +52,133 @@
              */
             addNewSetting: function () {
 
-                let modal      = $( "#searchModal" );
-                let openModal  = $( "#openModal" );
-                let closeModal = $( "#closeModal" );
-                let modalForm  = $( "#searchForm" );
-                let msgBox     = $( ".message-box" );
+                this.modalForm.trigger( "reset" );
+                this.modalTitle.text( WP_SEARCH_SETTING.add_title );
+                this.modelBtn.val( WP_SEARCH_SETTING.add_btn );
 
-                openModal.on( "click", function () {
-                    modal.css( "display", "flex" );
-                });
-
-                closeModal.on( "click", function ( event ) {
-                    event.preventDefault();
-                    modal.css( "display", "none" );
-                    modalForm.trigger( "reset" );
-                    msgBox.html( '' ).hide();
-                });
-
-                modalForm.on( 'submit', function ( e ) {
+                this.modalForm.off( 'submit' ).on( 'submit', function ( e ) {
                     e.preventDefault();
 
                     let formData = {
                         action: 'wp_search_setting',
                         nonce: WP_SEARCH_SETTING.nonce_add,
-                        place_holder: $( '#place_holder' ).val(),
-                        class: $( '#class' ).val(),
+                        place_holder: AdminSearchSetting.modelPlaceHolder.val(),
+                        class: AdminSearchSetting.modelClass.val(),
                         type: $( 'input[name="type"]:checked' ).val(),
                         post_type: $( 'input[name="post_type[]"]:checked' ).map( function () {
                             return $( this ).val();
                         } ).get()
                     };
 
-                    $.ajax({
+                    $.ajax( {
                         type: 'POST',
                         url: WP_SEARCH_SETTING.ajaxurl,
                         data: formData,
                         dataType: 'json',
                         success: function ( response ) {
-                            modalForm.trigger( "reset" );
-                            modal.css("display", "none" );
+                            AdminSearchSetting.modalForm.trigger( "reset" );
+                            AdminSearchSetting.modal.css( "display", "none" );
                             location.reload();
                             AdminSearchSetting.displayMessage( response.success, response.data.message );
                         },
                         error: function () {
-                            modal.css( "display", "none" );
-                            AdminSearchSetting.displayMessage( false, "Something went wrong. Please try again.");
+                            AdminSearchSetting.modal.css( "display", "none" );
+                            AdminSearchSetting.displayMessage( false, WP_SEARCH_SETTING.error_msg );
                         }
                     });
                 });
-            },
 
+                this.openModal();
+            },
 
             /**
              * Edit the specific setting
              */
-            editSetting: function( entry ) {
+            editSetting: function ( event ) {
 
-                if ( !entry ) return;
-        
-                $( ".editModelId" ).text( entry.id );
-                $( "#edit-place_holder" ).val( entry.place_holder );
-                $( "#edit-class" ).val( entry.class );
-            
-                $( 'input[name="edit-type"]' ).prop( "checked", false );
-                $( 'input[name="edit-type"][value="' + entry.type + '"]' ).prop( "checked", true );
-            
-                $( 'input[name="edit-post_type[]"]' ).prop( "checked", false );
+                let entry = JSON.parse( $( event.currentTarget ).attr( "data-entry" ) );
+
+                this.modalTitle.text( WP_SEARCH_SETTING.setting_id + entry.id );
+                this.modelPlaceHolder.val( entry.place_holder );
+                this.modelClass.val( entry.class );
+
+                $( 'input[name="type"]' ).prop( "checked", false );
+                $( 'input[name="type"][value="' + entry.type + '"]' ).prop( "checked", true );
+
+                this.modelPostType.prop( "checked", false );
                 if ( entry.post_type ) {
                     let selectedPostTypes = entry.post_type.split( "," );
-                    $( 'input[name="edit-post_type[]"]' ).each( function () {
-                        if ( selectedPostTypes.includes( $ ( this ).val() ) ) {
-                            $( this ).prop( "checked", true );
-                        }
+                    this.modelPostType.each( function () {
+                    if ( selectedPostTypes.includes( $( this ).val() ) ) {
+                        $( this ).prop( "checked", true );
+                    }
                     });
                 }
 
-                $( "#editSearchModal" ).css( "display", "flex" );
+                this.modelBtn.val( WP_SEARCH_SETTING.edit_btn );
 
-                $( "#editSearchForm" ).on( "submit", function( e ) {
+                this.modalForm.off( "submit" ).on( "submit", function ( e ) {
+
                     e.preventDefault();
-            
+
                     let formData = {
                         action: "wp_search_setting_edit",
                         nonce: WP_SEARCH_SETTING.nonce_edit,
                         id: entry.id,
-                        place_holder: $( "#edit-place_holder" ).val(),
-                        class: $( "#edit-class" ).val(),
-                        type: $( 'input[name="edit-type"]:checked' ).val(),
-                        post_type: $( 'input[name="edit-post_type[]"]:checked' ).map( function() {
+                        place_holder: AdminSearchSetting.modelPlaceHolder.val(),
+                        class: AdminSearchSetting.modelClass.val(),
+                        type: $( 'input[name="type"]:checked' ).val(),
+                        post_type: $( 'input[name="post_type[]"]:checked' ).map( function () {
                             return $( this ).val();
                         } ).get()
                     };
-            
+
                     $.ajax( {
                         type: "POST",
                         url: WP_SEARCH_SETTING.ajaxurl,
                         data: formData,
                         dataType: "json",
-                        success: function( response ) {
-                            $( "#editSearchModal" ).css( "display", "none" );
+                        success: function ( response ) {
+                            AdminSearchSetting.modal.css( "display", "none" );
                             location.reload();
                             AdminSearchSetting.displayMessage( response.success, response.data.message );
                         },
-                        error: function() {
-                            $( "#editSearchModal" ).css( "display", "none" );
-                            AdminSearchSetting.displayMessage( false, "Something went wrong. Please try again." );
+                        error: function () {
+                            AdminSearchSetting.modal.css( "display", "none" );
+                            AdminSearchSetting.displayMessage( false, WP_SEARCH_SETTING.error_msg );
                         }
                     });
+                });
 
-                });
-            
-                $( "#closeEditModal" ).on( "click", function( e ) {
-                    e.preventDefault();
-                    $( "#editSearchModal" ).css( "display", "none" );
-                    $( "#edit-place_holder, #edit-class" ).val( "" );
-                    $( 'input[name="edit-type"]' ).prop( "checked", false );
-                    $( 'input[name="edit-post_type[]"]' ).prop( "checked", false );
-                });
+                this.openModal();
             },
-            
+
             /**
-             * View the specific setting
+             * Delete the specific setting
              */
-            viewSetting: function( entry ) {
+            deleteSetting: function ( event ) {
 
-                if ( !entry ) return;
+                event.preventDefault();
+                let id = $( event.currentTarget ).data( 'id' );
 
-                $( "#view-model-id" ).text( entry.id );
-                $( "#view-model-place_holder" ).val( entry.place_holder );
-                $( "#view-model-class" ).val( entry.class );
-                $( "#view-model-type" ).val( entry.type );
-            
-                let postTypeDisplay = $( ".post-type-display" );
-                if ( postTypeDisplay.length ) {
-                    postTypeDisplay.text( entry.post_type.split( ',' ).join( ', ' ) );
+                if ( confirm( WP_SEARCH_SETTING.confirm_msg ) ) {
+                    $.ajax( {
+                        type: 'POST',
+                        url: WP_SEARCH_SETTING.ajaxurl,
+                        data: {
+                            action: 'wp_search_setting_delete',
+                            nonce: WP_SEARCH_SETTING.nonce_delete,
+                            id: id
+                        },
+                        success: function ( response ) {
+                            location.reload();
+                            AdminSearchSetting.displayMessage( response.success, response.data.message );
+                        },
+                        error: function () {
+                            AdminSearchSetting.displayMessage( false, WP_SEARCH_SETTING.error_msg ); 
+                        }
+                    });
                 }
-            
-                $( "#viewModal" ).css( "display", "flex" );
-            
-                $( "#closeViewModal" ).on( "click", function(e) {
-                    e.preventDefault();
-                    $( "#viewModal" ).css( "display", "none" );
-                    $( "#view-model-id, #view-model-place_holder, #view-model-class, #view-model-type" ).val( "" );
-                });
-            },
-
-            /**
-             * Delete the specific setting 
-             */
-            deleteSetting: function () {
-
-                $( '.delete-setting' ).on( 'click', function ( e ) {
-
-                    e.preventDefault();
-                    let id = $(this).data( 'id' );
-
-                    if ( confirm( 'Are you sure you want to delete this setting?' ) ) {
-                        $.ajax({
-                            type: 'POST',
-                            url: WP_SEARCH_SETTING.ajaxurl,
-                            data: {
-                                action: 'wp_search_setting_delete',
-                                nonce: WP_SEARCH_SETTING.nonce_delete,
-                                id: id
-                            },
-                            success: function ( response ) {
-                                location.reload();
-                                AdminSearchSetting.displayMessage( response.success, response.data.message );
-                            },
-                            error: function () {
-                                AdminSearchSetting.displayMessage( false, "Something went wrong. Please try again." );
-                            }
-                        });
-                    }
-                });
             },
 
             /**
@@ -205,13 +191,58 @@
                 msgBox.html( '<div class="alert ' + alertClass + '">' + message + '</div>' ).fadeIn();
 
                 setTimeout( () => {
-                    msgBox.fadeOut(500, function () {
-                        $( this ).html( '' );
+                    msgBox.fadeOut( 500, function () {
+                    $( this ).html( '' );
                     });
                 }, 5000 );
+            },
+
+            /**
+             * Open the modal form
+             */
+            openModal: function () {
+                this.modal.css( "display", "flex" );
+            },
+
+            /**
+             * Close the modal form
+             */
+            closeModalHandler: function ( event ) {
+
+                event.preventDefault();
+                this.modal.css( "display", "none" );
+                this.modalForm.trigger( "reset" );
+                this.modelPlaceHolder.prop( 'disabled', false );
+                this.modelClass.prop( 'disabled', false );
+                this.modelType.prop( 'disabled', false )
+                this.modelPostType.prop( 'disabled', false )
+                this.modelBtn.show();
+            },
+
+            /**
+             * Create Database table on click
+             */
+            createDatabaseTable: function(){
+
+                $.ajax( {
+                    url: WP_SEARCH_SETTING.ajaxurl,
+                    type: "POST",
+                    data: {
+                        action: "create_database_table",
+                        nonce: WP_SEARCH_SETTING.nonce_table,
+                    },
+                    success: function ( response ) {
+                        location.reload();
+                        AdminSearchSetting.displayMessage( response.success, response.data.message );
+                    },
+                    error: function () {
+                        AdminSearchSetting.displayMessage( false, WP_SEARCH_SETTING.error_msg ); 
+                    }
+                });
             }
+
         };
+
         AdminSearchSetting.init();
     });
-
 })( jQuery );

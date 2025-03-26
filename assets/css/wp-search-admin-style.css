@@ -1,35 +1,58 @@
+.page-header{
+    display: flex;
+    gap : 20px;
+}
+
 .new-rec-btn{
-    padding: 7px 25px !important;
+    padding: 10px;
+    color: #0073aa;
+    background: none;
+    font-weight: 700;
+    border: 1px solid #0073aa;
+    border-radius: 5px;
+    transition: 0.4s;
+    &:hover{
+        background-color:#0073aa ;
+        color: #fff;
+    }
+
 }
 .search-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    border: 2px solid #ccc;
 }
 
 .search-table th, 
 .search-table td {
     padding: 10px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+}
+
+.search-table thead ,.search-table  tfoot {
+    border: 2px solid #ccc;
 }
 
 .search-table th {
-    background-color: #0073aa;
-    font-size: larger;
-    color: white !important;
-    text-transform: uppercase;
+    background-color: #fff;
+    color: #0073aa;
 }
 
 .search-table tr:nth-child(even) {
-    background-color: #ccc;
-}
-.search-table tr:nth-child(odd) {
     background-color: #fff;
+    transition: 0.3s;
+
+}
+
+.search-table tr:nth-child(odd) {
+    background-color: #F0F0F1;
+    transition: 0.3s;
+
 }
 
 .search-table tr:hover {
-    background-color: #f0f0f0;
+    background-color: #e0e0e1;
 }
 
 .search-table .button {
@@ -165,4 +188,48 @@
     padding: 10px;
     border-radius: 5px;
     font-weight: bold;
+}
+
+/* Pagination */
+.tablenav {
+    margin-top: 20px;
+}
+
+.tablenav-pages {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.tablenav-pages a.page-numbers {
+    display: inline-block;
+    padding: 8px 12px;
+    background: #fff;
+    color: #005b8f;
+    font-weight: 600;
+    border: 1px solid #005b8f;
+    margin: 5px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.tablenav-pages a.page-numbers:hover {
+    background: #005b8f;
+    color: #fff;
+}
+
+.tablenav-pages a.current {
+    background-color: #005b8f;
+    color: #fff;
+    font-weight: bold;
+    pointer-events: none;
+    cursor: default;
+}
+.admin-msg{
+    padding: 3px 10px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    background-color: white;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.3);
+    border-left: 4px solid #ff4d4d;
 }
