@@ -11,7 +11,7 @@
 /*
  * Default Search 
 */
-.default-search-container {
+.wp-default-search-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -20,30 +20,30 @@
     margin-bottom: 20px;
 }
 
-.default-search-bar-container  {
+.wp-default-search-bar-container  {
     display: flex;
     justify-content: center;
     width: 100%;
-    height: 50px ;
+    height: 40px ;
 }
 
-.default-search-bar {
+.wp-default-search-bar {
     width: 60% ;
     min-width: 250px;
-    max-width: 300px;
     background: #fff ;
-    border-radius: 4px;
+    border-radius: 10px 10px 0 0;
     overflow: hidden;
     display: flex;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     padding: auto ;
 }
 
-.default-search-btn{
+.wp-default-search-btn{
     width: 30px ;
+    background-color: #5DADE2;
 }
 
-.default-search-icon {
+.wp-default-search-icon {
     display: flex ;
     justify-content: center;
     align-items: center;
@@ -53,16 +53,15 @@
 
 }
 
-.default-search-icon span {
+.wp-default-search-icon span {
     font-size: 24px;
 }
 
-.default-search-input {
+.wp-default-search-input {
     flex-grow: 1;
     border: none ;
     outline: none ;
     box-shadow: none ;
-    height: 50px;
     width: 100%;
     font-size: 16px;
     background-color: white ;
@@ -74,7 +73,6 @@
 .search-suggestions {
     width: 60% ;
     min-width: 250px;
-    max-width: 300px;
     background: white;
     border: 1px solid #ddd;
     border-top: none;
@@ -85,12 +83,15 @@
 .search-suggestions ul {
     list-style: none;
     margin: 0;
+    max-height: 200px;
+    overflow-y: scroll;
+
 }
 
 .search-suggestions li {
-    padding: 5px !important;
+
+    padding: 10px 15px !important;   
     cursor: pointer;
-    border-bottom: 1px solid #eee;
 }
 
 .search-suggestions li a{
@@ -102,7 +103,7 @@
 }
 
 .search-suggestions .no-results {
-    padding: 10px;
+    padding: 10px 15px;
     color: #5DADE2;
 }
 
@@ -116,8 +117,8 @@
 */
 @media ( max-width: 992px ) {
 
-    .default-search-bar,
-    .default-search-bar-container,
+    .wp-default-search-bar,
+    .wp-default-search-bar-container,
     .search-suggestions {
 
         width: 80% ;
@@ -127,8 +128,8 @@
 
 @media ( max-width: 768px ) {
 
-    .default-search-bar,
-    .default-search-bar-container,
+    .wp-default-search-bar,
+    .wp-default-search-bar-container,
     .search-suggestions  {
 
         width: 100% ;
@@ -137,7 +138,7 @@
 
 @media ( max-width: 480px ) {
 
-    .default-search-input{
+    .wp-default-search-input{
         width: 130px ;
     }
 }

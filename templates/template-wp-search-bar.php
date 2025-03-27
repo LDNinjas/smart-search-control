@@ -3,21 +3,20 @@
 if ( !defined( 'ABSPATH' ) )
     exit;
 ?>
-<div class="<?php echo $class; ?>-container parent-container">
+<div id="<?php echo ( $css_id ) ?>" class="wp-default-search-container parent-container <?php echo ( $class ) ?>">
 
-    <div class="<?php echo $class; ?>-bar-container">
-        <form  action="<?php echo esc_url( home_url( '/' ) ); ?>"  method="POST" class="<?php echo $class; ?>-bar wp-search-form" >
+    <div  class="wp-default-search-bar-container">
+        <form  action="<?php echo esc_url( home_url( '/' ) ); ?>"  method="POST" class="wp-default-search-bar wp-search-form" >
 
             <!-- Input Field -->
-            <input type="text" name="s" class="<?php echo $class; ?>-input search-query"
-                placeholder="<?php echo $placeholder; ?>" aria-label="Search">
+            <input type="text" name="s" class="wp-default-search-input search-query"
+                placeholder="<?php echo !empty( $placeholder ) ? esc_attr( $placeholder ) : 'Enter your text here'; ?>" aria-label="Search">
 
             <!-- Post Type Hidden Input -->
             <input type="hidden" name="post_type" value="<?php echo esc_attr( implode( ',', $post_types ) ); ?>">
-
             <!-- Search Icon -->
-            <button class="<?php echo $class; ?>-btn search-btn"> 
-                <span class="<?php echo $class; ?>-icon">
+            <button class="wp-default-search-btn search-btn "> 
+                <span class="wp-default-search-icon">
                     <span class="dashicons dashicons-search"></span>
                 </span>
             </button>

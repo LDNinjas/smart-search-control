@@ -86,8 +86,7 @@
                  */
                 $( document ).on( 'click', function ( e ) {
 
-                    if ( !$( e.target ).closest( '.search-container' )) {
-
+                    if ( $( e.target ).closest( '.search-container' ).length === 0 ) {
                         $( '.search-suggestions' ).fadeOut( 200 );
                     }
                 });

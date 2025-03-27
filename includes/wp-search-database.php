@@ -41,8 +41,9 @@ class WP_Search_Database {
 
         $sql = "CREATE TABLE $table_name (
             id mediumint( 9 ) NOT NULL AUTO_INCREMENT,
-            place_holder varchar( 255 ) NOT NULL DEFAULT 'Enter Search',
-            class varchar( 255 ) NOT NULL DEFAULT 'default-search',
+            place_holder varchar( 255 ) NULL  DEFAULT NULL,
+            css_id varchar( 255 ) NULL  DEFAULT NULL,
+            class varchar( 255 ) NULL  DEFAULT NULL,
             type varchar( 10 ) NOT NULL DEFAULT 'all',
             post_type varchar( 255 ) NULL DEFAULT NULL,
             date timestamp DEFAULT CURRENT_TIMESTAMP,
