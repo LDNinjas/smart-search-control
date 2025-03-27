@@ -76,6 +76,7 @@ class WP_Search_Admin_Settings {
      * Show Admin Notice if Table Does Not Exist
      */
     public function get_admin_notice() {
+
         global $wpdb;
         $table_name = $wpdb->prefix . 'search_parameters';
 
@@ -166,6 +167,7 @@ class WP_Search_Admin_Settings {
     public function wp_search_setting_add() {
 
         global $wpdb;
+
         if( !$this->is_admin_settings_page() ) {
             return;
         }
@@ -180,9 +182,10 @@ class WP_Search_Admin_Settings {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' ) ] );
         }
     
-        $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : 'Search...';
-        $class        = !empty( $_POST[ 'class' ] ) ? sanitize_text_field( $_POST[ 'class' ] ) : 'default-search';
-        $type         = !empty( $_POST[ 'type' ] ) ? sanitize_text_field( $_POST[ 'type' ] ) : 'All';
+        $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
+        $css_id          = !empty( $_POST[ 'id' ] ) ? sanitize_text_field( $_POST[ 'id' ] ) : '';
+        $class        = !empty( $_POST[ 'class' ] ) ? sanitize_text_field( $_POST[ 'class' ] ) : '';
+        $type         = !empty( $_POST[ 'type' ] ) ? sanitize_text_field( $_POST[ 'type' ] ) : 'include';
         $post_types   = isset( $_POST[ 'post_type' ] ) && !empty( $_POST[ 'post_type' ] ) 
             ? array_map( 'sanitize_text_field', $_POST[ 'post_type' ] ) 
             : get_post_types( [ 'public' => true ], 'names' );
@@ -193,11 +196,12 @@ class WP_Search_Admin_Settings {
             $table_name,
             [
                 'place_holder' => $place_holder,
+                'css_id' => $css_id ,
                 'class' => $class,
                 'type' => $type,
                 'post_type' => $post_types_string
             ],
-            [ '%s', '%s', '%s', '%s' ]
+            [ '%s', '%s', '%s', '%s', '%s' ]
         );
     
         if ( $result ) {
@@ -216,6 +220,7 @@ class WP_Search_Admin_Settings {
     public function wp_search_setting_edit() {
 
         global $wpdb;
+
         if( !$this->is_admin_settings_page() ) {
             return;
         }
@@ -236,21 +241,23 @@ class WP_Search_Admin_Settings {
             wp_send_json_error( [ 'message' => __( 'Invalid ID' ) ] );
         }
 
-        $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : 'Search...';
-        $class        = !empty( $_POST[ 'class' ] ) ? sanitize_text_field( $_POST[ 'class' ] ) : 'default-search';
-        $type         = !empty( $_POST[ 'type' ] ) ? sanitize_text_field( $_POST[ 'type' ] ) : 'All';
+        $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
+        $class        = !empty( $_POST[ 'class' ] ) ? sanitize_text_field( $_POST[ 'class' ] ) : '';
+        $css_id           = !empty( $_POST[ 'css_id' ] ) ? sanitize_text_field( $_POST[ 'css_id' ] ) : '';
+        $type         = !empty( $_POST[ 'type' ] ) ? sanitize_text_field( $_POST[ 'type' ] ) : '';
         $post_types   = isset( $_POST[ 'post_type' ] ) && !empty( $_POST[ 'post_type' ] ) 
             ? array_map( 'sanitize_text_field', $_POST[ 'post_type' ] ) 
             : get_post_types( [ 'public' => true ], 'names' );
 
         $post_types_string = implode( ',', $post_types );
 
+        // wp_send_json_error( [ 'message' => $post_types  ] );
         $result = $wpdb->update(
             $table_name,
             [
                 'place_holder' => $place_holder,
                 'class' => $class,
-                'type' => $type,
+                'css_id' => $css_id,
                 'post_type' => $post_types_string
             ],
             [ 'id' => $id ],
@@ -274,6 +281,7 @@ class WP_Search_Admin_Settings {
     public function wp_search_setting_delete() {
         
         global $wpdb;
+
         if( !$this->is_admin_settings_page() ) {
             return;
         }

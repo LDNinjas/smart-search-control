@@ -76,12 +76,15 @@ class WP_Search {
         );
         
         $table_name = $wpdb->prefix . 'search_parameters';
-        $query = "SELECT * FROM $table_name WHERE id = %d";
+        $query = "SELECT id, place_holder, css_id, class, type, post_type FROM $table_name WHERE id = %d";
         $result = $wpdb->get_row( $wpdb->prepare( $query, $sanitized_atts[ 'id' ] ) );
         
         $all_post_types = get_post_types( [ 'public' => true ], 'names' );
 
         $class = isset( $result->class ) ? $result->class : '';
+
+        $css_id = isset( $result->css_id ) ? $result->css_id : '';
+
         $placeholder = isset( $result->place_holder ) ? $result->place_holder : '';
         
         $posts_types = isset( $result->post_type ) ? ( is_array( $result->post_type ) ? $result->post_type : explode( ',', $result->post_type ) ) : [];
@@ -100,6 +103,7 @@ class WP_Search {
             $post_types = $all_post_types;
         }
         
+
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_style( 'wp-search-style' );
         wp_enqueue_script( 'wp-search-js' );

@@ -19,16 +19,23 @@
             cacheSelectors: function () {
                 
                 this.createtable      = $( ".create-table" );
+                this.advanceSetting   = $( "#advance-toggle" )
+                this.codeCopy         = $( "#copy-code" )
+                this.selectAll        = $( "#select-all" )
+                this.singleOptions    = $( ".custom-checkbox" )
 
                 this.addBtn           = $( "#openModal" );
                 this.editBtn          = $( ".edit-setting" );
                 this.deleteBtn        = $( ".delete-setting" );
 
+                this.shortcode        = $( ".shortcode-container" )
                 this.modal            = $( "#searchModal" );
-                this.closeModal       = $( "#closeModal" );
+                this.closeModal       = $( ".closeModal" );
                 this.modalTitle       = $( ".model-title" );
+                this.shortcodeid      = $( ".code-id" );
                 this.modelPlaceHolder = $( "#place_holder" );
                 this.modelClass       = $( "#class" );
+                this.modelID          = $( "#id" );
                 this.modelType        = $( 'input[name="type"]' );
                 this.modelPostType    = $( 'input[name="post_type[]"]' );
                 this.modelBtn         = $( ".model-btn" );
@@ -44,7 +51,15 @@
                 this.editBtn.on( "click", this.editSetting.bind( this ) );
                 this.deleteBtn.on( "click", this.deleteSetting.bind( this ) );
                 this.closeModal.on( "click", this.closeModalHandler.bind( this ) );
+
                 this.createtable.on( "click", this.createDatabaseTable.bind( this ) );
+
+                this.advanceSetting.on( "click", this.showAdvanceSetting.bind( this) );
+                this.codeCopy.on( "click", this.copyShortCode.bind( this) );
+
+                this.selectAll.on( "change", this.selectAllPost.bind( this) );
+                this.singleOptions.on( "change", this.allsingleoptions.bind( this) );
+
             },
 
             /**
@@ -64,6 +79,7 @@
                         nonce: WP_SEARCH_SETTING.nonce_add,
                         place_holder: AdminSearchSetting.modelPlaceHolder.val(),
                         class: AdminSearchSetting.modelClass.val(),
+                        id:  AdminSearchSetting.modelID.val(),
                         type: $( 'input[name="type"]:checked' ).val(),
                         post_type: $( 'input[name="post_type[]"]:checked' ).map( function () {
                             return $( this ).val();
@@ -99,8 +115,12 @@
                 let entry = JSON.parse( $( event.currentTarget ).attr( "data-entry" ) );
 
                 this.modalTitle.text( WP_SEARCH_SETTING.setting_id + entry.id );
+                this.shortcodeid.text( entry.id )
                 this.modelPlaceHolder.val( entry.place_holder );
                 this.modelClass.val( entry.class );
+                this.modelID.val( entry.css_id );
+
+                this.shortcode.css("display", "inline-block");
 
                 $( 'input[name="type"]' ).prop( "checked", false );
                 $( 'input[name="type"][value="' + entry.type + '"]' ).prop( "checked", true );
@@ -113,6 +133,9 @@
                         $( this ).prop( "checked", true );
                     }
                     });
+                }
+                if ( $( ".custom-checkbox:checked" ).length === $( ".custom-checkbox" ).length ) {
+                    $( "#select-all" ).prop( "checked", true );
                 }
 
                 this.modelBtn.val( WP_SEARCH_SETTING.edit_btn );
@@ -127,12 +150,12 @@
                         id: entry.id,
                         place_holder: AdminSearchSetting.modelPlaceHolder.val(),
                         class: AdminSearchSetting.modelClass.val(),
-                        type: $( 'input[name="type"]:checked' ).val(),
+                        css_id:  AdminSearchSetting.modelID.val(),
                         post_type: $( 'input[name="post_type[]"]:checked' ).map( function () {
                             return $( this ).val();
                         } ).get()
                     };
-
+                    
                     $.ajax( {
                         type: "POST",
                         url: WP_SEARCH_SETTING.ajaxurl,
@@ -211,6 +234,7 @@
 
                 event.preventDefault();
                 this.modal.css( "display", "none" );
+                this.shortcode.css("display", "none");
                 this.modalForm.trigger( "reset" );
                 this.modelPlaceHolder.prop( 'disabled', false );
                 this.modelClass.prop( 'disabled', false );
@@ -239,6 +263,45 @@
                         AdminSearchSetting.displayMessage( false, WP_SEARCH_SETTING.error_msg ); 
                     }
                 });
+            },
+
+            /**
+             * Show Advance Setting in model
+             */
+            showAdvanceSetting: function () {
+
+                $( "#advance-content" ).slideToggle( 300 );
+                this.advanceSetting.toggleClass( "active" );
+            },
+
+            /**
+             * Copy short code
+             */
+            copyShortCode: function() {
+
+                var text = $( "#shortcode-text" ).text();
+                navigator.clipboard.writeText( text );
+                alert( "Copied: " + text );
+            },
+
+            /**
+             * When check Select all then select all option
+             */
+            selectAllPost: function() {
+                
+                $( ".custom-checkbox" ).prop( "checked", $( this.selectAll ).prop( "checked" ) );
+            },
+
+            /**
+             * when check all option then check the select All checkbox
+             */
+            allsingleoptions: function() {
+
+                if ( $( ".custom-checkbox:checked" ).length === $( ".custom-checkbox" ).length ) {
+                    $( "#select-all" ).prop( "checked", true );
+                } else {
+                    $( "#select-all" ).prop( "checked", false );
+                }
             }
 
         };

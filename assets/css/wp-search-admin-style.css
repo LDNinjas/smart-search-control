@@ -59,33 +59,9 @@
     margin-right: 5px;
 }
 
-.search-table .button-danger {
-    background-color: #d9534f;
-    color: white;
-    border: none;
-}
-
-.search-table .button-danger:hover {
-    background-color: #c9302c;
-    color: white;
-
-}
-
-.search-table .button-warning {
-    background-color: #ffc107;
-    color: black;
-    border: none;
-}
-
-.search-table .button-warning:hover {
-    background-color: #e0a800;
-    color: black;
-}
-
-/* Model Form for new entry */ 
 /* Modal Overlay */
 .modal-overlay {
-    display: none;
+    display: none; /* Hide modal by default */
     position: fixed;
     top: 0;
     left: 0;
@@ -100,13 +76,61 @@
 /* Modal Content */
 .modal-content {
     background: white;
-    padding: 25px;
     border-radius: 8px;
-    width: 450px;
+    width: 476px;
     max-width: 90%;
     text-align: left;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     position: relative;
+    padding: 20px;
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 25px;
+}
+
+.modal-header .modal-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.modal-header .modal-header-close {
+    background: none;
+    font-size: 22px;
+    font-weight: bold;
+    color: #ADBFC7;
+    border: none;
+    cursor: pointer;
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: scroll;
+    padding-bottom: 0;
+}
+
+/* Shortcode Section */
+.shortcode-container {
+    display: none;
+    background-color: #EEF3F8;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.short-code-copy {
+    font-size: 12px;
+}
+
+#copy-code {
+    margin-right: 5px;
+    cursor: pointer;
 }
 
 /* Form Fields */
@@ -118,6 +142,7 @@
     display: block;
     font-weight: bold;
     margin-bottom: 5px;
+    font-size: 14px;
 }
 
 .form-group input[type="text"],
@@ -129,17 +154,44 @@
     font-size: 14px;
 }
 
-/* Checkboxes Layout */
-.post-type-options label {
-    display: block;
-    margin-bottom: 5px;
+.label-container {
+    display: flex;
+    gap:20px;
+    align-items: center;
+    margin: 20px 0;
 }
 
-/* Buttons */
+.select-all-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.post-type-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.checkbox-label {
+    width: 48%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#select-all:checked,.custom-checkbox:checked {
+    
+    border-color: #007bff;
+}
+
+
+/* Modal Footer (Actions) */
 .modal-actions {
     display: flex;
-    justify-content: space-between;
-    margin-top: 15px;
+    justify-content: flex-end;
+    gap: 20px;
+    margin : 15px 0 5px 0;
 }
 
 .button {
@@ -153,20 +205,48 @@
 .button-primary {
     background: #0073aa;
     color: white;
+    border: none;
 }
 
 .button-primary:hover {
     background: #005a87;
 }
 
-.button {
-    background: #ff4d4d;
-    color: white;
+/* Advanced Settings Section */
+.advance-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 0 10px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    transition: 0.3s;
 }
 
-.button:hover {
-    background: #cc0000;
+.advance-container:hover {
+    background-color: #e9ecef;
 }
+
+.advance-container .dashicons {
+    transition: transform 0.3s ease-in-out;
+}
+
+.advance-container.active .dashicons {
+    transform: rotate(90deg);
+}
+
+/* Hide the content by default */
+.advance-container-toggle {
+    display: none;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    transition: max-height 0.3s ease-in-out;
+}
+
 
 
 /* Message Box */
@@ -206,9 +286,7 @@
     background: #fff;
     color: #005b8f;
     font-weight: 600;
-    border: 1px solid #005b8f;
-    margin: 5px;
-    border-radius: 4px;
+    border-radius: 50px;
     text-decoration: none;
     transition: 0.3s;
 }
@@ -216,6 +294,9 @@
 .tablenav-pages a.page-numbers:hover {
     background: #005b8f;
     color: #fff;
+}
+.prev , .next{
+    border: 1PX solid #005b8f;
 }
 
 .tablenav-pages a.current {
