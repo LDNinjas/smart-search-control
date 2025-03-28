@@ -181,8 +181,10 @@
 
                     if ( SearchForm.selectedIndex >= 0 ) {
 
+                        let selectedItem = $( items[ SearchForm.selectedIndex ] );
                         $( items[ SearchForm.selectedIndex ] ).addClass( 'highlighted' );
                         $( this ).val( $( items[ SearchForm.selectedIndex ] ).text() );
+                        selectedItem[ 0 ].scrollIntoView( { block: 'nearest', behavior: 'smooth' } );
                     }
 
                 });

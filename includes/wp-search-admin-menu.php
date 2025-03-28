@@ -38,7 +38,6 @@ class WP_Search_Admin_Settings {
         add_action( 'admin_menu', [ $this, 'add_admin_page' ] );
         add_action( 'current_screen', [ $this, 'setup_screen_id' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'wp_search_admin_assets' ] );
-        add_action( 'admin_notices',[ $this, 'show_admin_notices' ] );
         add_action( 'wp_ajax_wp_search_setting', [ $this, 'wp_search_setting_add' ] );
         add_action( 'wp_ajax_wp_search_setting_delete', [ $this, 'wp_search_setting_delete' ] );
         add_action( 'wp_ajax_wp_search_setting_edit', [ $this, 'wp_search_setting_edit' ] );
@@ -199,27 +198,24 @@ class WP_Search_Admin_Settings {
             ],
             [ '%s' ]
         );
-        
-        session_start(); 
 
         if ( $result ) {
 
-            $_SESSION[ 'admin_notice' ] = [
-                'message' =>  __( 'Search settings saved successfully!' ),
-                'type' => 'updated'
+            $notice = [
+                'message' => __( 'Search settings saved successfully!' ),
+                'type'    => 'success'
             ];
 
-            wp_send_json_success( [ 'message' => __( 'Search settings saved successfully!' ) ] );
+            wp_send_json_success( $notice );
+
         } else {
 
-            $_SESSION[ 'admin_notice' ] = [
+            $notice = [
                 'message' => __( 'Failed to save search settings. Please try again.' ),
-                'type' => 'error'
+                'type'    => 'error'
             ];
 
-            wp_send_json_error( [
-                'message' => __( 'Failed to save search settings' ),
-            ] );
+            wp_send_json_success( $notice );
         }
     }
 
@@ -274,26 +270,23 @@ class WP_Search_Admin_Settings {
             
         );
 
-        session_start(); 
-
         if ( $result !== false ) {
 
-            $_SESSION[ 'admin_notice' ] = [
+            $notice = [
                 'message' => __( 'Search settings updated successfully!' ),
-                'type' => 'updated'
+                'type' => 'success'
             ];
 
-            wp_send_json_success( [ 'message' => __( 'Search settings updated successfully!' ) ] );
+            wp_send_json_success( $notice );
+
         } else {
 
-            $_SESSION[ 'admin_notice' ] = [
+            $notice = [
                 'message' => __( 'Failed to update data. Please try again.' ),
                 'type' => 'error'
             ];
-
-            wp_send_json_error( [
-                'message' =>  __( 'Failed to update search settings' ),
-            ] );
+            
+            wp_send_json_success( $notice );
         }
     }
 
@@ -326,24 +319,23 @@ class WP_Search_Admin_Settings {
 
         $result = $wpdb->delete( $table_name, [ 'id' => $id ], [ '%d' ] );
 
-        session_start(); 
-
         if ( $result ) {
 
-            $_SESSION[ 'admin_notice' ] = [
+            $notice = [
                 'message' => __( 'Search setting deleted successfully!' ),
-                'type' => 'updated'
+                'type' => 'success'
             ];
 
-            wp_send_json_success( [ 'message' => __( 'Search setting deleted successfully!' ) ] );
+            wp_send_json_success( $notice );
+
         } else {
 
-            $_SESSION[ 'admin_notice' ] = [
+            $notice = [
                 'message' => __( 'Failed to delete search setting. Please try again.' ),
                 'type' => 'error'
             ];
 
-            wp_send_json_error( [ 'message' => __( 'Failed to delete search setting' ) ] );
+            wp_send_json_error( $notice );
         }
     }
 
@@ -357,46 +349,27 @@ class WP_Search_Admin_Settings {
         }
     
         $database_file = WP_SEARCH_INCLUDES_DIR . 'wp-search-database.php';
-
-        session_start(); 
     
         if ( file_exists( $database_file ) ) {
 
             require_once $database_file;
 
-            $_SESSION[ 'admin_notice' ] = [
+            $notice = [
                 'message' => __( 'Table for WP Search created successfully!' ),
-                'type' => 'updated'
+                'type' => 'success'
             ];
 
-            wp_send_json_success( [ 'message' => __( 'Table for WP Search created successfully!' ) ] );
+            wp_send_json_success( $notice );
         } else { 
 
-            $_SESSION[ 'admin_notice' ] = [
+            $notice = [
                 'message' => __( 'Database file not found!' ),
                 'type' => 'error'
             ];
 
-            wp_send_json_error( [ 'message' => __( 'Database file not found!' ) ] );
+            wp_send_json_error( $notice );
         }
     }
-
-    /**
-     * Show the notification
-     */
-    public function show_admin_notices() {
-        
-        session_start();
-
-        if ( !empty( $_SESSION[ 'admin_notice' ] ) ) {
-
-            $notice = $_SESSION[ 'admin_notice' ];
-            $class = $notice[ 'type' ];
-            echo '<div class="' . esc_attr( $class ) . ' notice is-dismissible"><p>' . esc_html( $notice[ 'message' ] ) . '</p></div>';
-            unset( $_SESSION[ 'admin_notice' ] );
-        }
-    }
-    
 }
-
+    
 WP_Search_Admin_Settings::instance();

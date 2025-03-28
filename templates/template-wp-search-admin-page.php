@@ -128,22 +128,24 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
         <?php echo $admin_notice; ?>
 
         <div class="modal-body">
+            
             <!-- Short code display -->
             <div class="shortcode-container">
-    <p class="short-code-copy">
-        <span id="copy-code">
-            <span class="dashicons dashicons-clipboard"></span>
-            <span class="copy-msg copied" ><?php echo __( 'Copied!' )?></span>
-        </span> 
-        <span id="shortcode-text">[wp_search_bar_ id="<span class="code-id">123</span>"]</span>
-    </p>
-</div>
-
+                <p class="short-code-copy">
+                    <span id="copy-code">
+                        <span class="dashicons dashicons-clipboard"></span>
+                        <span class="copy-msg" ><?php echo __( 'Copied!' )?></span>
+                    </span> 
+                    <span id="shortcode-text">[wp_search_bar id="<span class="code-id">123</span>"]</span>
+                </p>
+            </div>
 
             <form id="searchForm" method="post">
+
                 <div class="form-group">
                     <label for="place_holder"><?php echo __( 'Placeholder' ); ?></label>
                     <input type="text" id="place_holder" name="place_holder">
+                    <span class="inputs-desc"><?= __( 'This text will appear inside the search field as a hint before the user types.' )?></span>
                 </div>
 
                 <div class="advance-container" id="advance-toggle">
@@ -155,10 +157,12 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
                     <div class="form-group">
                         <label for="id"><?php echo __( 'CSS ID' ); ?></label>
                         <input type="text" id="id" name="id">
+                        <span class="inputs-desc"><?= __( 'Optional: Enter a unique ID for this element (for CSS or JavaScript).' )?></span>
                     </div>
                     <div class="form-group">
                         <label for="class"><?php echo __( 'CSS Class' ); ?></label>
                         <input type="text" id="class" name="class">
+                        <span class="inputs-desc"><?= __( 'Optional: Enter custom CSS classes (separated by spaces).' )?></span>
                     </div>
                 </div>
 
@@ -190,4 +194,3 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
         </div>
     </div>
 </div>
-

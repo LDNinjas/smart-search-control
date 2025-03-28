@@ -11,6 +11,7 @@
 
                 this.cacheSelectors();
                 this.bindEvents();
+                this.adminNotice();
             },
 
             /**
@@ -20,7 +21,7 @@
                 
                 this.createtable      = $( ".create-table" );
                 this.advanceSetting   = $( "#advance-toggle" )
-                this.codeCopy         = $( "#copy-code" )
+                this.codeCopy         = $( ".short-code-copy" )
                 this.selectAll        = $( "#select-all" )
                 this.singleOptions    = $( ".custom-checkbox" )
 
@@ -89,12 +90,15 @@
                         success: function ( response ) {
                             AdminSearchSetting.modalForm.trigger( "reset" );
                             AdminSearchSetting.modal.css( "display", "none" );
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
+
                             
                         },
                         error: function () {
                             AdminSearchSetting.modal.css( "display", "none" );
-                            console.log( WP_SEARCH_SETTING.error_msg );
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
+                            location.reload();
                         }
                     });
                 });
@@ -159,11 +163,13 @@
                         dataType: "json",
                         success: function ( response ) {
                             AdminSearchSetting.modal.css( "display", "none" );
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
                         },
                         error: function () {
                             AdminSearchSetting.modal.css( "display", "none" );
-                            console.log( WP_SEARCH_SETTING.error_msg );
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
+                            location.reload();
                         }
                     });
                 });
@@ -189,12 +195,13 @@
                             id: id
                         },
                         success: function ( response ) {
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
                         
                         },
                         error: function () {
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
-                            console.log( WP_SEARCH_SETTING.error_msg );
                         }
                     });
                 }
@@ -231,12 +238,13 @@
                         nonce: WP_SEARCH_SETTING.nonce_table,
                     },
                     success: function ( response ) {
+                        localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                         location.reload();
                     
                     },
                     error: function () {
+                        localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                         location.reload();
-                        console.log( WP_SEARCH_SETTING.error_msg );
                     }
                 });
             },
@@ -291,6 +299,35 @@
                     $( "#select-all" ).prop( "checked", true );
                 } else {
                     $( "#select-all" ).prop( "checked", false );
+                }
+            },
+
+            /**
+             * Show the admin Notice
+             */
+            adminNotice: function() {
+
+                let adminNotice = localStorage.getItem( "admin_notice" );
+
+                if ( adminNotice ) {
+                    let notice = JSON.parse( adminNotice );
+            
+                    let noticeHtml = `
+                        <div class="notice notice-${ notice.type } is-dismissible">
+                            <p>${ notice.message }</p>
+                            <button type="button" class="notice-dismiss">
+                                <span class="screen-reader-text">Dismiss this notice.</span>
+                            </button>
+                        </div>
+                    `;
+
+                    $( ".wrap" ).prepend(noticeHtml);
+            
+                    localStorage.removeItem( "admin_notice" );
+
+                    $( document ).on( "click", ".notice-dismiss", function () {
+                        $( this ).closest( ".notice" ).fadeOut();
+                    });
                 }
             }
 

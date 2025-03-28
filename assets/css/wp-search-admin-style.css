@@ -152,15 +152,17 @@
 
 .short-code-copy {
     font-size: 12px;
+    cursor: pointer;
+
 }
 
 #copy-code {
     margin-right: 5px;
-    cursor: pointer;
 }
 
 .copy-msg {
     display: none;
+    color: green;
 }
 
 #copy-code.copied .dashicons {
@@ -170,6 +172,11 @@
 /* Form Fields */
 .form-group {
     margin-bottom: 15px;
+}
+
+.inputs-desc{
+    color: #ff4d4d;
+    font-weight: 600;
 }
 
 .form-group label {
