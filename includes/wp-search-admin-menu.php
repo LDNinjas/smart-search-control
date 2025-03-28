@@ -4,7 +4,6 @@
  */
 
 if ( !defined( 'ABSPATH' ) ) exit;
-
 class WP_Search_Admin_Settings {
 
     /**
@@ -39,6 +38,7 @@ class WP_Search_Admin_Settings {
         add_action( 'admin_menu', [ $this, 'add_admin_page' ] );
         add_action( 'current_screen', [ $this, 'setup_screen_id' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'wp_search_admin_assets' ] );
+        add_action( 'admin_notices',[ $this, 'show_admin_notices' ] );
         add_action( 'wp_ajax_wp_search_setting', [ $this, 'wp_search_setting_add' ] );
         add_action( 'wp_ajax_wp_search_setting_delete', [ $this, 'wp_search_setting_delete' ] );
         add_action( 'wp_ajax_wp_search_setting_edit', [ $this, 'wp_search_setting_edit' ] );
@@ -153,10 +153,6 @@ class WP_Search_Admin_Settings {
             'nonce_table'  => wp_create_nonce( 'create_database_table_nonce' ),
             'error_msg'    => __( 'Something went wrong. Please try again.' ),
             'confirm_msg'  => __( 'Are you sure you want to delete this search setting?' ),
-            'add_title'    => __( 'Add New Setting' ),
-            'setting_id'   => __( 'Search Setting - ID : ' ),
-            'add_btn'      => __( 'Add Setting' ),
-            'edit_btn'     => __( 'Update Setting' ),
             
         ]);   
     }
@@ -183,33 +179,46 @@ class WP_Search_Admin_Settings {
         }
     
         $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
-        $css_id          = !empty( $_POST[ 'id' ] ) ? sanitize_text_field( $_POST[ 'id' ] ) : '';
+        $css_id       = !empty( $_POST[ 'css_id' ] ) ? sanitize_text_field( $_POST[ 'css_id' ] ) : '';
         $class        = !empty( $_POST[ 'class' ] ) ? sanitize_text_field( $_POST[ 'class' ] ) : '';
-        $type         = !empty( $_POST[ 'type' ] ) ? sanitize_text_field( $_POST[ 'type' ] ) : 'include';
         $post_types   = isset( $_POST[ 'post_type' ] ) && !empty( $_POST[ 'post_type' ] ) 
             ? array_map( 'sanitize_text_field', $_POST[ 'post_type' ] ) 
             : get_post_types( [ 'public' => true ], 'names' );
     
-        $post_types_string = implode( ',', $post_types );
+        $data = json_encode([
+            'place_holder' => $place_holder,
+            'css_id'       => $css_id,
+            'class'        => $class,
+            'post_type'    => $post_types
+        ]);
     
         $result = $wpdb->insert(
             $table_name,
             [
-                'place_holder' => $place_holder,
-                'css_id' => $css_id ,
-                'class' => $class,
-                'type' => $type,
-                'post_type' => $post_types_string
+                'data' => $data
             ],
-            [ '%s', '%s', '%s', '%s', '%s' ]
+            [ '%s' ]
         );
-    
+        
+        session_start(); 
+
         if ( $result ) {
+
+            $_SESSION[ 'admin_notice' ] = [
+                'message' =>  __( 'Search settings saved successfully!' ),
+                'type' => 'updated'
+            ];
+
             wp_send_json_success( [ 'message' => __( 'Search settings saved successfully!' ) ] );
         } else {
+
+            $_SESSION[ 'admin_notice' ] = [
+                'message' => __( 'Failed to save search settings. Please try again.' ),
+                'type' => 'error'
+            ];
+
             wp_send_json_error( [
                 'message' => __( 'Failed to save search settings' ),
-                'error' => $wpdb->last_error
             ] );
         }
     }
@@ -242,35 +251,48 @@ class WP_Search_Admin_Settings {
         }
 
         $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
+        $css_id       = !empty( $_POST[ 'css_id' ] ) ? sanitize_text_field( $_POST[ 'css_id' ] ) : '';
         $class        = !empty( $_POST[ 'class' ] ) ? sanitize_text_field( $_POST[ 'class' ] ) : '';
-        $css_id           = !empty( $_POST[ 'css_id' ] ) ? sanitize_text_field( $_POST[ 'css_id' ] ) : '';
-        $type         = !empty( $_POST[ 'type' ] ) ? sanitize_text_field( $_POST[ 'type' ] ) : '';
         $post_types   = isset( $_POST[ 'post_type' ] ) && !empty( $_POST[ 'post_type' ] ) 
             ? array_map( 'sanitize_text_field', $_POST[ 'post_type' ] ) 
             : get_post_types( [ 'public' => true ], 'names' );
 
-        $post_types_string = implode( ',', $post_types );
+        $data = json_encode([
+            'place_holder' => $place_holder,
+            'css_id'       => $css_id,
+            'class'        => $class,
+            'post_type'    => $post_types
+        ]);
 
-        // wp_send_json_error( [ 'message' => $post_types  ] );
-        $result = $wpdb->update(
+        $result =  $wpdb->update(
+
             $table_name,
-            [
-                'place_holder' => $place_holder,
-                'class' => $class,
-                'css_id' => $css_id,
-                'post_type' => $post_types_string
-            ],
-            [ 'id' => $id ],
-            [ '%s', '%s', '%s', '%s' ],
+            [ 'data' => $data ],  
+            [ 'id' => $id ],      
+            [ '%s' ],              
             [ '%d' ]
+            
         );
 
+        session_start(); 
+
         if ( $result !== false ) {
+
+            $_SESSION[ 'admin_notice' ] = [
+                'message' => __( 'Search settings updated successfully!' ),
+                'type' => 'updated'
+            ];
+
             wp_send_json_success( [ 'message' => __( 'Search settings updated successfully!' ) ] );
         } else {
+
+            $_SESSION[ 'admin_notice' ] = [
+                'message' => __( 'Failed to update data. Please try again.' ),
+                'type' => 'error'
+            ];
+
             wp_send_json_error( [
                 'message' =>  __( 'Failed to update search settings' ),
-                'error' => $wpdb->last_error
             ] );
         }
     }
@@ -304,9 +326,23 @@ class WP_Search_Admin_Settings {
 
         $result = $wpdb->delete( $table_name, [ 'id' => $id ], [ '%d' ] );
 
+        session_start(); 
+
         if ( $result ) {
+
+            $_SESSION[ 'admin_notice' ] = [
+                'message' => __( 'Search setting deleted successfully!' ),
+                'type' => 'updated'
+            ];
+
             wp_send_json_success( [ 'message' => __( 'Search setting deleted successfully!' ) ] );
         } else {
+
+            $_SESSION[ 'admin_notice' ] = [
+                'message' => __( 'Failed to delete search setting. Please try again.' ),
+                'type' => 'error'
+            ];
+
             wp_send_json_error( [ 'message' => __( 'Failed to delete search setting' ) ] );
         }
     }
@@ -321,15 +357,43 @@ class WP_Search_Admin_Settings {
         }
     
         $database_file = WP_SEARCH_INCLUDES_DIR . 'wp-search-database.php';
+
+        session_start(); 
     
         if ( file_exists( $database_file ) ) {
 
             require_once $database_file;
 
+            $_SESSION[ 'admin_notice' ] = [
+                'message' => __( 'Table for WP Search created successfully!' ),
+                'type' => 'updated'
+            ];
+
             wp_send_json_success( [ 'message' => __( 'Table for WP Search created successfully!' ) ] );
         } else { 
 
+            $_SESSION[ 'admin_notice' ] = [
+                'message' => __( 'Database file not found!' ),
+                'type' => 'error'
+            ];
+
             wp_send_json_error( [ 'message' => __( 'Database file not found!' ) ] );
+        }
+    }
+
+    /**
+     * Show the notification
+     */
+    public function show_admin_notices() {
+        
+        session_start();
+
+        if ( !empty( $_SESSION[ 'admin_notice' ] ) ) {
+
+            $notice = $_SESSION[ 'admin_notice' ];
+            $class = $notice[ 'type' ];
+            echo '<div class="' . esc_attr( $class ) . ' notice is-dismissible"><p>' . esc_html( $notice[ 'message' ] ) . '</p></div>';
+            unset( $_SESSION[ 'admin_notice' ] );
         }
     }
     

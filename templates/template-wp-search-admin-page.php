@@ -6,14 +6,14 @@ if ( !defined( 'ABSPATH' ) ) {
 global $wpdb;
 $table_name = $wpdb->prefix . 'search_parameters';
 
-$items_per_page = 2;
+$items_per_page = 12;
 $page = isset( $_GET['paged'] ) ? absint( $_GET['paged']) : 1;
 $offset = ( $page - 1 ) * $items_per_page;
 
 $total_items = $wpdb->get_var( "SELECT COUNT( * ) FROM $table_name" );
 $total_pages = ceil( $total_items / $items_per_page );
 
-$search_entries = $wpdb->get_results( $wpdb->prepare( "SELECT id, place_holder, css_id, class, type, post_type FROM $table_name LIMIT %d OFFSET %d", $items_per_page, $offset ) );
+$search_entries = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM $table_name LIMIT %d OFFSET %d", $items_per_page, $offset ) );
 
 $post_types = get_post_types( ['public' => true], 'objects' );
 
@@ -22,11 +22,10 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
 
 <div class="wrap">
     <?php echo  $admin_notice ?>
-    <div class="message-box"></div>
     <div class="page-header">
-        <h1><?php echo __( 'WP Search Settings' ); ?></h1>
-        <button id="openModal" class="new-rec-btn"><?php echo __( 'Add New Search' ); ?></button>
-    </div>
+    <p class="page-title"><?php echo __( 'WP Search' ); ?></p>
+    <button id="openModal" class="new-rec-btn"><?php echo __( 'Add New Search' ); ?></button>
+</div>
     <p><?php echo __( 'Customize the search bar settings to enhance your website’s search functionality.' ); ?></p>
 
     <?php if ( empty( $admin_notice ) ){ ?>
@@ -43,21 +42,26 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
             </thead>
             <tbody>
                 <?php if ( $search_entries ): ?>
-                    <?php foreach ( $search_entries as $entry ): ?>
-                        <tr>
-                            <td>[wp_search_bar id="<?php echo esc_html( $entry->id ); ?>"]</td>
-                            <td><?php echo esc_html( $entry->place_holder ); ?></td>
-                            <td><?php echo esc_html( $entry->css_id ); ?></td>
-                            <td><?php echo esc_html( $entry->class ); ?></td>
+                    <?php foreach ( $search_entries as $entry ): 
+                    
+                        $data = json_decode( $entry->data ); ?>
+                        
+                        <tr class="search-table-data">
+                            <strong>
+                                <td>[wp_search_bar id="<?php echo esc_html( $entry->id ); ?>"]</td>
+                            </strong>
+                            <td><?php echo esc_html( $data->place_holder ); ?></td>
+                            <td><?php echo esc_html( $data->css_id ); ?></td>
+                            <td><?php echo esc_html( $data->class ); ?></td>
                             <td>
-                                <a href="#" data-entry='<?= json_encode( $entry ?: new stdClass() ); ?>' class="button button-warning edit-setting"><?php echo __( 'Edit' ); ?></a>
-                                <a href="#" class="button button-danger delete-setting" data-id="<?php echo $entry->id; ?>"><?php echo __( 'Delete' ); ?></a>
+                                <a href="#" data-entry='<?= json_encode( $entry ?: new stdClass() ); ?>' class="button edit-setting"><?php echo __( 'Edit' ); ?></a>
+                                <a href="#" class="button delete-setting" data-id="<?php echo $entry->id; ?>"><?php echo __( 'Delete' ); ?></a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="4" class="no-search-parm"><?php echo __( 'No search parameters found.' ); ?></td>
+                        <td colspan="5" class="no-search-parm"><?php echo __( 'No search parameters found.' ); ?></td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -126,13 +130,15 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
         <div class="modal-body">
             <!-- Short code display -->
             <div class="shortcode-container">
-                <p class="short-code-copy">
-                    <span id="copy-code">
-                        <span class="dashicons dashicons-clipboard"></span>
-                    </span> 
-                    <span id="shortcode-text">[wp_search_bar_ id="<span class="code-id"></span>"]</span>
-                </p>
-            </div>
+    <p class="short-code-copy">
+        <span id="copy-code">
+            <span class="dashicons dashicons-clipboard"></span>
+            <span class="copy-msg copied" ><?php echo __( 'Copied!' )?></span>
+        </span> 
+        <span id="shortcode-text">[wp_search_bar_ id="<span class="code-id">123</span>"]</span>
+    </p>
+</div>
+
 
             <form id="searchForm" method="post">
                 <div class="form-group">

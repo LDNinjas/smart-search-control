@@ -26,8 +26,6 @@ class WP_Search_Database {
     /**
      * Creates the search parameters database table if it doesn't exist.
      */
-    
-
     private function create_database_table() {
 
         global $wpdb;
@@ -40,14 +38,10 @@ class WP_Search_Database {
         $charset_collate = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE $table_name (
-            id mediumint( 9 ) NOT NULL AUTO_INCREMENT,
-            place_holder varchar( 255 ) NULL  DEFAULT NULL,
-            css_id varchar( 255 ) NULL  DEFAULT NULL,
-            class varchar( 255 ) NULL  DEFAULT NULL,
-            type varchar( 10 ) NOT NULL DEFAULT 'all',
-            post_type varchar( 255 ) NULL DEFAULT NULL,
-            date timestamp DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY  ( id )
+            id MEDIUMINT( 9 ) NOT NULL AUTO_INCREMENT,
+            data JSON NULL,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY ( id )
         ) $charset_collate;";
 
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -58,7 +52,9 @@ class WP_Search_Database {
      * Checks if a table exists in the database.
      */
     private function table_exists( $table_name ) {
+
         global $wpdb;
+        
         $query = $wpdb->prepare(
             "SHOW TABLES LIKE %s",
             $table_name
