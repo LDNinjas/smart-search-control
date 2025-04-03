@@ -69,10 +69,12 @@
                  */
                 $( document ).on( 'click', '.suggestion-item', function () {
 
+                    let parentContainer = $( this ).closest( '.parent-container' );
+                    let searchQuery = parentContainer.find( '.search-query' );
                     let selectedText = $( this ).text();
                     let selectedLink = $( this ).find( 'a' ).attr( 'href' );
 
-                    $( '.search-query' ).val( selectedText );
+                    searchQuery.val( selectedText );
                     $( '.search-suggestions' ).fadeOut( 200 );
 
                     if ( selectedLink ) {
