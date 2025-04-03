@@ -56,7 +56,7 @@ class WP_Search {
         wp_localize_script( 'wp-search-js', 'WP_SEARCH', [
             'ajaxurl'    => admin_url( 'admin-ajax.php' ),
             'nonce'      => wp_create_nonce( 'wp_search_result_nonce' ),
-            'search_msg' => __( 'Searching...' ),
+            'search_msg' => __( 'Searching...' , 'wp-search' ),
         ]);   
         
     }
@@ -109,13 +109,13 @@ class WP_Search {
 
         if ( !isset( $_POST['nonce'] ) || !check_ajax_referer( 'wp_search_result_nonce', 'nonce', false ) ) {
 
-            wp_send_json_error( [ 'message' => __( 'Nonce verification failed' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Nonce verification failed' , 'wp-search' ) ] );
 
         }
 
         if ( empty( $_POST['search_query'] ) ) {
 
-            wp_send_json_error( [ 'message' => __( 'Search query is empty.' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Search query is empty.' , 'wp-search' ) ] );
 
         }
 
@@ -163,7 +163,7 @@ class WP_Search {
         if ( !empty( $posts ) ) {
             wp_send_json_success( [ 'search_results' => $posts ] );
         } else {
-            wp_send_json_error(  [ 'message' => __( 'No results found.' )  ]  );
+            wp_send_json_error(  [ 'message' => __( 'No results found.' , 'wp-search' )  ]  );
         }
 
         wp_die();

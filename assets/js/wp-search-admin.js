@@ -21,7 +21,7 @@
                 
                 this.createtable      = $( ".create-table" );
                 this.advanceSetting   = $( "#advance-toggle" )
-                this.codeCopy         = $( ".short-code-copy" )
+                this.codeCopy         = $( ".shortcode-container" )
                 this.selectAll        = $( "#select-all" )
                 this.singleOptions    = $( ".custom-checkbox" )
 
@@ -36,7 +36,7 @@
                 this.modelPlaceHolder = $( "#place_holder" );
                 this.modelClass       = $( "#class" );
                 this.modelID          = $( "#id" );
-                this.modelPostType    = $( 'input[name="post_type[]"]' );
+                this.modelPostType    = $( "input[name='post_type[]']" );
                 this.modelBtn         = $( ".model-btn" );
                 this.modalForm        = $( "#searchForm" );
             },
@@ -92,7 +92,6 @@
                             AdminSearchSetting.modal.css( "display", "none" );
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
-
                             
                         },
                         error: function () {
@@ -221,7 +220,7 @@
 
                 event.preventDefault();
                 this.modal.css( "display", "none" );
-                this.shortcode.css("display", "none");
+                this.shortcode.css( "display", "none" );
                 this.modalForm.trigger( "reset" );
             },
 
@@ -262,10 +261,10 @@
              * Copy short code
              */
             copyShortCode: function() {
-
+                
                 var text = $( "#shortcode-text" ).text().trim();
 
-                navigator.clipboard.writeText( text ).then(function() {
+                navigator.clipboard.writeText( text ).then( function() {
 
                     var icon = $( "#copy-code .dashicons" );
                     var container = $( "#copy-code" );

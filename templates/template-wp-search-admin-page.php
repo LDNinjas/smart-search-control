@@ -23,21 +23,21 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
 <div class="wrap">
     <?php echo  $admin_notice ?>
     <div class="page-header">
-    <p class="page-title"><?php echo __( 'WP Search' ); ?></p>
-    <button id="openModal" class="new-rec-btn"><?php echo __( 'Add New Search' ); ?></button>
+    <p class="page-title"><?php echo __( 'WP Search' , 'wp-search' ); ?></p>
+    <a href="#" id="openModal" class="new-rec-btn"><?php echo __( 'Add New Search', 'wp-search' ); ?></a>
 </div>
-    <p><?php echo __( 'Customize the search bar settings to enhance your website’s search functionality.' ); ?></p>
+    <p><?php echo __( 'Customize the search bar settings to enhance your website’s search functionality.', 'wp-search' ); ?></p>
 
     <?php if ( empty( $admin_notice ) ){ ?>
 
         <table class="search-table">
             <thead>
                 <tr>
-                    <th><?php echo __( 'Shortcode' ); ?></th>
-                    <th><?php echo __( 'Place Holder' ); ?></th>
-                    <th><?php echo __( 'CSS ID' ); ?></th>
-                    <th><?php echo __( 'CSS Class' ); ?></th>
-                    <th><?php echo __( 'Action' ); ?></th>
+                    <th><?php echo __( 'Shortcode' , 'wp-search' ); ?></th>
+                    <th><?php echo __( 'Place Holder' , 'wp-search' ); ?></th>
+                    <th><?php echo __( 'CSS ID' , 'wp-search' ); ?></th>
+                    <th><?php echo __( 'CSS Class' , 'wp-search' ); ?></th>
+                    <th><?php echo __( 'Action' , 'wp-search' ); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -54,24 +54,24 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
                             <td><?php echo esc_html( $data->css_id ); ?></td>
                             <td><?php echo esc_html( implode(', ', explode(' ', $data->class)) ); ?></td>
                             <td>
-                                <a href="#" data-entry='<?= json_encode( $entry ?: new stdClass() ); ?>' class="button edit-setting"><?php echo __( 'Edit' ); ?></a>
-                                <a href="#" class="button delete-setting" data-id="<?php echo $entry->id; ?>"><?php echo __( 'Delete' ); ?></a>
+                                <a href="#" data-entry='<?= json_encode( $entry ?: new stdClass() ); ?>' class="button edit-setting"><?php echo __( 'Edit' , 'wp-search' ); ?></a>
+                                <a href="#" class="button delete-setting" data-id="<?php echo $entry->id; ?>"><?php echo __( 'Delete' , 'wp-search'); ?></a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="5" class="no-search-parm"><?php echo __( 'No search parameters found.' ); ?></td>
+                        <td colspan="5" class="no-search-parm"><?php echo __( 'No search parameters found.', 'wp-search' ); ?></td>
                     </tr>
                 <?php endif; ?>
             </tbody>
         <tfoot>
                 <tr>
-                    <th><?php echo __( 'Shortcode' ); ?></th>
-                    <th><?php echo __( 'Place Holder' ); ?></th>
-                    <th><?php echo __( 'CSS ID' ); ?></th>
-                    <th><?php echo __( 'CSS Class' ); ?></th>
-                    <th><?php echo __( 'Action' ); ?></th>
+                    <th><?php echo __( 'Shortcode' , 'wp-search' ); ?></th>
+                    <th><?php echo __( 'Place Holder' , 'wp-search' ); ?></th>
+                    <th><?php echo __( 'CSS ID' , 'wp-search' ); ?></th>
+                    <th><?php echo __( 'CSS Class' , 'wp-search' ); ?></th>
+                    <th><?php echo __( 'Action' , 'wp-search' ); ?></th>
                 </tr>
             </tfoot>
         </table>
@@ -91,7 +91,7 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
 
                 <!-- Previous Button -->
                 <?php if ( $page > 1 ) { ?>
-                    <a class="prev page-numbers" href="<?php echo admin_url( 'admin.php?page=wp_search_settings&paged=' . $prev_page ); ?>">« Prev</a>
+                    <a class="prev page-numbers" href="<?php echo admin_url( 'admin.php?page=wp_search_settings&paged=' . $prev_page ); ?>"><?php echo __( '« Prev' , 'wp-search' ); ?></a>
                 <?php } ?>
 
                 <!-- Numbered Pagination -->
@@ -106,7 +106,7 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
 
                 <!-- Next Button -->
                 <?php if ( $page < $total_pages ) { ?>
-                    <a class="next page-numbers" href="<?php echo admin_url( 'admin.php?page=wp_search_settings&paged=' . $next_page ); ?>">Next »</a>
+                    <a class="next page-numbers" href="<?php echo admin_url( 'admin.php?page=wp_search_settings&paged=' . $next_page ); ?>"><?php echo __( 'Next »' , 'wp-search' ); ?></a>
                 <?php } ?>
 
             <?php } ?>
@@ -120,7 +120,7 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
 <div id="searchModal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title"><?php echo __( 'WP Search Settings' ); ?></h2>
+            <h2 class="modal-title"><?php echo __( 'WP Search Settings' , 'wp-search' ); ?></h2>
             <button class="closeModal modal-header-close">×</button>
         </div>
         <hr>
@@ -134,44 +134,44 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
                 <p class="short-code-copy">
                     <span id="copy-code">
                         <span class="dashicons dashicons-clipboard"></span>
-                        <span class="copy-msg" ><?php echo __( 'Copied!' )?></span>
+                        <span class="copy-msg" ><?php echo __( 'Copied!' , 'wp-search' ); ?></span>
                     </span> 
-                    <span id="shortcode-text">[wp_search_bar id="<span class="code-id">123</span>"]</span>
+                    <span id="shortcode-text">[wp_search_bar id="<span class="code-id"></span>"]</span>
                 </p>
             </div>
 
             <form id="searchForm" method="post">
 
                 <div class="form-group">
-                    <label for="place_holder"><?php echo __( 'Placeholder' ); ?></label>
+                    <label for="place_holder"><?php echo __( 'Placeholder' , 'wp-search' ); ?></label>
                     <input type="text" id="place_holder" name="place_holder">
-                    <span class="inputs-desc"><?= __( 'This text will appear inside the search field as a hint before the user types.' )?></span>
+                    <span class="inputs-desc"><?= __( 'This text will appear inside the search field as a hint before the user types.' , 'wp-search' ); ?></span>
                 </div>
 
                 <div class="advance-container" id="advance-toggle">
-                    <p><?php echo __( 'Advanced Settings' ); ?></p>
+                    <p><?php echo __( 'Advanced Settings' , 'wp-search' ); ?></p>
                     <span class="dashicons dashicons-arrow-right-alt2"></span>
                 </div>
 
                 <div class="advance-container-toggle" id="advance-content">
                     <div class="form-group">
-                        <label for="id"><?php echo __( 'CSS ID' ); ?></label>
+                        <label for="id"><?php echo __( 'CSS ID' , 'wp-search' ); ?></label>
                         <input type="text" id="id" name="id">
-                        <span class="inputs-desc"><?= __( 'Optional: Enter a unique ID for this element (for CSS or JavaScript).' )?></span>
+                        <span class="inputs-desc"><?= __( 'Optional: Enter a unique ID for this element (for CSS or JavaScript).' , 'wp-search' )?></span>
                     </div>
                     <div class="form-group">
-                        <label for="class"><?php echo __( 'CSS Class' ); ?></label>
+                        <label for="class"><?php echo __( 'CSS Class' , 'wp-search' ); ?></label>
                         <input type="text" id="class" name="class">
-                        <span class="inputs-desc"><?= __( 'Optional: Enter custom CSS classes (separated by spaces).' )?></span>
+                        <span class="inputs-desc"><?= __( 'Optional: Enter custom CSS classes (separated by spaces).' , 'wp-search' )?></span>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="label-container">
-                        <label class="post-type-label"><?php echo __( 'Post Types' ); ?></label>
+                        <label class="post-type-label"><?php echo __( 'Post Types' , 'wp-search' ); ?></label>
                         <label class="select-all-label">
                             <input type="checkbox" id="select-all">
-                            <span><?php echo __( 'Select All' ); ?></span>
+                            <span><?php echo __( 'Select All' , 'wp-search' ); ?></span>
                         </label>
                     </div>
                     <div class="post-type-options">
@@ -187,8 +187,8 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
                 <hr>
 
                 <div class="modal-actions">
-                    <button type="button" class="closeModal button"><?php echo __( 'Cancel' ); ?></button>
-                    <input type="submit" name="submit_search" class="button button-primary modal-btn" value="<?php echo __( 'Save' ); ?>">
+                    <button type="button" class="closeModal button"><?php echo __( 'Cancel' , 'wp-search' ); ?></button>
+                    <input type="submit" name="submit_search" class="button button-primary modal-btn" value="<?php echo __( 'Save' , 'wp-search' ); ?>">
                 </div>
             </form>
         </div>

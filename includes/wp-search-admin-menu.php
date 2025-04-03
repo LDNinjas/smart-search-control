@@ -85,10 +85,10 @@ class WP_Search_Admin_Settings {
             ob_start(); 
             ?>
             <div class="admin-msg">
-                <p><?php echo esc_html__( 'The table for WP Search does not exist. Click here to ' ); ?>
+                <p><?php echo esc_html__( 'The table for WP Search does not exist. Click here to ' , 'wp-search' ); ?>
                     <strong class="create-table">
                         <a href="#">
-                            <?php echo esc_html__( 'Create Table' ); ?>
+                            <?php echo esc_html__( 'Create Table' , 'wp-search' ); ?>
                         </a>
                     </strong>
                 </p>
@@ -105,8 +105,8 @@ class WP_Search_Admin_Settings {
     public function add_admin_page() {
 
         add_menu_page(
-            __( 'WP Search' ),
-            __( 'WP Search' ),
+            __( 'WP Search' , 'wp-search' ),
+            __( 'WP Search' , 'wp-search' ),
             'manage_options',
             'wp_search_settings',
             [ $this, 'render_admin_page' ],
@@ -121,7 +121,7 @@ class WP_Search_Admin_Settings {
     public function render_admin_page() {
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( __( 'You do not have permission to access this page.' ) );
+            wp_die( __( 'You do not have permission to access this page.' , 'wp-search' ) );
         }
 
         $template_path = WP_SEARCH_TEMPLATES_DIR . 'template-wp-search-admin-page.php';
@@ -150,8 +150,8 @@ class WP_Search_Admin_Settings {
             'nonce_edit'   => wp_create_nonce( 'wp_search_setting_nonce_edit' ),
             'nonce_delete' => wp_create_nonce( 'wp_search_setting_nonce_delete' ),
             'nonce_table'  => wp_create_nonce( 'create_database_table_nonce' ),
-            'error_msg'    => __( 'Something went wrong. Please try again.' ),
-            'confirm_msg'  => __( 'Are you sure you want to delete this search setting?' ),
+            'error_msg'    => __( 'Something went wrong. Please try again.' , 'wp-search' ),
+            'confirm_msg'  => __( 'Are you sure you want to delete this search setting?' , 'wp-search' ),
             
         ]);   
     }
@@ -168,13 +168,13 @@ class WP_Search_Admin_Settings {
         }
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Unauthorized request' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'wp-search' ) ] );
         }
 
         $table_name = $wpdb->prefix . 'search_parameters';
     
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'wp_search_setting_nonce_add' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid nonce' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'wp-search' ) ] );
         }
     
         $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
@@ -202,7 +202,7 @@ class WP_Search_Admin_Settings {
         if ( $result ) {
 
             $notice = [
-                'message' => __( 'Search settings saved successfully!' ),
+                'message' => __( 'Search settings saved successfully!' , 'wp-search' ),
                 'type'    => 'success'
             ];
 
@@ -211,7 +211,7 @@ class WP_Search_Admin_Settings {
         } else {
 
             $notice = [
-                'message' => __( 'Failed to save search settings. Please try again.' ),
+                'message' => __( 'Failed to save search settings. Please try again.' , 'wp-search' ),
                 'type'    => 'error'
             ];
 
@@ -231,19 +231,19 @@ class WP_Search_Admin_Settings {
         }
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Unauthorized request' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'wp-search' ) ] );
         }
 
         $table_name = $wpdb->prefix . 'search_parameters';
 
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'wp_search_setting_nonce_edit' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid nonce' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'wp-search' ) ] );
         }
 
         $id = isset( $_POST[ 'id' ] ) ? intval( $_POST[ 'id' ] ) : 0;
 
         if ( $id === 0 ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid ID' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'wp-search' ) ] );
         }
 
         $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
@@ -273,7 +273,7 @@ class WP_Search_Admin_Settings {
         if ( $result !== false ) {
 
             $notice = [
-                'message' => __( 'Search settings updated successfully!' ),
+                'message' => __( 'Search settings updated successfully!' , 'wp-search' ),
                 'type' => 'success'
             ];
 
@@ -282,7 +282,7 @@ class WP_Search_Admin_Settings {
         } else {
 
             $notice = [
-                'message' => __( 'Failed to update data. Please try again.' ),
+                'message' => __( 'Failed to update data. Please try again.' , 'wp-search' ),
                 'type' => 'error'
             ];
             
@@ -302,19 +302,19 @@ class WP_Search_Admin_Settings {
         }
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Unauthorized request' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'wp-search' ) ] );
         }
 
         $table_name = $wpdb->prefix . 'search_parameters';
 
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'wp_search_setting_nonce_delete' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid nonce' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'wp-search' ) ] );
         }
 
         $id = isset( $_POST[ 'id' ] ) ? intval( $_POST[ 'id' ] ) : 0;
 
         if ( $id === 0 ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid ID' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'wp-search' ) ] );
         }
 
         $result = $wpdb->delete( $table_name, [ 'id' => $id ], [ '%d' ] );
@@ -322,7 +322,7 @@ class WP_Search_Admin_Settings {
         if ( $result ) {
 
             $notice = [
-                'message' => __( 'Search setting deleted successfully!' ),
+                'message' => __( 'Search setting deleted successfully!' , 'wp-search' ),
                 'type' => 'success'
             ];
 
@@ -331,7 +331,7 @@ class WP_Search_Admin_Settings {
         } else {
 
             $notice = [
-                'message' => __( 'Failed to delete search setting. Please try again.' ),
+                'message' => __( 'Failed to delete search setting. Please try again.' , 'wp-search' ),
                 'type' => 'error'
             ];
 
@@ -345,7 +345,7 @@ class WP_Search_Admin_Settings {
     public function create_database_table() {
 
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'create_database_table_nonce' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid nonce' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'wp-search' ) ] );
         }
     
         $database_file = WP_SEARCH_INCLUDES_DIR . 'wp-search-database.php';
@@ -355,7 +355,7 @@ class WP_Search_Admin_Settings {
             require_once $database_file;
 
             $notice = [
-                'message' => __( 'Table for WP Search created successfully!' ),
+                'message' => __( 'Table for WP Search created successfully!' , 'wp-search' ),
                 'type' => 'success'
             ];
 
@@ -363,7 +363,7 @@ class WP_Search_Admin_Settings {
         } else { 
 
             $notice = [
-                'message' => __( 'Database file not found!' ),
+                'message' => __( 'Database file not found!' , 'wp-search' ),
                 'type' => 'error'
             ];
 
