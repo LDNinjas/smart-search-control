@@ -11,6 +11,7 @@
 
                 this.cacheSelectors();
                 this.bindEvents();
+                this.adminNotice();
             },
 
             /**
@@ -20,7 +21,7 @@
                 
                 this.createtable      = $( ".create-table" );
                 this.advanceSetting   = $( "#advance-toggle" )
-                this.codeCopy         = $( "#copy-code" )
+                this.codeCopy         = $( ".short-code-copy" )
                 this.selectAll        = $( "#select-all" )
                 this.singleOptions    = $( ".custom-checkbox" )
 
@@ -31,12 +32,10 @@
                 this.shortcode        = $( ".shortcode-container" )
                 this.modal            = $( "#searchModal" );
                 this.closeModal       = $( ".closeModal" );
-                this.modalTitle       = $( ".model-title" );
                 this.shortcodeid      = $( ".code-id" );
                 this.modelPlaceHolder = $( "#place_holder" );
                 this.modelClass       = $( "#class" );
                 this.modelID          = $( "#id" );
-                this.modelType        = $( 'input[name="type"]' );
                 this.modelPostType    = $( 'input[name="post_type[]"]' );
                 this.modelBtn         = $( ".model-btn" );
                 this.modalForm        = $( "#searchForm" );
@@ -68,8 +67,6 @@
             addNewSetting: function () {
 
                 this.modalForm.trigger( "reset" );
-                this.modalTitle.text( WP_SEARCH_SETTING.add_title );
-                this.modelBtn.val( WP_SEARCH_SETTING.add_btn );
 
                 this.modalForm.off( 'submit' ).on( 'submit', function ( e ) {
                     e.preventDefault();
@@ -79,8 +76,7 @@
                         nonce: WP_SEARCH_SETTING.nonce_add,
                         place_holder: AdminSearchSetting.modelPlaceHolder.val(),
                         class: AdminSearchSetting.modelClass.val(),
-                        id:  AdminSearchSetting.modelID.val(),
-                        type: $( 'input[name="type"]:checked' ).val(),
+                        css_id:  AdminSearchSetting.modelID.val(),
                         post_type: $( 'input[name="post_type[]"]:checked' ).map( function () {
                             return $( this ).val();
                         } ).get()
@@ -94,12 +90,15 @@
                         success: function ( response ) {
                             AdminSearchSetting.modalForm.trigger( "reset" );
                             AdminSearchSetting.modal.css( "display", "none" );
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
-                            AdminSearchSetting.displayMessage( response.success, response.data.message );
+
+                            
                         },
                         error: function () {
                             AdminSearchSetting.modal.css( "display", "none" );
-                            AdminSearchSetting.displayMessage( false, WP_SEARCH_SETTING.error_msg );
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
+                            location.reload();
                         }
                     });
                 });
@@ -114,32 +113,33 @@
 
                 let entry = JSON.parse( $( event.currentTarget ).attr( "data-entry" ) );
 
-                this.modalTitle.text( WP_SEARCH_SETTING.setting_id + entry.id );
-                this.shortcodeid.text( entry.id )
-                this.modelPlaceHolder.val( entry.place_holder );
-                this.modelClass.val( entry.class );
-                this.modelID.val( entry.css_id );
-
-                this.shortcode.css("display", "inline-block");
-
-                $( 'input[name="type"]' ).prop( "checked", false );
-                $( 'input[name="type"][value="' + entry.type + '"]' ).prop( "checked", true );
-
+                let parsedData = JSON.parse( entry.data );
+                
+                this.shortcodeid.text( entry.id );
+                this.modelPlaceHolder.val( parsedData.place_holder );
+                this.modelClass.val( parsedData.class );
+                this.modelID.val( parsedData.css_id );
+                
+                this.shortcode.css( "display", "inline-block" );
+                
                 this.modelPostType.prop( "checked", false );
-                if ( entry.post_type ) {
-                    let selectedPostTypes = entry.post_type.split( "," );
+                
+                if ( Array.isArray( parsedData.post_type ) ) { 
+
                     this.modelPostType.each( function () {
-                    if ( selectedPostTypes.includes( $( this ).val() ) ) {
-                        $( this ).prop( "checked", true );
-                    }
+                        if ( parsedData.post_type.includes( $( this ).val() ) ) {
+                            $( this ).prop( "checked", true );
+                        }
                     });
                 }
-                if ( $( ".custom-checkbox:checked" ).length === $( ".custom-checkbox" ).length ) {
+                
+                if ( $ ( ".custom-checkbox:checked" ).length === $( ".custom-checkbox" ).length ) {
+
                     $( "#select-all" ).prop( "checked", true );
+                } else {
+                    $( "#select-all" ).prop( "checked", false );
                 }
-
-                this.modelBtn.val( WP_SEARCH_SETTING.edit_btn );
-
+                
                 this.modalForm.off( "submit" ).on( "submit", function ( e ) {
 
                     e.preventDefault();
@@ -163,12 +163,13 @@
                         dataType: "json",
                         success: function ( response ) {
                             AdminSearchSetting.modal.css( "display", "none" );
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
-                            AdminSearchSetting.displayMessage( response.success, response.data.message );
                         },
                         error: function () {
                             AdminSearchSetting.modal.css( "display", "none" );
-                            AdminSearchSetting.displayMessage( false, WP_SEARCH_SETTING.error_msg );
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
+                            location.reload();
                         }
                     });
                 });
@@ -194,30 +195,16 @@
                             id: id
                         },
                         success: function ( response ) {
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
-                            AdminSearchSetting.displayMessage( response.success, response.data.message );
+                        
                         },
                         error: function () {
-                            AdminSearchSetting.displayMessage( false, WP_SEARCH_SETTING.error_msg ); 
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
+                            location.reload();
                         }
                     });
                 }
-            },
-
-            /**
-             * Display success or error messages
-             */
-            displayMessage: function ( isSuccess, message ) {
-
-                let msgBox = $( ".message-box" );
-                let alertClass = isSuccess ? "alert-success" : "alert-danger";
-                msgBox.html( '<div class="alert ' + alertClass + '">' + message + '</div>' ).fadeIn();
-
-                setTimeout( () => {
-                    msgBox.fadeOut( 500, function () {
-                    $( this ).html( '' );
-                    });
-                }, 5000 );
             },
 
             /**
@@ -236,11 +223,6 @@
                 this.modal.css( "display", "none" );
                 this.shortcode.css("display", "none");
                 this.modalForm.trigger( "reset" );
-                this.modelPlaceHolder.prop( 'disabled', false );
-                this.modelClass.prop( 'disabled', false );
-                this.modelType.prop( 'disabled', false )
-                this.modelPostType.prop( 'disabled', false )
-                this.modelBtn.show();
             },
 
             /**
@@ -256,11 +238,13 @@
                         nonce: WP_SEARCH_SETTING.nonce_table,
                     },
                     success: function ( response ) {
+                        localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                         location.reload();
-                        AdminSearchSetting.displayMessage( response.success, response.data.message );
+                    
                     },
                     error: function () {
-                        AdminSearchSetting.displayMessage( false, WP_SEARCH_SETTING.error_msg ); 
+                        localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
+                        location.reload();
                     }
                 });
             },
@@ -279,9 +263,23 @@
              */
             copyShortCode: function() {
 
-                var text = $( "#shortcode-text" ).text();
-                navigator.clipboard.writeText( text );
-                alert( "Copied: " + text );
+                var text = $( "#shortcode-text" ).text().trim();
+
+                navigator.clipboard.writeText( text ).then(function() {
+
+                    var icon = $( "#copy-code .dashicons" );
+                    var container = $( "#copy-code" );
+
+                    icon.removeClass( "dashicons-clipboard" ).addClass( "dashicons-yes" );
+                    $( '.copy-msg' ).css("display", "inline-block");
+                    container.addClass( "copied" );
+
+                    setTimeout( function() {
+                        icon.removeClass( "dashicons-yes" ).addClass( "dashicons-clipboard" );
+                        container.removeClass( "copied" );
+                        $( '.copy-msg' ).css( "display", "none" );
+                    }, 5000 );
+                });
             },
 
             /**
@@ -301,6 +299,35 @@
                     $( "#select-all" ).prop( "checked", true );
                 } else {
                     $( "#select-all" ).prop( "checked", false );
+                }
+            },
+
+            /**
+             * Show the admin Notice
+             */
+            adminNotice: function() {
+
+                let adminNotice = localStorage.getItem( "admin_notice" );
+
+                if ( adminNotice ) {
+                    let notice = JSON.parse( adminNotice );
+            
+                    let noticeHtml = `
+                        <div class="notice notice-${ notice.type } is-dismissible">
+                            <p>${ notice.message }</p>
+                            <button type="button" class="notice-dismiss">
+                                <span class="screen-reader-text">Dismiss this notice.</span>
+                            </button>
+                        </div>
+                    `;
+
+                    $( ".wrap" ).prepend(noticeHtml);
+            
+                    localStorage.removeItem( "admin_notice" );
+
+                    $( document ).on( "click", ".notice-dismiss", function () {
+                        $( this ).closest( ".notice" ).fadeOut();
+                    });
                 }
             }
 

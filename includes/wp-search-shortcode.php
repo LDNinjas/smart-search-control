@@ -67,6 +67,11 @@ class WP_Search {
     public function render_search_shortcode( $atts ) {
 
         global $wpdb;
+
+        wp_enqueue_style( 'dashicons' );
+        wp_enqueue_style( 'wp-search-style' );
+        wp_enqueue_script( 'wp-search-js' );
+
         $sanitized_atts = shortcode_atts(
             [
                 'id' => '1',
@@ -76,37 +81,18 @@ class WP_Search {
         );
         
         $table_name = $wpdb->prefix . 'search_parameters';
-        $query = "SELECT id, place_holder, css_id, class, type, post_type FROM $table_name WHERE id = %d";
+
+        $query = "SELECT id, data FROM $table_name WHERE id = %d";
+        
         $result = $wpdb->get_row( $wpdb->prepare( $query, $sanitized_atts[ 'id' ] ) );
-        
-        $all_post_types = get_post_types( [ 'public' => true ], 'names' );
 
-        $class = isset( $result->class ) ? $result->class : '';
+        $data = json_decode( $result->data ); 
 
-        $css_id = isset( $result->css_id ) ? $result->css_id : '';
-
-        $placeholder = isset( $result->place_holder ) ? $result->place_holder : '';
-        
-        $posts_types = isset( $result->post_type ) ? ( is_array( $result->post_type ) ? $result->post_type : explode( ',', $result->post_type ) ) : [];
-        
+        $class = isset( $data->class ) ? $data->class : '';
+        $css_id = isset( $data->css_id ) ? $data->css_id : '';
+        $placeholder = isset( $data->place_holder ) ? $data->place_holder : '';
+        $posts_types = isset( $data->post_type ) ? ( is_array( $data->post_type ) ? $data->post_type : explode( ',', $data->post_type ) ) : [];
         $posts_types = array_map( 'trim', $posts_types );
-        
-        if ( $result->type === 'include' ) {
-
-            $post_types = array_intersect( $all_post_types, $posts_types );
-
-        } elseif ( $result->type === 'exclude' ) {
-
-            $post_types = array_diff( $all_post_types, $posts_types );
-
-        } else {
-            $post_types = $all_post_types;
-        }
-        
-
-        wp_enqueue_style( 'dashicons' );
-        wp_enqueue_style( 'wp-search-style' );
-        wp_enqueue_script( 'wp-search-js' );
         
         ob_start();
         $template_path = WP_SEARCH_TEMPLATES_DIR . 'template-wp-search-bar.php';
@@ -158,7 +144,6 @@ class WP_Search {
             }
         }
 
-        // Process results
         $posts = [];
         if ( $query->have_posts() ) {
             while ( $query->have_posts() ) {
@@ -170,8 +155,6 @@ class WP_Search {
                     'title'     => get_the_title(),
                     'permalink' => get_permalink(),
                 ];
-
-
             }
             wp_reset_postdata();
 
@@ -190,6 +173,7 @@ class WP_Search {
      * Override the default WordPress search page to custom search
      */
     function wp_custom_search_query( $query ) {
+
         if ( !is_admin() && $query->is_main_query() && $query->is_search() ) {
 
             if ( !isset( $_POST['post_type'] ) || empty( $_POST['post_type'] ) ) {
@@ -198,7 +182,7 @@ class WP_Search {
                 return;
             }
 
-            $post_types = array_map( 'trim', explode( ',', sanitize_text_field( $_POST['post_type'] ) ) );
+            $post_types = array_map( 'trim', explode( ',', sanitize_text_field( $_POST[ 'post_type' ] ) ) );
 
             if ( in_array( 'product', $post_types ) && !in_array( 'product_variation', $post_types ) ) {
                 $post_types[] = 'product_variation';
