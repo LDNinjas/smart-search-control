@@ -16,6 +16,7 @@
                 this.handleSearchInput();
                 this.handleSearchFormSubmit();
                 this.handleSuggestionNavigation();
+                this.handleSeeMore();
             },
 
             /**
@@ -109,6 +110,7 @@
                 }
 
                 SearchForm.ajaxRequest = $.ajax( {
+
                     url: WP_SEARCH.ajaxurl,
                     type: 'POST',
                     data: {
@@ -119,6 +121,7 @@
                     },
 
                     beforeSend: function () {
+
                         searchSuggestionContainer.html(
                             `<div class="no-results">${ WP_SEARCH.search_msg }</div>` 
                         ).show();
@@ -131,13 +134,20 @@
 
                         if ( response.success && response.data.search_results ) {
 
-                            let suggestionsHTML = response.data.search_results
-                                .map(
-                                    ( item ) =>
-
-                                        `<li class="suggestion-item"><a href="${ item.permalink }">${ item.title }</a></li>`
+                            let searchResults = response.data.search_results;
+                            let suggestionsHTML = searchResults
+                                .slice( 0, 10 )
+                                .map(( item ) => 
+                                    `<li class="suggestion-item"><a href="${ item.permalink }">${ item.title }</a></li>`
                                 )
                                 .join( '' );
+
+                                if ( searchResults.length > 10 ) {
+
+                                    suggestionsHTML += `<a  href="javascript:void( 0 );" class="see-more" >${ WP_SEARCH.more_msg }</a>`;
+
+                                }
+
                             searchSuggestionContainer.html( `<ul class="suggestions-list">${ suggestionsHTML }</ul>` ).show();
 
                         } else {
@@ -181,17 +191,26 @@
 
                     items.removeClass( 'highlighted' );
 
-                    if ( SearchForm.selectedIndex >= 0 ) {
-
-                        let selectedItem = $( items[ SearchForm.selectedIndex ] );
-                        $( items[ SearchForm.selectedIndex ] ).addClass( 'highlighted' );
-                        $( this ).val( $( items[ SearchForm.selectedIndex ] ).text() );
-                        selectedItem[ 0 ].scrollIntoView( { block: 'nearest', behavior: 'smooth' } );
-                    }
-
                 });
 
             },
+
+            /**
+             * Handle clicking on "See More" link
+             */
+            handleSeeMore: function () {
+
+                $( document ).on( 'click', '.see-more', function ( e ) {
+
+                    e.preventDefault();
+
+                    let parentContainer = $( this ).closest( '.parent-container' );
+
+                    parentContainer.find( '.wp-search-form' ).submit();
+
+                });
+
+            }
             
         };
 

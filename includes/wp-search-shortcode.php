@@ -57,6 +57,7 @@ class WP_Search {
             'ajaxurl'    => admin_url( 'admin-ajax.php' ),
             'nonce'      => wp_create_nonce( 'wp_search_result_nonce' ),
             'search_msg' => __( 'Searching...' , 'wp-search' ),
+            'more_msg'   => __( 'See more...', 'wp-search' ),
         ]);   
         
     }

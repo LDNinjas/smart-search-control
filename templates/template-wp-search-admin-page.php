@@ -52,7 +52,7 @@ $admin_notice = WP_Search_Admin_Settings::instance()->get_admin_notice();
                             </strong>
                             <td><?php echo esc_html( $data->place_holder ); ?></td>
                             <td><?php echo esc_html( $data->css_id ); ?></td>
-                            <td><?php echo esc_html( implode(', ', explode(' ', $data->class)) ); ?></td>
+                            <td><?php echo esc_html( implode(', ', explode( ' ', $data->class ) ) ); ?></td>
                             <td>
                                 <a href="#" data-entry='<?= json_encode( $entry ?: new stdClass() ); ?>' class="button edit-setting"><?php echo __( 'Edit' , 'wp-search' ); ?></a>
                                 <a href="#" class="button delete-setting" data-id="<?php echo $entry->id; ?>"><?php echo __( 'Delete' , 'wp-search'); ?></a>
