@@ -2,21 +2,21 @@
 /**
  * Create the Database
  */
-class WP_Search_Database {
+class Smart_Search_Control_Database {
 
     /**
      * Holds the class instance.
-     * @var WP_Search_Database|null
+     * @var Smart_Search_Control_Database|null
      */
     private static $instance = null;
 
     /**
      * Returns the singleton instance.
-     * @return WP_Search_Database
+     * @return Smart_Search_Control_Database
      */
     public static function instance() {
         
-        if ( is_null( self::$instance ) && ! ( self::$instance instanceof WP_Search_Database ) ) {
+        if ( is_null( self::$instance ) && ! ( self::$instance instanceof Smart_Search_Control_Database ) ) {
             self::$instance = new self();
             self::$instance->create_database_table();
         }
@@ -63,4 +63,4 @@ class WP_Search_Database {
     }
 }
 
-WP_Search_Database::instance();
+Smart_Search_Control_Database::instance();

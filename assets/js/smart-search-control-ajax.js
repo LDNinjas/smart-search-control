@@ -111,11 +111,11 @@
 
                 SearchForm.ajaxRequest = $.ajax( {
 
-                    url: WP_SEARCH.ajaxurl,
+                    url: SMART_SEARCH_CONTROL.ajaxurl,
                     type: 'POST',
                     data: {
-                        action: 'wp_search_suggestion',
-                        nonce: WP_SEARCH.nonce,
+                        action: 'smart_search_control_suggestion',
+                        nonce: SMART_SEARCH_CONTROL.nonce,
                         search_query: searchQuery,
                         post_types: postTypes,
                     },
@@ -123,7 +123,7 @@
                     beforeSend: function () {
 
                         searchSuggestionContainer.html(
-                            `<div class="no-results">${ WP_SEARCH.search_msg }</div>` 
+                            `<div class="no-results">${ SMART_SEARCH_CONTROL.search_msg }</div>` 
                         ).show();
                     },
 
@@ -144,7 +144,7 @@
 
                                 if ( searchResults.length > 10 ) {
 
-                                    suggestionsHTML += `<a  href="javascript:void( 0 );" class="see-more" >${ WP_SEARCH.more_msg }</a>`;
+                                    suggestionsHTML += `<a  href="javascript:void( 0 );" class="see-more" >${ SMART_SEARCH_CONTROL.more_msg }</a>`;
 
                                 }
 
