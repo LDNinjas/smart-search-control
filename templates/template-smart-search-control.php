@@ -16,6 +16,10 @@ if ( !defined( 'ABSPATH' ) )
                 <!-- Post Type Hidden Input -->
                 <input type="hidden" name="post_type" value="<?php echo esc_attr( implode( ',', $posts_types ) ); ?>">
                 
+                <input type="hidden" name="css_id" value="<?php echo esc_attr( $css_id ); ?>">
+                <input type="hidden" name="css_class" value="<?php echo esc_attr( $class ); ?>">
+                <input type="hidden" name="place_holder" value="<?php echo esc_attr( $placeholder ); ?>">
+
                 <!-- Search Icon -->
                 <button class="ssc-default-search-btn search-btn "> 
                     <span class="ssc-default-search-icon">
