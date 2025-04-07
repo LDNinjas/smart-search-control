@@ -40,7 +40,6 @@ class Smart_Search_Control {
         add_action( 'wp_ajax_nopriv_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
         add_shortcode( 'smart_search_control', [ $this, 'render_search_shortcode' ] );
         add_action( 'pre_get_posts', [ $this, 'smart_search_control_custom_search_query' ] );
-        add_filter( 'the_content', [ $this, 'smart_search_control_custom_search_content' ]);
         add_filter( 'register_block_type_args',  [ $this, 'modify_result_search_block' ], 10, 2 );
 
     }
