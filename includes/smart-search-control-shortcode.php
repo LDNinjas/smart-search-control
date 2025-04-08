@@ -40,7 +40,7 @@ class Smart_Search_Control {
         add_action( 'wp_ajax_nopriv_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
         add_shortcode( 'smart_search_control', [ $this, 'render_search_shortcode' ] );
         add_action( 'pre_get_posts', [ $this, 'smart_search_control_custom_search_query' ] );
-        add_filter( 'register_block_type_args',  [ $this, 'modify_result_search_block' ], 10, 2 );
+        add_filter( 'render_block',  [ $this, 'modify_result_search_block' ], 10, 2 );
         add_filter( 'render_block', [ $this , 'customize_post_template_output' ], 11, 2 );
         add_filter( 'render_block', [ $this , 'customize_pagination_block' ], 12, 2 );
     
@@ -94,7 +94,10 @@ class Smart_Search_Control {
         $query = "SELECT id, data FROM $table_name WHERE id = %d";
         $result = $wpdb->get_row( $wpdb->prepare( $query, $sanitized_atts[ 'id' ] ) );
     
-        $data = json_decode( $result->data );
+        if ( !empty( $result ) ) {
+            $stored_data = isset( $result->data ) ? $result->data : '';
+            $data = json_decode( $stored_data );
+        }
     
         $class = isset( $data->class ) ? $data->class : $sanitized_atts[ 'css_class' ];
         $css_id = isset( $data->css_id ) ? $data->css_id : $sanitized_atts[ 'css_id' ];
@@ -113,13 +116,14 @@ class Smart_Search_Control {
     /**
      * Modify the core search block to use our custom search form
      */
-    public function modify_result_search_block( $args, $name ) {
+    public function modify_result_search_block( $block_content, $block ) {
 
-        if ( $name === 'core/search' ) {
-            $args['render_callback'] = [ $this , 'short_code_search'];
+        if ( is_search() && $block['blockName'] === 'core/search' ) {
+            return $this->short_code_search();
         }
-        return $args;
+        return $block_content;
     }
+    
     
     public function short_code_search() {
     
@@ -229,12 +233,16 @@ class Smart_Search_Control {
 
             $query->set( 'post_type', $post_types );
 
-            $query->set( 'posts_per_page', 3 );
+            if ( isset( $_POST['paged'] ) ) {
+                $query->set( 'paged', intval( $_POST['paged'] ) );
+            }
+
+            $query->set( 'posts_per_page', 3 ); 
         }
     }
 
     /**
-     * Summary of modify_result_search_block
+     * Summary of modify_result_block
      */
     public function customize_post_template_output( $block_content, $block ) {
 
@@ -251,8 +259,16 @@ class Smart_Search_Control {
                     ?>
                         <div class="search-result-item">
                             <div class="search-featured-image">
+                            
                                 <a href="<?php the_permalink(); ?>">
-                                    <?php the_post_thumbnail( 'medium' ); ?>
+
+                                    <?php if( has_post_thumbnail()  ){
+                                        the_post_thumbnail( 'medium' ); 
+                                    }else{?>
+                                        <img src="<?php echo SMART_SEARCH_CONTROL_ASSETS_URL . 'default-img/no-feature-image.jpg' ?>" alt=" <?php echo esc_attr( get_the_title() ) ?> "/>
+                                    <?php }
+                                    ?>
+                                        
                                 </a>
                             </div>
                             
@@ -263,7 +279,7 @@ class Smart_Search_Control {
                             </h2>
                             
                             <div class="search-excerpt">
-                                <?php the_excerpt(); ?>
+                                <?php echo wp_trim_words( get_the_excerpt(), 25, '...' ); ?>
                             </div>
                         </div>
 
