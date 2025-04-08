@@ -4,7 +4,7 @@
  */
 
 if ( !defined( 'ABSPATH' ) ) exit;
-class WP_Search_Admin_Settings {
+class Smart_Search_Control_Admin_Settings {
 
     /**
      * instance
@@ -19,11 +19,11 @@ class WP_Search_Admin_Settings {
 
     /**
      * Define instance
-     * @return WP_Search_Admin_Settings
+     * @return Smart_Search_Control_Admin_Settings
      */
     public static function instance() {
 
-        if ( is_null( self::$instance ) && ! ( self::$instance instanceof WP_Search_Admin_Settings ) ) {
+        if ( is_null( self::$instance ) && ! ( self::$instance instanceof Smart_Search_Control_Admin_Settings ) ) {
             self::$instance = new self();
             self::$instance->hooks();
         }
@@ -37,10 +37,10 @@ class WP_Search_Admin_Settings {
 
         add_action( 'admin_menu', [ $this, 'add_admin_page' ] );
         add_action( 'current_screen', [ $this, 'setup_screen_id' ] );
-        add_action( 'admin_enqueue_scripts', [ $this, 'wp_search_admin_assets' ] );
-        add_action( 'wp_ajax_wp_search_setting', [ $this, 'wp_search_setting_add' ] );
-        add_action( 'wp_ajax_wp_search_setting_delete', [ $this, 'wp_search_setting_delete' ] );
-        add_action( 'wp_ajax_wp_search_setting_edit', [ $this, 'wp_search_setting_edit' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'smart_search_control_admin_assets' ] );
+        add_action( 'wp_ajax_smart_search_control_setting', [ $this, 'smart_search_control_setting_add' ] );
+        add_action( 'wp_ajax_smart_search_control_setting_delete', [ $this, 'smart_search_control_setting_delete' ] );
+        add_action( 'wp_ajax_smart_search_control_setting_edit', [ $this, 'smart_search_control_setting_edit' ] );
         add_action( 'wp_ajax_create_database_table', [ $this, 'create_database_table' ] );
         
     }
@@ -53,6 +53,7 @@ class WP_Search_Admin_Settings {
         $screen = get_current_screen();
 
         if ( $screen ) {
+
             $this->screen_id = $screen->id;
         }
 
@@ -64,7 +65,7 @@ class WP_Search_Admin_Settings {
     public function is_admin_settings_page() {
 
         if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-            return isset( $_POST['action'] ) && strpos( $_POST['action'], 'wp_search_setting' ) !== false;
+            return isset( $_POST['action'] ) && strpos( $_POST['action'], 'smart_search_control_setting' ) !== false;
         }
     
         $screen = get_current_screen();
@@ -85,10 +86,10 @@ class WP_Search_Admin_Settings {
             ob_start(); 
             ?>
             <div class="admin-msg">
-                <p><?php echo esc_html__( 'The table for WP Search does not exist. Click here to ' , 'wp-search' ); ?>
+                <p><?php echo esc_html__( 'The table for Smart Search Control does not exist. Click here to ' , 'smart-search-control' ); ?>
                     <strong class="create-table">
                         <a href="#">
-                            <?php echo esc_html__( 'Create Table' , 'wp-search' ); ?>
+                            <?php echo esc_html__( 'Create Table' , 'smart-search-control' ); ?>
                         </a>
                     </strong>
                 </p>
@@ -105,10 +106,10 @@ class WP_Search_Admin_Settings {
     public function add_admin_page() {
 
         add_menu_page(
-            __( 'WP Search' , 'wp-search' ),
-            __( 'WP Search' , 'wp-search' ),
+            __( 'Smart Search Control' , 'smart-search-control' ),
+            __( 'Smart Search Control' , 'smart-search-control' ),
             'manage_options',
-            'wp_search_settings',
+            'smart_search_control_settings',
             [ $this, 'render_admin_page' ],
             'dashicons-search',
             80
@@ -121,10 +122,10 @@ class WP_Search_Admin_Settings {
     public function render_admin_page() {
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( __( 'You do not have permission to access this page.' , 'wp-search' ) );
+            wp_die( __( 'You do not have permission to access this page.' , 'smart-search-control' ) );
         }
 
-        $template_path = WP_SEARCH_TEMPLATES_DIR . 'template-wp-search-admin-page.php';
+        $template_path = SMART_SEARCH_CONTROL_TEMPLATES_DIR . 'template-smart-search-control-admin-page.php';
         include $template_path;
 
     }
@@ -132,34 +133,34 @@ class WP_Search_Admin_Settings {
     /**
      * wp_search_admin_assets
      */
-    public function wp_search_admin_assets() {
+    public function smart_search_control_admin_assets() {
 
         if ( !$this->is_admin_settings_page() ) {
             return;
         }
 
         wp_enqueue_style(
-            'wp-search-admin-style',
-            WP_SEARCH_ASSETS_URL . 'css/wp-search-admin-style.css'
+            'smart-search-control-admin-style',
+            SMART_SEARCH_CONTROL_ASSETS_URL . 'css/smart-search-control-admin-style.css'
         );
-        wp_enqueue_script( 'wp-search-admin-js', WP_SEARCH_ASSETS_URL . 'js/wp-search-admin.js', [ 'jquery' ], WP_SEARCH_VERSION, true );
-        wp_localize_script( 'wp-search-admin-js', 'WP_SEARCH_SETTING', [
+        wp_enqueue_script( 'smart-search-control-admin-js', SMART_SEARCH_CONTROL_ASSETS_URL . 'js/smart-search-control-admin.js', [ 'jquery' ], SMART_SEARCH_CONTROL_VERSION, true );
+        wp_localize_script( 'smart-search-control-admin-js', 'SMART_SEARCH_CONTROL_SETTING', [
 
             'ajaxurl'      => admin_url( 'admin-ajax.php' ),
-            'nonce_add'    => wp_create_nonce( 'wp_search_setting_nonce_add' ),
-            'nonce_edit'   => wp_create_nonce( 'wp_search_setting_nonce_edit' ),
-            'nonce_delete' => wp_create_nonce( 'wp_search_setting_nonce_delete' ),
+            'nonce_add'    => wp_create_nonce( 'smart_search_control_setting_nonce_add' ),
+            'nonce_edit'   => wp_create_nonce( 'smart_search_control_setting_nonce_edit' ),
+            'nonce_delete' => wp_create_nonce( 'smart_search_control_setting_nonce_delete' ),
             'nonce_table'  => wp_create_nonce( 'create_database_table_nonce' ),
-            'error_msg'    => __( 'Something went wrong. Please try again.' , 'wp-search' ),
-            'confirm_msg'  => __( 'Are you sure you want to delete this search setting?' , 'wp-search' ),
+            'error_msg'    => __( 'Something went wrong. Please try again.' , 'smart-search-control' ),
+            'confirm_msg'  => __( 'Are you sure you want to delete this search setting?' , 'smart-search-control' ),
             
         ]);   
     }
 
     /**
-     * Add New Wp Search Setting
+     * Add New Search Setting
      */
-    public function wp_search_setting_add() {
+    public function smart_search_control_setting_add() {
 
         global $wpdb;
 
@@ -168,13 +169,13 @@ class WP_Search_Admin_Settings {
         }
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'wp-search' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
 
         $table_name = $wpdb->prefix . 'search_parameters';
     
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'wp_search_setting_nonce_add' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'wp-search' ) ] );
+        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_add' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
     
         $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
@@ -202,7 +203,7 @@ class WP_Search_Admin_Settings {
         if ( $result ) {
 
             $notice = [
-                'message' => __( 'Search settings saved successfully!' , 'wp-search' ),
+                'message' => __( 'Search settings saved successfully!' , 'smart-search-control' ),
                 'type'    => 'success'
             ];
 
@@ -211,7 +212,7 @@ class WP_Search_Admin_Settings {
         } else {
 
             $notice = [
-                'message' => __( 'Failed to save search settings. Please try again.' , 'wp-search' ),
+                'message' => __( 'Failed to save search settings. Please try again.' , 'smart-search-control' ),
                 'type'    => 'error'
             ];
 
@@ -220,9 +221,9 @@ class WP_Search_Admin_Settings {
     }
 
     /**
-     * Edit WP Search Setting
+     * Edit Search Setting
      */
-    public function wp_search_setting_edit() {
+    public function smart_search_control_setting_edit() {
 
         global $wpdb;
 
@@ -231,19 +232,19 @@ class WP_Search_Admin_Settings {
         }
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'wp-search' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
 
         $table_name = $wpdb->prefix . 'search_parameters';
 
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'wp_search_setting_nonce_edit' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'wp-search' ) ] );
+        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_edit' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
 
         $id = isset( $_POST[ 'id' ] ) ? intval( $_POST[ 'id' ] ) : 0;
 
         if ( $id === 0 ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'wp-search' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'smart-search-control' ) ] );
         }
 
         $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
@@ -273,7 +274,7 @@ class WP_Search_Admin_Settings {
         if ( $result !== false ) {
 
             $notice = [
-                'message' => __( 'Search settings updated successfully!' , 'wp-search' ),
+                'message' => __( 'Search settings updated successfully!' , 'smart-search-control' ),
                 'type' => 'success'
             ];
 
@@ -282,7 +283,7 @@ class WP_Search_Admin_Settings {
         } else {
 
             $notice = [
-                'message' => __( 'Failed to update data. Please try again.' , 'wp-search' ),
+                'message' => __( 'Failed to update data. Please try again.' , 'smart-search-control' ),
                 'type' => 'error'
             ];
             
@@ -291,9 +292,9 @@ class WP_Search_Admin_Settings {
     }
 
     /**
-     * Delete WP Search Setting
+     * Delete Search Setting
      */
-    public function wp_search_setting_delete() {
+    public function smart_search_control_setting_delete() {
         
         global $wpdb;
 
@@ -302,19 +303,19 @@ class WP_Search_Admin_Settings {
         }
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'wp-search' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
 
         $table_name = $wpdb->prefix . 'search_parameters';
 
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'wp_search_setting_nonce_delete' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'wp-search' ) ] );
+        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_delete' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
 
         $id = isset( $_POST[ 'id' ] ) ? intval( $_POST[ 'id' ] ) : 0;
 
         if ( $id === 0 ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'wp-search' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'smart-search-control' ) ] );
         }
 
         $result = $wpdb->delete( $table_name, [ 'id' => $id ], [ '%d' ] );
@@ -322,7 +323,7 @@ class WP_Search_Admin_Settings {
         if ( $result ) {
 
             $notice = [
-                'message' => __( 'Search setting deleted successfully!' , 'wp-search' ),
+                'message' => __( 'Search setting deleted successfully!' , 'smart-search-control' ),
                 'type' => 'success'
             ];
 
@@ -331,7 +332,7 @@ class WP_Search_Admin_Settings {
         } else {
 
             $notice = [
-                'message' => __( 'Failed to delete search setting. Please try again.' , 'wp-search' ),
+                'message' => __( 'Failed to delete search setting. Please try again.' , 'smart-search-control' ),
                 'type' => 'error'
             ];
 
@@ -345,17 +346,17 @@ class WP_Search_Admin_Settings {
     public function create_database_table() {
 
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'create_database_table_nonce' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'wp-search' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
     
-        $database_file = WP_SEARCH_INCLUDES_DIR . 'wp-search-database.php';
+        $database_file = SMART_SEARCH_CONTROL_INCLUDES_DIR . 'smart-search-control-database.php';
     
         if ( file_exists( $database_file ) ) {
 
             require_once $database_file;
 
             $notice = [
-                'message' => __( 'Table for WP Search created successfully!' , 'wp-search' ),
+                'message' => __( 'Table for Smart Search Control created successfully!' , 'smart-search-control' ),
                 'type' => 'success'
             ];
 
@@ -363,7 +364,7 @@ class WP_Search_Admin_Settings {
         } else { 
 
             $notice = [
-                'message' => __( 'Database file not found!' , 'wp-search' ),
+                'message' => __( 'Database file not found!' , 'smart-search-control' ),
                 'type' => 'error'
             ];
 
@@ -372,4 +373,4 @@ class WP_Search_Admin_Settings {
     }
 }
     
-WP_Search_Admin_Settings::instance();
+Smart_Search_Control_Admin_Settings::instance();
