@@ -17,6 +17,7 @@
                 this.handleSearchFormSubmit();
                 this.handleSuggestionNavigation();
                 this.handleSeeMore();
+                this.pagination();
             },
 
             /**
@@ -171,10 +172,12 @@
              */
             handleSuggestionNavigation: function () {
 
-                $( '.search-query' ).on( 'keydown', function ( e ) {
+                    $( document ).on( 'keydown', '.ssc-default-search-input', function ( e ) {
 
                     let searchSuggestions = $( this ).closest( '.parent-container' ).find( '.search-suggestions' );
                     let items = searchSuggestions.find( '.suggestion-item' );
+
+                    
 
                     if ( items.length === 0 ) return;
 
@@ -206,10 +209,55 @@
 
                     let parentContainer = $( this ).closest( '.parent-container' );
 
-                    parentContainer.find( '.wp-search-form' ).submit();
+                    parentContainer.find( '.ssc-search-form' ).submit();
 
                 });
 
+            },
+
+            /**
+             * Handle the Search with Pagination
+             */
+            pagination: function() {
+
+                $( '.ssc-search-form' ).on( 'submit', function( e ) {
+
+                    e.preventDefault();
+
+                    var url = $( this ).attr( 'action' );
+                    var searchVal = $( this ).find( 'input[name="s"]' ).val().trim();
+                    var post_type = $( this ).find( 'input[name="post_type"]' ).val();
+                    var css_id = $( this ).find( 'input[name="css_id"]' ).val();
+                    var css_class = $( this ).find( 'input[name="css_class"]' ).val();
+                    var place_holder = $( this ).find( 'input[name="place_holder"]' ).val();
+
+                    if ( searchVal !== '' ) {
+
+                        SearchForm.clearCookie( 'search_post_type' );
+                        SearchForm.clearCookie( 'search_css_id' );
+                        SearchForm.clearCookie( 'search_css_class' );
+                        SearchForm.clearCookie( 'search_place_holder' );
+
+                        var expirationDate = new Date();
+                        expirationDate.setTime( expirationDate.getTime() + ( 60 * 60 * 1000 ) );
+
+                        document.cookie = `search_post_type=${ encodeURIComponent( post_type ) }; expires=${ expirationDate.toUTCString() }; path=/`;
+                        document.cookie = `search_css_id=${ encodeURIComponent( css_id ) }; expires=${ expirationDate.toUTCString() }; path=/`;
+                        document.cookie = `search_css_class=${ encodeURIComponent( css_class ) }; expires=${ expirationDate.toUTCString() }; path=/`;
+                        document.cookie = `search_place_holder=${ encodeURIComponent( place_holder ) }; expires=${ expirationDate.toUTCString() }; path=/`;
+                        
+                        var newUrl = url + '?s=' + encodeURIComponent(  searchVal );
+                        
+                        window.location.href = newUrl;
+                    }
+                });
+            },
+
+            /**
+             * Function to clear the cookies
+             */
+            clearCookie: function ( name ) {
+                document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
             }
             
         };

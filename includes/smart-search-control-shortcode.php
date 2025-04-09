@@ -40,7 +40,7 @@ class Smart_Search_Control {
         add_action( 'wp_ajax_nopriv_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
         add_shortcode( 'smart_search_control', [ $this, 'render_search_shortcode' ] );
         add_action( 'pre_get_posts', [ $this, 'smart_search_control_custom_search_query' ] );
-        add_filter( 'register_block_type_args',  [ $this, 'modify_result_search_block' ], 10, 2 );
+        add_filter( 'render_block',  [ $this, 'modify_result_search_block' ], 10, 2 );
         add_filter( 'render_block', [ $this , 'customize_post_template_output' ], 11, 2 );
         add_filter( 'render_block', [ $this , 'customize_pagination_block' ], 12, 2 );
     
@@ -94,7 +94,10 @@ class Smart_Search_Control {
         $query = "SELECT id, data FROM $table_name WHERE id = %d";
         $result = $wpdb->get_row( $wpdb->prepare( $query, $sanitized_atts[ 'id' ] ) );
     
-        $data = json_decode( $result->data );
+        if ( !empty( $result ) ) {
+            $stored_data = isset( $result->data ) ? $result->data : '';
+            $data = json_decode( $stored_data );
+        }
     
         $class = isset( $data->class ) ? $data->class : $sanitized_atts[ 'css_class' ];
         $css_id = isset( $data->css_id ) ? $data->css_id : $sanitized_atts[ 'css_id' ];
@@ -113,23 +116,25 @@ class Smart_Search_Control {
     /**
      * Modify the core search block to use our custom search form
      */
-    public function modify_result_search_block( $args, $name ) {
+    public function modify_result_search_block( $block_content, $block ) {
 
-        if ( $name === 'core/search' ) {
-            $args['render_callback'] = [ $this , 'short_code_search'];
+        if ( is_search() && $block['blockName'] === 'core/search' ) {
+            return $this->short_code_search();
         }
-        return $args;
+        return $block_content;
     }
-    
+
+    /**
+     * Render the search shortcode
+     */    
     public function short_code_search() {
-    
-        // Capture POST values and sanitize
-        $css_id = isset( $_POST['css_id'] ) ? sanitize_text_field( $_POST['css_id'] ) : '';
-        $class = isset( $_POST['css_class'] ) ? sanitize_text_field( $_POST['css_class'] ) : '';
-        $placeholder = isset( $_POST['place_holder'] ) ? sanitize_text_field( $_POST['place_holder'] ) : '';
-        $posts_types = isset( $_POST['post_type'] ) ? ( is_array( $_POST['post_type'] ) ? $_POST['post_type'] : explode( ',', $_POST['post_type'] ) ) : [];
+
+        $css_id = isset( $_COOKIE['search_css_id'] ) ? sanitize_text_field( $_COOKIE['search_css_id'] ) : '';
+        $class = isset( $_COOKIE['search_css_class'] ) ? sanitize_text_field( $_COOKIE['search_css_class'] ) : '';
+        $placeholder = isset( $_COOKIE['search_place_holder'] ) ? sanitize_text_field( $_COOKIE['search_place_holder'] ) : '';
+        $posts_types = isset( $_COOKIE['search_post_type'] ) ? ( is_array( $_COOKIE['search_post_type'] ) ? $_COOKIE['search_post_type'] : explode( ',', $_COOKIE['search_post_type'] ) ) : [];
         $posts_types = array_map( 'trim', $posts_types );
-        
+
         return $this->render_search_shortcode( [
             'css_id' => $css_id,
             'css_class' => $class,
@@ -137,7 +142,7 @@ class Smart_Search_Control {
             'post_type' => $posts_types,
         ]);
     }
-
+    
     /**
      * Summary of search_suggestion
      */
@@ -215,13 +220,13 @@ class Smart_Search_Control {
 
         if ( !is_admin() && $query->is_main_query() && $query->is_search() ) {
 
-            if ( !isset( $_POST[ 'post_type' ] ) || empty( $_POST[ 'post_type' ] ) ) {
+            if ( !isset( $_COOKIE['search_post_type'] ) || empty( $_COOKIE['search_post_type'] ) ) {
 
                 $query->set( 'post_type', array( 'post' ) ); 
                 return;
             }
-
-            $post_types = array_map( 'trim', explode( ',', sanitize_text_field( $_POST[ 'post_type' ] ) ) );
+            
+            $post_types = array_map( 'trim', explode( ',', sanitize_text_field( $_COOKIE['search_post_type'] ) ) );
 
             if ( in_array( 'product', $post_types ) && !in_array( 'product_variation', $post_types ) ) {
                 $post_types[] = 'product_variation';
@@ -229,12 +234,17 @@ class Smart_Search_Control {
 
             $query->set( 'post_type', $post_types );
 
-            $query->set( 'posts_per_page', 3 );
+            if ( isset( $_POST['paged'] ) ) {
+                
+                $query->set( 'paged', intval( $_POST['paged'] ) );
+            }
+            
+            $query->set( 'posts_per_page', 3 ); 
         }
     }
 
     /**
-     * Summary of modify_result_search_block
+     * Summary of modify_result_block
      */
     public function customize_post_template_output( $block_content, $block ) {
 
@@ -251,8 +261,16 @@ class Smart_Search_Control {
                     ?>
                         <div class="search-result-item">
                             <div class="search-featured-image">
+                            
                                 <a href="<?php the_permalink(); ?>">
-                                    <?php the_post_thumbnail( 'medium' ); ?>
+
+                                    <?php if( has_post_thumbnail()  ){
+                                        the_post_thumbnail( 'medium' ); 
+                                    }else{?>
+                                        <img src="<?php echo SMART_SEARCH_CONTROL_ASSETS_URL . 'default-img/no-feature-image.jpg' ?>" alt=" <?php echo esc_attr( get_the_title() ) ?> "/>
+                                    <?php }
+                                    ?>
+                                        
                                 </a>
                             </div>
                             
@@ -263,7 +281,7 @@ class Smart_Search_Control {
                             </h2>
                             
                             <div class="search-excerpt">
-                                <?php the_excerpt(); ?>
+                                <?php echo wp_trim_words( get_the_excerpt(), 25, '...' ); ?>
                             </div>
                         </div>
 
