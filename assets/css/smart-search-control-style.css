@@ -81,6 +81,31 @@
     background: white;
     border: 1px solid #ddd;
     border-top: none;
+    display: none;
+    z-index: 1000;
+    position: relative;
+}
+
+.search-suggestions ul,
+.search-suggestions .no-results {
+    list-style: none;
+    position: absolute;
+    padding: 0;
+    margin: 0;
+    font-weight: 700;
+    font-size: 16px;
+    background: #fff;
+    width: 100%;
+    border: 1px solid #e4e4e4;
+    border-radius: 5px;
+}
+
+.search-suggestions {
+    width: 100% ;
+    min-width: 250px;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
     border-radius: 5px ; 
     display: none;
     z-index: 1000;
@@ -132,7 +157,6 @@
     color: inherit;
     text-decoration: none;
 }
-
 /* 
  * Search result item
 */

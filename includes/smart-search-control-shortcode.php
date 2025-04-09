@@ -123,17 +123,18 @@ class Smart_Search_Control {
         }
         return $block_content;
     }
-    
-    
+
+    /**
+     * Render the search shortcode
+     */    
     public function short_code_search() {
-    
-        // Capture POST values and sanitize
-        $css_id = isset( $_POST['css_id'] ) ? sanitize_text_field( $_POST['css_id'] ) : '';
-        $class = isset( $_POST['css_class'] ) ? sanitize_text_field( $_POST['css_class'] ) : '';
-        $placeholder = isset( $_POST['place_holder'] ) ? sanitize_text_field( $_POST['place_holder'] ) : '';
-        $posts_types = isset( $_POST['post_type'] ) ? ( is_array( $_POST['post_type'] ) ? $_POST['post_type'] : explode( ',', $_POST['post_type'] ) ) : [];
+
+        $css_id = isset( $_COOKIE['search_css_id'] ) ? sanitize_text_field( $_COOKIE['search_css_id'] ) : '';
+        $class = isset( $_COOKIE['search_css_class'] ) ? sanitize_text_field( $_COOKIE['search_css_class'] ) : '';
+        $placeholder = isset( $_COOKIE['search_place_holder'] ) ? sanitize_text_field( $_COOKIE['search_place_holder'] ) : '';
+        $posts_types = isset( $_COOKIE['search_post_type'] ) ? ( is_array( $_COOKIE['search_post_type'] ) ? $_COOKIE['search_post_type'] : explode( ',', $_COOKIE['search_post_type'] ) ) : [];
         $posts_types = array_map( 'trim', $posts_types );
-        
+
         return $this->render_search_shortcode( [
             'css_id' => $css_id,
             'css_class' => $class,
@@ -141,7 +142,7 @@ class Smart_Search_Control {
             'post_type' => $posts_types,
         ]);
     }
-
+    
     /**
      * Summary of search_suggestion
      */
@@ -219,13 +220,13 @@ class Smart_Search_Control {
 
         if ( !is_admin() && $query->is_main_query() && $query->is_search() ) {
 
-            if ( !isset( $_POST[ 'post_type' ] ) || empty( $_POST[ 'post_type' ] ) ) {
+            if ( !isset( $_COOKIE['search_post_type'] ) || empty( $_COOKIE['search_post_type'] ) ) {
 
                 $query->set( 'post_type', array( 'post' ) ); 
                 return;
             }
-
-            $post_types = array_map( 'trim', explode( ',', sanitize_text_field( $_POST[ 'post_type' ] ) ) );
+            
+            $post_types = array_map( 'trim', explode( ',', sanitize_text_field( $_COOKIE['search_post_type'] ) ) );
 
             if ( in_array( 'product', $post_types ) && !in_array( 'product_variation', $post_types ) ) {
                 $post_types[] = 'product_variation';
@@ -234,9 +235,10 @@ class Smart_Search_Control {
             $query->set( 'post_type', $post_types );
 
             if ( isset( $_POST['paged'] ) ) {
+                
                 $query->set( 'paged', intval( $_POST['paged'] ) );
             }
-
+            
             $query->set( 'posts_per_page', 3 ); 
         }
     }
