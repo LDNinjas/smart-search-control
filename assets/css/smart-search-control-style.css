@@ -41,9 +41,13 @@
 }
 
 .ssc-default-search-btn{
+    color: #fff ;
+    display: flex;
+    justify-content: center;
     width: 45px ;
     border: none;
     height: 100%;
+    text-decoration: none;
     background-color: #ccc;
 }
 
@@ -161,6 +165,15 @@
  * Search result item
 */
 
+.smart-search-control-result-header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.smart-search-control-result-header .result-header{
+    width: 50%;
+}
+
 .custom-search-results {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -214,39 +227,41 @@
 }
 
 /* 
- * Pagination
+ *Pagination Styling
 */
-.ssc-pagination-class {
+.pagination {
     display: flex;
     justify-content: center;
-    align-items: center;
-    margin-top: 1rem;
-    gap: 1rem;
+    margin-top: 20px;
 }
 
-.ssc-pagination-class .page-numbers , .ssc-pagination-class a {
-    display: inline-block;
-    padding: 8px 12px;
-    background: #fff;
+.pagination a, .pagination span {
+    padding: 8px 14px;
+    margin: 0 3px;
+    background-color: #fff;
     color: #2271b1;
     font-weight: 600;
+    font-size: 14px;
     border-radius: 50px;
     text-decoration: none;
     transition: 0.3s;
 }
 
-.ssc-pagination-class .page-numbers:hover {
-    background: #2271b1;
+.pagination a:hover {
+    background-color: #2271b1;
     color: #fff;
 }
 
-.ssc-pagination-class .page-numbers.current {
+.pagination .current {
     background-color: #2271b1;
     color: #fff;
-    font-weight: bold;
-    pointer-events: none;
-    cursor: default;
 }
+
+.pagination .disabled {
+    background-color: #eaeaea;
+    color: #ccc;
+}
+
 
 /* 
  *Responsive  
