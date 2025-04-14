@@ -64,13 +64,13 @@ $query = new WP_Query( $args );
     } else {
         ?>
 
-            <div class="smart-search-control-result-header">
-                <h2 class="result-header"><?php echo __( 'No Result Found ', 'smart-search-control' ); ?></h2>
+            </div>
+            <div class="smart-search-control-no-result">
+                <h2><?php echo __( 'No Result Found ', 'smart-search-control' ); ?></h2>
             </div>
         
     <?php }
     ?>
-</div>
 
 <!-- Pagination -->
 <?php
@@ -87,7 +87,7 @@ if ( $query->max_num_pages > 1 ) {
         ] );
         ?>
     </div>
-    
+
     <?php
 }
 

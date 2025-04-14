@@ -171,28 +171,29 @@
              */
             handleSuggestionNavigation: function () {
 
-                    $( document ).on( 'keydown', '.ssc-default-search-input', function ( e ) {
+                $( document ).on( 'keydown', '.ssc-default-search-input', function ( e ) {
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
 
-                    let searchSuggestions = $( this ).closest( '.parent-container' ).find( '.search-suggestions' );
-                    let items = searchSuggestions.find( '.suggestion-item' );
+                        let searchSuggestions = $( this ).closest( '.parent-container' ).find( '.search-suggestions' );
+                        let items = searchSuggestions.find( '.suggestion-item' );
 
-                    if ( items.length === 0 ) return;
+                        if ( items.length === 0 ) return;
 
-                    if ( e.key === 'ArrowDown' ) {
+                        if ( e.key === 'ArrowDown' ) {
 
-                        e.preventDefault();
-                        SearchForm.selectedIndex = ( SearchForm.selectedIndex + 1 ) % items.length;
+                            e.preventDefault();
+                            SearchForm.selectedIndex = ( SearchForm.selectedIndex + 1 ) % items.length;
 
-                    } else if ( e.key === 'ArrowUp' ) {
+                        } else if ( e.key === 'ArrowUp' ) {
 
-                        e.preventDefault();
-                        SearchForm.selectedIndex = ( SearchForm.selectedIndex - 1 + items.length ) % items.length;
-                    } 
+                            e.preventDefault();
+                            SearchForm.selectedIndex = ( SearchForm.selectedIndex - 1 + items.length ) % items.length;
+                        } 
 
-                    items.removeClass( 'highlighted' );
-                    items.eq( SearchForm.selectedIndex ).addClass( 'highlighted' );
-                    $( '.ssc-default-search-input' ).val( items.eq( SearchForm.selectedIndex ).text() );
-
+                        items.removeClass( 'highlighted' );
+                        items.eq( SearchForm.selectedIndex ).addClass( 'highlighted' );
+                        $( '.ssc-default-search-input' ).val( items.eq( SearchForm.selectedIndex ).text() );
+                    }
                 });
 
             },

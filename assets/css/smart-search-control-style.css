@@ -226,6 +226,18 @@
     line-height: 1.5;
 }
 
+.smart-search-control-no-result{
+    margin-top: 0;
+    display: flex;
+    justify-content: center;
+
+}
+
+.smart-search-control-no-result h2{
+    margin: 0;
+}
+
+
 /* 
  *Pagination Styling
 */

@@ -46,8 +46,8 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
                 </tr>
             </thead>
             <tbody>
-                <?php if ( $search_entries ): ?>
-                    <?php foreach ( $search_entries as $entry ): 
+                <?php if ( $search_entries ){ ?>
+                    <?php foreach ( $search_entries as $entry ){
                     
                         $data = json_decode( $entry->data ); ?>
                         
@@ -63,12 +63,15 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
                                 <a href="#" class="button delete-setting" data-id="<?php echo $entry->id; ?>"><?php echo __( 'Delete' , 'smart-search-control'); ?></a>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
+                    <?php
+                    } 
+                    
+                }
+                else { ?>
                     <tr>
                         <td colspan="5" class="no-search-parm"><?php echo __( 'No search parameters found.', 'smart-search-control' ); ?></td>
                     </tr>
-                <?php endif; ?>
+                <?php } ?>
             </tbody>
         <tfoot>
                 <tr>
@@ -92,7 +95,7 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
 
                 $prev_page = max( 1, $page - 1 );
                 $next_page = min( $total_pages, $page + 1 );
-            ?>
+                ?>
 
                 <!-- Previous Button -->
                 <?php if ( $page > 1 ) { ?>
@@ -113,7 +116,6 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
                 <?php if ( $page < $total_pages ) { ?>
                     <a class="next page-numbers" href="<?php echo admin_url( 'admin.php?page=smart_search_control&paged=' . $next_page ); ?>"><?php echo __( 'Next »' , 'smart-search-control' ); ?></a>
                 <?php } ?>
-
             <?php } ?>
 
         </div>
@@ -181,10 +183,12 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
                     </div>
                     <div class="post-type-options">
                         <?php foreach ( $post_types as $key => $post_type ): ?>
+
                             <label class="checkbox-label">
                                 <input type="checkbox" name="post_type[]" value="<?php echo esc_attr( $key ); ?>" class="custom-checkbox">
                                 <?php echo esc_html( $post_type->label ); ?>
                             </label>
+
                         <?php endforeach; ?>
                     </div>
                 </div>

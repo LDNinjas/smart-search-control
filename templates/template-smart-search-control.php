@@ -18,7 +18,7 @@ $url = '';
 
 if ( ! empty( $pages ) ) {
     
-    $url = get_permalink( $pages[0]->ID );
+    $url = get_permalink( $pages[ 0 ]->ID );
 } else {
 
     $fallback_page_id = get_option( 'smart_search_control_result_page' );
