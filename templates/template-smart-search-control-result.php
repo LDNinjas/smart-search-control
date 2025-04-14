@@ -21,7 +21,7 @@ $query = new WP_Query( $args );
     </div>
 </div>
 
-<div class="custom-search-results">
+    <div class="custom-search-results">
 
     <?php
 
@@ -59,12 +59,13 @@ $query = new WP_Query( $args );
                 </div>
             </div>
             <?php
-        }
-
-    } else {
+        
+    }
+    echo'</div>';
+    } 
+    else {
         ?>
 
-            </div>
             <div class="smart-search-control-no-result">
                 <h2><?php echo __( 'No Result Found ', 'smart-search-control' ); ?></h2>
             </div>
