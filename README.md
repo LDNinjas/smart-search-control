@@ -1,4 +1,4 @@
-**WP-Search Plugin Documentation**
+**Smart Search Control Plugin Documentation**
 
 **Shortcode Usage**
 
@@ -6,7 +6,7 @@ Insert the shortcode into any page or post to display the search bar.
 
 **Basic Shortcode**
 
-[wp_search_bar]
+[smart_search_control]
 
 This shortcode will display a search bar with an "Advanced Filters" button.
 
@@ -16,15 +16,15 @@ Customize the search bar using the following shortcode attributes:
 
 **Placeholder TextSet a custom placeholder in the search bar:**
 
-[wp_search_bar placeholder="Custom Placeholder"]
+[smart_search_control]
 
 **Custom CSS ClassesAdd your own CSS classes to style the search bar:**
 
-[wp_search_bar class="custom-class"]
+[smart_search_control class="custom-class"]
 
 **Post Type FilteringRestrict the search to specific post types (e.g., pages):**
 
-[wp_search_bar type="page"]
+[smart_search_control type="page"]
 
 **Advanced Filters**
 
@@ -46,7 +46,7 @@ A message box will appear if the user attempts to search with an empty search ba
 
 **Basic Search Bar with Custom Placeholder:**
 
-[wp_search_bar placeholder="Search for articles..."]
+[smart_search_control placeholder="Search for articles..."]
 
 **Search Bar with Custom Class and Post Type Restriction:**
 
