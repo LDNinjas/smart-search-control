@@ -58,11 +58,13 @@ class LD_Smart_Search_Control {
     private function includes_files() {
 
         if ( is_admin() ) {
-            require_once SMART_SEARCH_CONTROL_INCLUDES_DIR . 'smart-search-control-admin-menu.php';
+            require_once SMART_SEARCH_CONTROL_INCLUDES_DIR . 'admin/smart-search-control-admin-menu.php';
+            require_once SMART_SEARCH_CONTROL_INCLUDES_DIR . 'admin/smart-search-control-admin-submenu-setting.php';
         }
 
         if( !is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ){
             require_once SMART_SEARCH_CONTROL_INCLUDES_DIR . 'smart-search-control-shortcode.php';
+            require_once SMART_SEARCH_CONTROL_INCLUDES_DIR . 'smart-search-control-result-shortcode.php';
         }
 
     }
@@ -82,10 +84,12 @@ class LD_Smart_Search_Control {
      */
     public function smart_search_control_setting_links( $links ) {
 
-        $settings_link = '<a href="' . admin_url( 'admin.php?page=smart_search_control_settings' ) . '">' . __( 'Settings', 'smart-search-control' ) . '</a>';
-        array_unshift( $links, $settings_link );
-        return $links;
-    }
+        $main_link = '<a href="' . admin_url( 'admin.php?page=smart_search_control' ) . '">' . __( 'Main Page', 'smart-search-control' ) . '</a>';
+        array_unshift( $links, $main_link );
+
+        $setting_link = '<a href="' . admin_url( 'admin.php?page='.$main_link.'_settings' ) . '">' . __( 'Settings', 'smart-search-control' ) . '</a>';
+        array_unshift( $links, $setting_link );
+    }   
 
     /**
      * plugin_activate cretae database table

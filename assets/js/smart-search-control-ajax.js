@@ -17,7 +17,6 @@
                 this.handleSearchFormSubmit();
                 this.handleSuggestionNavigation();
                 this.handleSeeMore();
-                this.pagination();
             },
 
             /**
@@ -103,7 +102,7 @@
 
                 if ( !searchQuery ) return;
 
-                let postTypes = parentContainer.find(  'input[ name="post_type" ]' ).val() ;
+                let ssc_id = parentContainer.find(  'input[ name="smartsearch" ]' ).val() ;
 
                 if ( SearchForm.ajaxRequest ) {
 
@@ -118,7 +117,7 @@
                         action: 'smart_search_control_suggestion',
                         nonce: SMART_SEARCH_CONTROL.nonce,
                         search_query: searchQuery,
-                        post_types: postTypes,
+                        ssc_id: ssc_id,
                     },
 
                     beforeSend: function () {
@@ -172,28 +171,29 @@
              */
             handleSuggestionNavigation: function () {
 
-                    $( document ).on( 'keydown', '.ssc-default-search-input', function ( e ) {
+                $( document ).on( 'keydown', '.ssc-default-search-input', function ( e ) {
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
 
-                    let searchSuggestions = $( this ).closest( '.parent-container' ).find( '.search-suggestions' );
-                    let items = searchSuggestions.find( '.suggestion-item' );
+                        let searchSuggestions = $( this ).closest( '.parent-container' ).find( '.search-suggestions' );
+                        let items = searchSuggestions.find( '.suggestion-item' );
 
-                    
+                        if ( items.length === 0 ) return;
 
-                    if ( items.length === 0 ) return;
+                        if ( e.key === 'ArrowDown' ) {
 
-                    if ( e.key === 'ArrowDown' ) {
+                            e.preventDefault();
+                            SearchForm.selectedIndex = ( SearchForm.selectedIndex + 1 ) % items.length;
 
-                        e.preventDefault();
-                        SearchForm.selectedIndex = ( SearchForm.selectedIndex + 1 ) % items.length;
+                        } else if ( e.key === 'ArrowUp' ) {
 
-                    } else if ( e.key === 'ArrowUp' ) {
+                            e.preventDefault();
+                            SearchForm.selectedIndex = ( SearchForm.selectedIndex - 1 + items.length ) % items.length;
+                        } 
 
-                        e.preventDefault();
-                        SearchForm.selectedIndex = ( SearchForm.selectedIndex - 1 + items.length ) % items.length;
-                    } 
-
-                    items.removeClass( 'highlighted' );
-
+                        items.removeClass( 'highlighted' );
+                        items.eq( SearchForm.selectedIndex ).addClass( 'highlighted' );
+                        $( '.ssc-default-search-input' ).val( items.eq( SearchForm.selectedIndex ).text() );
+                    }
                 });
 
             },
@@ -212,52 +212,6 @@
                     parentContainer.find( '.ssc-search-form' ).submit();
 
                 });
-
-            },
-
-            /**
-             * Handle the Search with Pagination
-             */
-            pagination: function() {
-
-                $( '.ssc-search-form' ).on( 'submit', function( e ) {
-
-                    e.preventDefault();
-
-                    var url = $( this ).attr( 'action' );
-                    var searchVal = $( this ).find( 'input[name="s"]' ).val().trim();
-                    var post_type = $( this ).find( 'input[name="post_type"]' ).val();
-                    var css_id = $( this ).find( 'input[name="css_id"]' ).val();
-                    var css_class = $( this ).find( 'input[name="css_class"]' ).val();
-                    var place_holder = $( this ).find( 'input[name="place_holder"]' ).val();
-
-                    if ( searchVal !== '' ) {
-
-                        SearchForm.clearCookie( 'search_post_type' );
-                        SearchForm.clearCookie( 'search_css_id' );
-                        SearchForm.clearCookie( 'search_css_class' );
-                        SearchForm.clearCookie( 'search_place_holder' );
-
-                        var expirationDate = new Date();
-                        expirationDate.setTime( expirationDate.getTime() + ( 60 * 60 * 1000 ) );
-
-                        document.cookie = `search_post_type=${ encodeURIComponent( post_type ) }; expires=${ expirationDate.toUTCString() }; path=/`;
-                        document.cookie = `search_css_id=${ encodeURIComponent( css_id ) }; expires=${ expirationDate.toUTCString() }; path=/`;
-                        document.cookie = `search_css_class=${ encodeURIComponent( css_class ) }; expires=${ expirationDate.toUTCString() }; path=/`;
-                        document.cookie = `search_place_holder=${ encodeURIComponent( place_holder ) }; expires=${ expirationDate.toUTCString() }; path=/`;
-                        
-                        var newUrl = url + '?s=' + encodeURIComponent(  searchVal );
-                        
-                        window.location.href = newUrl;
-                    }
-                });
-            },
-
-            /**
-             * Function to clear the cookies
-             */
-            clearCookie: function ( name ) {
-                document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
             }
             
         };

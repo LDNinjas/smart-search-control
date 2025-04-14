@@ -1,13 +1,14 @@
 <?php
+
 if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
 
 global $wpdb;
-$table_name = $wpdb->prefix . 'search_parameters';
+$table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
-$items_per_page = 12;
-$page = isset( $_GET['paged'] ) ? absint( $_GET['paged']) : 1;
+$items_per_page = 2;
+$page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 1;
 $offset = ( $page - 1 ) * $items_per_page;
 
 $total_items = $wpdb->get_var( "SELECT COUNT( * ) FROM $table_name" );
@@ -15,17 +16,21 @@ $total_pages = ceil( $total_items / $items_per_page );
 
 $search_entries = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM $table_name LIMIT %d OFFSET %d", $items_per_page, $offset ) );
 
-$post_types = get_post_types( ['public' => true], 'objects' );
+$post_types = get_post_types( [ 'public' => true ], 'objects' );
 
 $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notice();
+
 ?>
 
 <div class="wrap">
     <?php echo  $admin_notice ?>
+
     <div class="page-header">
     <p class="page-title"><?php echo __( 'Smart Search Control' , 'smart-search-control' ); ?></p>
     <a href="#" id="openModal" class="new-rec-btn"><?php echo __( 'Add New Search', 'smart-search-control' ); ?></a>
+
 </div>
+
     <p><?php echo __( 'Customize the search bar settings to enhance your website’s search functionality.', 'smart-search-control' ); ?></p>
 
     <?php if ( empty( $admin_notice ) ){ ?>
@@ -41,8 +46,8 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
                 </tr>
             </thead>
             <tbody>
-                <?php if ( $search_entries ): ?>
-                    <?php foreach ( $search_entries as $entry ): 
+                <?php if ( $search_entries ){ ?>
+                    <?php foreach ( $search_entries as $entry ){
                     
                         $data = json_decode( $entry->data ); ?>
                         
@@ -52,18 +57,21 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
                             </strong>
                             <td><?php echo esc_html( $data->place_holder ); ?></td>
                             <td><?php echo esc_html( $data->css_id ); ?></td>
-                            <td><?php echo esc_html( implode(', ', explode( ' ', $data->class ) ) ); ?></td>
+                            <td><?php echo esc_html( implode( ', ', explode( ' ', $data->class ) ) ); ?></td>
                             <td>
                                 <a href="#" data-entry='<?= json_encode( $entry ?: new stdClass() ); ?>' class="button edit-setting"><?php echo __( 'Edit' , 'smart-search-control' ); ?></a>
                                 <a href="#" class="button delete-setting" data-id="<?php echo $entry->id; ?>"><?php echo __( 'Delete' , 'smart-search-control'); ?></a>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
+                    <?php
+                    } 
+                    
+                }
+                else { ?>
                     <tr>
                         <td colspan="5" class="no-search-parm"><?php echo __( 'No search parameters found.', 'smart-search-control' ); ?></td>
                     </tr>
-                <?php endif; ?>
+                <?php } ?>
             </tbody>
         <tfoot>
                 <tr>
@@ -87,18 +95,18 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
 
                 $prev_page = max( 1, $page - 1 );
                 $next_page = min( $total_pages, $page + 1 );
-            ?>
+                ?>
 
                 <!-- Previous Button -->
                 <?php if ( $page > 1 ) { ?>
-                    <a class="prev page-numbers" href="<?php echo admin_url( 'admin.php?page=smart_search_control_settings&paged=' . $prev_page ); ?>"><?php echo __( '« Prev' , 'smart-search-control' ); ?></a>
+                    <a class="prev page-numbers" href="<?php echo admin_url( 'admin.php?page=smart_search_control&paged=' . $prev_page ); ?>"><?php echo __( '« Prev' , 'smart-search-control' ); ?></a>
                 <?php } ?>
 
                 <!-- Numbered Pagination -->
                 <?php for ( $i = 1; $i <= $total_pages; $i++ ) { ?>
 
                     <a class="page-numbers <?php echo ( $i == $page ) ? 'current' : ''; ?>" 
-                    href="<?php echo admin_url( 'admin.php?page=smart_search_control_settings&paged=' . $i ); ?>">
+                    href="<?php echo admin_url( 'admin.php?page=smart_search_control&paged=' . $i ); ?>">
                     <?php echo $i; ?>
                     </a>
 
@@ -106,9 +114,8 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
 
                 <!-- Next Button -->
                 <?php if ( $page < $total_pages ) { ?>
-                    <a class="next page-numbers" href="<?php echo admin_url( 'admin.php?page=smart_search_control_settings&paged=' . $next_page ); ?>"><?php echo __( 'Next »' , 'smart-search-control' ); ?></a>
+                    <a class="next page-numbers" href="<?php echo admin_url( 'admin.php?page=smart_search_control&paged=' . $next_page ); ?>"><?php echo __( 'Next »' , 'smart-search-control' ); ?></a>
                 <?php } ?>
-
             <?php } ?>
 
         </div>
@@ -144,7 +151,7 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
 
                 <div class="form-group">
                     <label for="place_holder"><?php echo __( 'Placeholder' , 'smart-search-control' ); ?></label>
-                    <input type="text" id="place_holder" name="place_holder">
+                    <input type="text" id="place_holder" name="place_holder" placeholder="<?php echo __( 'Search...' , 'smart-search-control' ); ?>" value="<?php echo $place_holder; ?>">
                     <span class="inputs-desc"><?= __( 'This text will appear inside the search field as a hint before the user types.' , 'smart-search-control' ); ?></span>
                 </div>
 
@@ -176,10 +183,12 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
                     </div>
                     <div class="post-type-options">
                         <?php foreach ( $post_types as $key => $post_type ): ?>
+
                             <label class="checkbox-label">
                                 <input type="checkbox" name="post_type[]" value="<?php echo esc_attr( $key ); ?>" class="custom-checkbox">
                                 <?php echo esc_html( $post_type->label ); ?>
                             </label>
+
                         <?php endforeach; ?>
                     </div>
                 </div>

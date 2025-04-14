@@ -26,10 +26,10 @@ class Smart_Search_Control_Database {
     /**
      * Creates the search parameters database table if it doesn't exist.
      */
-    private function create_database_table() {
+    public function create_database_table() {
 
         global $wpdb;
-        $table_name = $wpdb->prefix . 'search_parameters';
+        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
         if ( $this->table_exists( $table_name ) ) {
             return;

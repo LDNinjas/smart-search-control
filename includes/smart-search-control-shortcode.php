@@ -39,10 +39,6 @@ class Smart_Search_Control {
         add_action( 'wp_ajax_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
         add_action( 'wp_ajax_nopriv_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
         add_shortcode( 'smart_search_control', [ $this, 'render_search_shortcode' ] );
-        add_action( 'pre_get_posts', [ $this, 'smart_search_control_custom_search_query' ] );
-        add_filter( 'render_block',  [ $this, 'modify_result_search_block' ], 10, 2 );
-        add_filter( 'render_block', [ $this , 'customize_post_template_output' ], 11, 2 );
-        add_filter( 'render_block', [ $this , 'customize_pagination_block' ], 12, 2 );
     
     }
 
@@ -78,75 +74,69 @@ class Smart_Search_Control {
     
         $sanitized_atts = shortcode_atts(
             [
-                'id' => '',
-                'css_id' => '',
-                'css_class' => '',
+                'id'           => '',
+                'css_id'       => '',
+                'css_class'    => '',
                 'place_holder' => '',
-                'post_type' => [],
+                'post_type'    => [],
             ],
             $atts,
             'smart_search_control'
         );
     
-        $posts_types = array_map( 'trim', $sanitized_atts['post_type'] );
+        $ssc_id = intval( $sanitized_atts['id'] );
     
-        $table_name = $wpdb->prefix . 'search_parameters';
-        $query = "SELECT id, data FROM $table_name WHERE id = %d";
-        $result = $wpdb->get_row( $wpdb->prepare( $query, $sanitized_atts[ 'id' ] ) );
+        $all_public_post_types = get_post_types( [ 'public' => true ], 'names' );
+
+        $posts_types = $all_public_post_types;
     
-        if ( !empty( $result ) ) {
-            $stored_data = isset( $result->data ) ? $result->data : '';
-            $data = json_decode( $stored_data );
+        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+        $query      = "SELECT data FROM $table_name WHERE id = %d";
+        $result     = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
+    
+        $class       = $sanitized_atts[ 'css_class' ];
+        $css_id      = $sanitized_atts[ 'css_id' ];
+        $placeholder = $sanitized_atts[ 'place_holder' ];
+    
+        if ( ! empty( $result ) && isset( $result->data ) ) {
+
+            $data = json_decode( $result->data );
+    
+            $class       = isset( $data->class ) ? $data->class : $class;
+            $css_id      = isset( $data->css_id ) ? $data->css_id : $css_id;
+            $placeholder = isset( $data->place_holder ) ? $data->place_holder : $placeholder;
+    
+            if ( isset( $data->post_type ) && !empty( $data->post_type ) ) {
+                if ( is_array( $data->post_type ) ) {
+                    $posts_types = $data->post_type;
+                } elseif ( is_string( $data->post_type ) ) {
+                    $posts_types = array_map( 'trim', explode( ',', $data->post_type ) );
+                } else {
+                    $posts_types = $all_public_post_types;
+                }
+            } else {
+                $posts_types = $all_public_post_types;
+            }
+        } else {
+            $posts_types = $all_public_post_types;
         }
-    
-        $class = isset( $data->class ) ? $data->class : $sanitized_atts[ 'css_class' ];
-        $css_id = isset( $data->css_id ) ? $data->css_id : $sanitized_atts[ 'css_id' ];
-        $placeholder = isset( $data->place_holder ) ? $data->place_holder : $sanitized_atts[ 'place_holder' ];
-        $posts_types = isset( $data->post_type ) ? ( is_array( $data->post_type ) ? $data->post_type : explode( ',', $data->post_type ) ) : $posts_types;
     
         ob_start();
         $template_path = SMART_SEARCH_CONTROL_TEMPLATES_DIR . 'template-smart-search-control.php';
-        include $template_path;
-        $content = ob_get_contents();
-        ob_end_clean();
     
-        return $content;
-    }
-
-    /**
-     * Modify the core search block to use our custom search form
-     */
-    public function modify_result_search_block( $block_content, $block ) {
-
-        if ( is_search() && $block['blockName'] === 'core/search' ) {
-            return $this->short_code_search();
+        if ( file_exists( $template_path ) ) {
+            include $template_path;
         }
-        return $block_content;
-    }
-
-    /**
-     * Render the search shortcode
-     */    
-    public function short_code_search() {
-
-        $css_id = isset( $_COOKIE['search_css_id'] ) ? sanitize_text_field( $_COOKIE['search_css_id'] ) : '';
-        $class = isset( $_COOKIE['search_css_class'] ) ? sanitize_text_field( $_COOKIE['search_css_class'] ) : '';
-        $placeholder = isset( $_COOKIE['search_place_holder'] ) ? sanitize_text_field( $_COOKIE['search_place_holder'] ) : '';
-        $posts_types = isset( $_COOKIE['search_post_type'] ) ? ( is_array( $_COOKIE['search_post_type'] ) ? $_COOKIE['search_post_type'] : explode( ',', $_COOKIE['search_post_type'] ) ) : [];
-        $posts_types = array_map( 'trim', $posts_types );
-
-        return $this->render_search_shortcode( [
-            'css_id' => $css_id,
-            'css_class' => $class,
-            'place_holder' => $placeholder,
-            'post_type' => $posts_types,
-        ]);
+    
+        return ob_get_clean();
     }
     
     /**
      * Summary of search_suggestion
      */
     public function smart_search_control_suggestion() {
+
+        global $wpdb;
 
         if ( !isset( $_POST['nonce'] ) || !check_ajax_referer( 'smart_search_control_result_nonce', 'nonce', false ) ) {
 
@@ -161,13 +151,40 @@ class Smart_Search_Control {
         }
 
         $search_query = sanitize_text_field( $_POST[ 'search_query' ] );
-        $post_types = !empty( $_POST[ 'post_types' ] ) ? 
-            array_map( 'trim', explode( ',', sanitize_text_field( $_POST[ 'post_types' ] ) ) ) : 
-            [ 'post' ];
+
+        $ssc_id = sanitize_text_field( $_POST[ 'ssc_id' ] );
+
+        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+        $query = "SELECT  data FROM $table_name WHERE id = %d";
+        $result = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
+
+        $all_public_post_types = get_post_types( [ 'public' => true ], 'names' );
+
+        if ( ! empty( $result ) && isset( $result->data ) ) {
+
+            $data = json_decode( $result->data );
+    
+            if ( isset( $data->post_type ) && !empty( $data->post_type ) ) {
+                
+                if ( is_array( $data->post_type ) ) {
+
+                    $posts_types = $data->post_type;
+                } elseif ( is_string( $data->post_type ) ) {
+
+                    $posts_types = array_map( 'trim', explode( ',', $data->post_type ) );
+                } else {
+                    $posts_types = $all_public_post_types;
+                }
+            } else {
+                $posts_types = $all_public_post_types;
+            }
+        } else {
+            $posts_types = $all_public_post_types;
+        }
 
         $args = [
             's' => $search_query,
-            'post_type' => $post_types,
+            'post_type' => $posts_types,
             'posts_per_page' => -1,
             'post_status'    => 'publish',
         ];
@@ -176,9 +193,9 @@ class Smart_Search_Control {
 
         if ( !$query->have_posts() ) {
 
-            if ( in_array( 'product', $post_types ) && !in_array( 'product_variation', $post_types ) ) {
+            if ( in_array( 'product', $posts_types ) && !in_array( 'product_variation', $posts_types ) ) {
 
-                $modified_post_types = array_merge( $post_types, [ 'product_variation' ] );
+                $modified_post_types = array_merge( $posts_types, [ 'product_variation' ] );
                 
                 $args[ 'post_type' ] = $modified_post_types;
                 $query = new WP_Query( $args );
@@ -211,105 +228,6 @@ class Smart_Search_Control {
         }
 
         wp_die();
-    }
-
-    /**
-     * Override the Query for the search results
-     */
-    public function smart_search_control_custom_search_query( $query ) {
-
-        if ( !is_admin() && $query->is_main_query() && $query->is_search() ) {
-
-            if ( !isset( $_COOKIE['search_post_type'] ) || empty( $_COOKIE['search_post_type'] ) ) {
-
-                $query->set( 'post_type', array( 'post' ) ); 
-                return;
-            }
-            
-            $post_types = array_map( 'trim', explode( ',', sanitize_text_field( $_COOKIE['search_post_type'] ) ) );
-
-            if ( in_array( 'product', $post_types ) && !in_array( 'product_variation', $post_types ) ) {
-                $post_types[] = 'product_variation';
-            }
-
-            $query->set( 'post_type', $post_types );
-
-            if ( isset( $_POST['paged'] ) ) {
-                
-                $query->set( 'paged', intval( $_POST['paged'] ) );
-            }
-            
-            $query->set( 'posts_per_page', 3 ); 
-        }
-    }
-
-    /**
-     * Summary of modify_result_block
-     */
-    public function customize_post_template_output( $block_content, $block ) {
-
-        if ( is_search() && $block[ 'blockName' ] === 'core/post-template' ) {
-
-            global $wp_query;
-    
-            if ( $wp_query->have_posts() ) {
-                ob_start();
-                echo '<div class="custom-search-results">';
-    
-                while ( $wp_query->have_posts() ) {
-                    $wp_query->the_post();
-                    ?>
-                        <div class="search-result-item">
-                            <div class="search-featured-image">
-                            
-                                <a href="<?php the_permalink(); ?>">
-
-                                    <?php if( has_post_thumbnail()  ){
-                                        the_post_thumbnail( 'medium' ); 
-                                    }else{?>
-                                        <img src="<?php echo SMART_SEARCH_CONTROL_ASSETS_URL . 'default-img/no-feature-image.jpg' ?>" alt=" <?php echo esc_attr( get_the_title() ) ?> "/>
-                                    <?php }
-                                    ?>
-                                        
-                                </a>
-                            </div>
-                            
-                            <h2 class="search-title">
-                                <a href="<?php the_permalink(); ?>">
-                                    <?php the_title(); ?>
-                                </a>
-                            </h2>
-                            
-                            <div class="search-excerpt">
-                                <?php echo wp_trim_words( get_the_excerpt(), 25, '...' ); ?>
-                            </div>
-                        </div>
-
-                    <?php
-                }
-                echo '</div>';
-    
-                wp_reset_postdata();
-                return ob_get_clean();
-            } else {
-                return '<p>No results found.</p>';
-            }
-        }
-
-        return $block_content;
-    }
-
-    /**
-     * Summary of customize_pagination_block
-     */
-    public function customize_pagination_block( $block_content, $block ) {
-        
-        if ( is_search() && 'core/query-pagination' === $block['blockName'] ) {
-
-            $block_content = str_replace( 'wp-block-query-pagination', 'wp-block-query-pagination ssc-pagination-class', $block_content );
-        }
-    
-        return $block_content;
     }
     
 }
