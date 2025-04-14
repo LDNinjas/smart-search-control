@@ -5,21 +5,25 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 global $wpdb;
+
+$admin_notice = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
 $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
-$items_per_page = 10;
-$page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 1;
-$offset = ( $page - 1 ) * $items_per_page;
 
-$total_items = $wpdb->get_var( "SELECT COUNT( * ) FROM $table_name" );
-$total_pages = ceil( $total_items / $items_per_page );
+if ( empty( $admin_notice ) ){
 
-$search_entries = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM $table_name LIMIT %d OFFSET %d", $items_per_page, $offset ) );
+    $items_per_page = 10;
+    $page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 1;
+    $offset = ( $page - 1 ) * $items_per_page;
 
-$post_types = get_post_types( [ 'public' => true ], 'objects' );
+    $total_items = $wpdb->get_var( "SELECT COUNT( id ) FROM $table_name" );
+    $total_pages = ceil( $total_items / $items_per_page );
 
-$admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notice();
+    $search_entries = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM $table_name LIMIT %d OFFSET %d", $items_per_page, $offset ) );
 
+    $post_types = get_post_types( [ 'public' => true ], 'objects' );
+
+}
 ?>
 
 <div class="wrap">
@@ -33,8 +37,6 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
 
     <p><?php echo __( 'Customize the search bar settings to enhance your website’s search functionality.', 'smart-search-control' ); ?></p>
 
-    <?php if ( empty( $admin_notice ) ){ ?>
-
         <table class="search-table">
             <thead>
                 <tr>
@@ -46,7 +48,7 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
                 </tr>
             </thead>
             <tbody>
-                <?php if ( $search_entries ){ ?>
+            <?php if ( isset( $search_entries ) && is_array( $search_entries ) && $search_entries ) { ?>
                     <?php foreach ( $search_entries as $entry ){
                     
                         $data = json_decode( $entry->data ); ?>
@@ -84,7 +86,7 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
             </tfoot>
         </table>
 
-    <?php }?>
+    
 
     <!-- Pagination -->
     <div class="tablenav">
@@ -151,7 +153,7 @@ $admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notic
 
                 <div class="form-group">
                     <label for="place_holder"><?php echo __( 'Placeholder' , 'smart-search-control' ); ?></label>
-                    <input type="text" id="place_holder" name="place_holder" placeholder="<?php echo __( 'Search...' , 'smart-search-control' ); ?>" value="<?php echo $place_holder; ?>">
+                    <input type="text" id="place_holder" name="place_holder" value="<?php  echo esc_attr( __( 'Search...' , 'smart-search-control' ) ) ?>">
                     <span class="inputs-desc"><?= __( 'This text will appear inside the search field as a hint before the user types.' , 'smart-search-control' ); ?></span>
                 </div>
 

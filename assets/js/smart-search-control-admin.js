@@ -73,7 +73,7 @@
 
                     let formData = {
                         action: 'smart_search_control_setting',
-                        nonce: SMART_SEARCH_CONTROL_SETTING.nonce_add,
+                        nonce: SSC_SETTING.nonce_add,
                         place_holder: AdminSearchSetting.modelPlaceHolder.val(),
                         class: AdminSearchSetting.modelClass.val(),
                         css_id:  AdminSearchSetting.modelID.val(),
@@ -84,7 +84,7 @@
 
                     $.ajax( {
                         type: 'POST',
-                        url: SMART_SEARCH_CONTROL_SETTING.ajaxurl,
+                        url: SSC_SETTING.ajaxurl,
                         data: formData,
                         dataType: 'json',
                         success: function ( response ) {
@@ -145,7 +145,7 @@
 
                     let formData = {
                         action: "smart_search_control_setting_edit",
-                        nonce: SMART_SEARCH_CONTROL_SETTING.nonce_edit,
+                        nonce: SSC_SETTING.nonce_edit,
                         id: entry.id,
                         place_holder: AdminSearchSetting.modelPlaceHolder.val(),
                         class: AdminSearchSetting.modelClass.val(),
@@ -157,7 +157,7 @@
                     
                     $.ajax( {
                         type: "POST",
-                        url: SMART_SEARCH_CONTROL_SETTING.ajaxurl,
+                        url: SSC_SETTING.ajaxurl,
                         data: formData,
                         dataType: "json",
                         success: function ( response ) {
@@ -184,13 +184,13 @@
                 event.preventDefault();
                 let id = $( event.currentTarget ).data( 'id' );
 
-                if ( confirm( SMART_SEARCH_CONTROL_SETTING.confirm_msg ) ) {
+                if ( confirm( SSC_SETTING.confirm_msg ) ) {
                     $.ajax( {
                         type: 'POST',
-                        url: SMART_SEARCH_CONTROL_SETTING.ajaxurl,
+                        url: SSC_SETTING.ajaxurl,
                         data: {
                             action: 'smart_search_control_setting_delete',
-                            nonce: SMART_SEARCH_CONTROL_SETTING.nonce_delete,
+                            nonce: SSC_SETTING.nonce_delete,
                             id: id
                         },
                         success: function ( response ) {
@@ -230,11 +230,11 @@
             createDatabaseTable: function(){
 
                 $.ajax( {
-                    url: SMART_SEARCH_CONTROL_SETTING.ajaxurl,
+                    url: SSC_SETTING.ajaxurl,
                     type: "POST",
                     data: {
                         action: "create_database_table",
-                        nonce: SMART_SEARCH_CONTROL_SETTING.nonce_table,
+                        nonce: SSC_SETTING.nonce_table,
                     },
                     success: function ( response ) {
                         localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );

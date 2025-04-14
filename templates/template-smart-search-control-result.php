@@ -39,7 +39,7 @@ $query = new WP_Query( $args );
                             the_post_thumbnail( 'medium' );
                         } else {
                             ?>
-                            <img src="<?php echo SMART_SEARCH_CONTROL_ASSETS_URL . 'default-img/no-feature-image.jpg' ?>"
+                            <img src="<?php echo SSC_ASSETS_URL . 'default-img/no-feature-image.jpg' ?>"
                                 alt="<?php echo esc_attr( get_the_title() ); ?>" />
                             <?php
                         }

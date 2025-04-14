@@ -28,6 +28,7 @@ if ( ! empty( $pages ) ) {
 }
 
 if( isset( $_GET[ 'query' ] )  ){
+
     $search_query = sanitize_text_field( $_GET[ 'query' ] );
 }
 ?>
@@ -38,7 +39,7 @@ if( isset( $_GET[ 'query' ] )  ){
         <form  action="<?php echo esc_url( $url ); ?>" method="GET" class="ssc-default-search-bar ssc-search-form" id="ssc-search-form">
 
             <input type="text" name="query" class="ssc-default-search-input search-query"
-                value="<?php echo $search_query; ?>"
+                value="<?php echo !empty( $search_query ) ? esc_attr( $search_query ) :  '' ?>"
                 placeholder="<?php echo !empty( $placeholder ) ? esc_attr( $placeholder ) : __( 'Search...', 'smart-search-control' ); ?>" aria-label="Search">
 
             <!-- Hidden Post Type Input -->

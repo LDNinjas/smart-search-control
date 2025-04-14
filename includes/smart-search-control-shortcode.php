@@ -49,9 +49,9 @@ class Smart_Search_Control {
 
         wp_register_style(
             'smart-search-control-style',
-            SMART_SEARCH_CONTROL_ASSETS_URL . '/css/smart-search-control-style.css'
+            SSC_ASSETS_URL . '/css/smart-search-control-style.css'
         );
-        wp_register_script( 'smart-search-control-js', SMART_SEARCH_CONTROL_ASSETS_URL . 'js/smart-search-control-ajax.js', [ 'jquery' ], SMART_SEARCH_CONTROL_VERSION, true );
+        wp_register_script( 'smart-search-control-js', SSC_ASSETS_URL . 'js/smart-search-control-ajax.js', [ 'jquery' ], SSC_VERSION, true );
         wp_localize_script( 'smart-search-control-js', 'SMART_SEARCH_CONTROL', [
             'ajaxurl'    => admin_url( 'admin-ajax.php' ),
             'nonce'      => wp_create_nonce( 'smart_search_control_result_nonce' ),
@@ -122,7 +122,7 @@ class Smart_Search_Control {
         }
     
         ob_start();
-        $template_path = SMART_SEARCH_CONTROL_TEMPLATES_DIR . 'template-smart-search-control.php';
+        $template_path = SSC_TEMPLATES_DIR . 'template-smart-search-control.php';
     
         if ( file_exists( $template_path ) ) {
             include $template_path;

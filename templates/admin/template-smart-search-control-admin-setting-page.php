@@ -3,7 +3,7 @@ if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
 
-$admin_notice = Smart_Search_Control_Admin_Settings::instance()->get_admin_notice();
+$admin_notice = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
 
 /**
  * all pages

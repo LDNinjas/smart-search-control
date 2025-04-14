@@ -94,7 +94,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
             wp_die( __( 'You do not have permission to access this page.' , 'smart-search-control' ) );
         }
 
-        $template_path = SMART_SEARCH_CONTROL_TEMPLATES_DIR . 'admin/template-smart-search-control-admin-setting-page.php';
+        $template_path = SSC_TEMPLATES_DIR . 'admin/template-smart-search-control-admin-setting-page.php';
         include $template_path;
 
     }
@@ -110,9 +110,9 @@ class Smart_Search_Control_Admin_Submenu_Setting {
 
         wp_enqueue_style(
             'smart-search-control-admin-style',
-            SMART_SEARCH_CONTROL_ASSETS_URL . 'css/smart-search-control-admin-style.css'
+            SSC_ASSETS_URL . 'css/smart-search-control-admin-style.css'
         );
-        wp_enqueue_script( 'smart-search-control-admin-js', SMART_SEARCH_CONTROL_ASSETS_URL . 'js/smart-search-control-admin.js', [ 'jquery' ], SMART_SEARCH_CONTROL_VERSION, true );
+        wp_enqueue_script( 'smart-search-control-admin-js', SSC_ASSETS_URL . 'js/smart-search-control-admin.js', [ 'jquery' ], SSC_VERSION, true );
     }
 }
     
