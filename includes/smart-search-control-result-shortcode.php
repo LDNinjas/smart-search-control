@@ -95,8 +95,6 @@ class Smart_Search_Control_Result {
             $shortcode_content = '[smart_search_control id="' . esc_attr( $ssc_id ) . '"]';
             
             ob_start();
-            
-            ob_start();
             $template_path = SMART_SEARCH_CONTROL_TEMPLATES_DIR . 'template-smart-search-control-result.php';
         
             if ( file_exists( $template_path ) ) {

@@ -7,7 +7,7 @@ if ( !defined( 'ABSPATH' ) ) {
 global $wpdb;
 $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
-$items_per_page = 2;
+$items_per_page = 10;
 $page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 1;
 $offset = ( $page - 1 ) * $items_per_page;
 

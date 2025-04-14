@@ -84,11 +84,12 @@ class LD_Smart_Search_Control {
      */
     public function smart_search_control_setting_links( $links ) {
 
-        $main_link = '<a href="' . admin_url( 'admin.php?page=smart_search_control' ) . '">' . __( 'Main Page', 'smart-search-control' ) . '</a>';
+        $main_link = '<a href="' . admin_url( 'admin.php?page=smart_search_control' ) . '">' . __( 'Settings', 'smart-search-control' ) . '</a>';
+        $setting_link = '<a href="' . admin_url( 'admin.php?page=smart_search_control_settings' ) . '">' . __( 'Settings', 'smart-search-control' ) . '</a>';
+    
         array_unshift( $links, $main_link );
 
-        $setting_link = '<a href="' . admin_url( 'admin.php?page='.$main_link.'_settings' ) . '">' . __( 'Settings', 'smart-search-control' ) . '</a>';
-        array_unshift( $links, $setting_link );
+        return $links;
     }   
 
     /**
