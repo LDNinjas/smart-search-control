@@ -1,5 +1,4 @@
 ( function ( $ ) {
-    'use strict';
     $( document ).ready( function () {
 
         let AdminSearchSetting = {
@@ -262,12 +261,12 @@
              */
             copyShortCode: function() {
                 
-                var text = $( "#shortcode-text" ).text().trim();
+                let text = $( "#shortcode-text" ).text().trim();
 
                 navigator.clipboard.writeText( text ).then( function() {
 
-                    var icon = $( "#copy-code .dashicons" );
-                    var container = $( "#copy-code" );
+                    let icon = $( "#copy-code .dashicons" );
+                    let container = $( "#copy-code" );
 
                     icon.removeClass( "dashicons-clipboard" ).addClass( "dashicons-yes" );
                     $( '.copy-msg' ).css("display", "inline-block");

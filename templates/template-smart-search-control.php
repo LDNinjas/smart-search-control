@@ -5,27 +5,10 @@ if ( !defined( 'ABSPATH' ) ){
 
 }
 
-$args = array(
-    'post_type'   => 'page',
-    'post_status' => 'publish',
-    's'           => '[smart_search_result]',
-    'numberposts' => 1
-);
-
-$pages = get_posts( $args );
-
-$url = '';
-
-if ( ! empty( $pages ) ) {
-    
-    $url = get_permalink( $pages[ 0 ]->ID );
-} else {
-
     $fallback_page_id = get_option( 'smart_search_control_result_page' );
     if ( $fallback_page_id ) {
         $url = get_permalink( $fallback_page_id );
     }
-}
 
 if( isset( $_GET[ 'query' ] )  ){
 

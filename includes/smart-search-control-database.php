@@ -51,7 +51,7 @@ class Smart_Search_Control_Database {
     /**
      * Checks if a table exists in the database.
      */
-    private function table_exists( $table_name ) {
+    public function table_exists( $table_name ) {
 
         global $wpdb;
         

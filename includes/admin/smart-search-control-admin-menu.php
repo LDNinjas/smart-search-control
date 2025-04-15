@@ -83,6 +83,7 @@ class Smart_Search_Control_Admin_Menu {
         $table_exists = $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) === $table_name;
 
         if ( !$table_exists ) {
+
             ob_start(); 
             ?>
             <div class="admin-msg">
@@ -172,11 +173,11 @@ class Smart_Search_Control_Admin_Menu {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
 
-        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
-    
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_add' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
+
+        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
     
         $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
         $css_id       = !empty( $_POST[ 'css_id' ] ) ? sanitize_text_field( $_POST[ 'css_id' ] ) : '';
@@ -194,9 +195,7 @@ class Smart_Search_Control_Admin_Menu {
     
         $result = $wpdb->insert(
             $table_name,
-            [
-                'data' => $data
-            ],
+            [ 'data' => $data ],
             [ '%s' ]
         );
 
@@ -235,12 +234,12 @@ class Smart_Search_Control_Admin_Menu {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
 
-        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
-
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_edit' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
 
+        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+        
         $id = isset( $_POST[ 'id' ] ) ? intval( $_POST[ 'id' ] ) : 0;
 
         if ( $id === 0 ) {
@@ -305,13 +304,13 @@ class Smart_Search_Control_Admin_Menu {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
-
-        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
-
+        
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_delete' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
 
+        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+        
         $id = isset( $_POST[ 'id' ] ) ? intval( $_POST[ 'id' ] ) : 0;
 
         if ( $id === 0 ) {
@@ -371,6 +370,7 @@ class Smart_Search_Control_Admin_Menu {
             wp_send_json_error( $notice );
         }
     }
+
 }
-    
+
 Smart_Search_Control_Admin_Menu::instance();

@@ -77,7 +77,7 @@ class Smart_Search_Control {
                 'id'           => '',
                 'css_id'       => '',
                 'css_class'    => '',
-                'place_holder' => '',
+                'place_holder' => __( 'Search...' , 'smart-search-control' ),
                 'post_type'    => [],
             ],
             $atts,
@@ -91,6 +91,7 @@ class Smart_Search_Control {
         $posts_types = $all_public_post_types;
     
         $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+        
         $query      = "SELECT data FROM $table_name WHERE id = %d";
         $result     = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
     
@@ -99,6 +100,8 @@ class Smart_Search_Control {
         $placeholder = $sanitized_atts[ 'place_holder' ];
     
         if ( ! empty( $result ) && isset( $result->data ) ) {
+
+
 
             $data = json_decode( $result->data );
     
@@ -185,7 +188,7 @@ class Smart_Search_Control {
         $args = [
             's' => $search_query,
             'post_type' => $posts_types,
-            'posts_per_page' => -1,
+            'posts_per_page' => 10,
             'post_status'    => 'publish',
         ];
 

@@ -33,29 +33,10 @@ if ( isset( $_POST[ 'selected_page' ], $_POST[ 'smart_search_control_nonce' ] ) 
     <?php echo $admin_notice; ?>
     <h2 class="short-code-result_page-title"><?php echo __( 'Result Page Settings', 'smart-search-control' ); ?></h2>
 
-    <div class="short-code-result-row">
-        <h3 class="shortcode-label"><?php echo __( 'Shortcode', 'smart-search-control' ); ?></h3>
-
-        <div class="short-code-result-container">
-            <div class="shortcode-container short-code-result-wrapper">
-                <p class="short-code-copy">
-                    <span id="copy-code">
-                        <span class="dashicons dashicons-clipboard"></span>
-                        <span class="copy-msg"><?php echo __( 'Copied!', 'smart-search-control' ); ?></span>
-                    </span>
-                    <span id="shortcode-text">[smart_search_result]</span>
-                </p>
-            </div>
-            <p class="short-code-result-desc">
-                <?php echo __( 'Shortcode to display search form and results', 'smart-search-control' ); ?></p>
-        </div>
-    </div>
-
     <form method="post" action="">
         <div class="short-code-result-row">
 
                 <h3 class="shortcode-label"><?php echo __( 'Result page', 'smart-search-control' ); ?></h3>
-                <?php wp_nonce_field( 'smart_search_control_save_page', 'smart_search_control_nonce' ); ?>
 
             <div class="select-page-container">
                 <select name="selected_page" id="selected_page">
@@ -71,6 +52,8 @@ if ( isset( $_POST[ 'selected_page' ], $_POST[ 'smart_search_control_nonce' ] ) 
                 <?php echo __( 'Page where search results will be displayed', 'smart-search-control' ); ?></p>
             </div>
         </div>
+        
+        <?php wp_nonce_field( 'smart_search_control_save_page', 'smart_search_control_nonce' ); ?>
 
         <div class="smart_search_result_btn">
             <input type="submit" value="<?php echo __( 'Save changes', 'smart-search-control' ); ?>"

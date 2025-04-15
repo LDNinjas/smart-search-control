@@ -9,12 +9,15 @@ global $wpdb;
 $admin_notice = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
 $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
+$items_per_page = 10;
+$page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 1;
+$offset = ( $page - 1 ) * $items_per_page;
+
+$search_entries = [];
+
+$total_pages = 1 ;
 
 if ( empty( $admin_notice ) ){
-
-    $items_per_page = 10;
-    $page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 1;
-    $offset = ( $page - 1 ) * $items_per_page;
 
     $total_items = $wpdb->get_var( "SELECT COUNT( id ) FROM $table_name" );
     $total_pages = ceil( $total_items / $items_per_page );
