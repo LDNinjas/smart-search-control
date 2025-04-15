@@ -4,7 +4,7 @@
  */
 
 if ( !defined( 'ABSPATH' ) ) exit;
-class Smart_Search_Control_Admin_Settings {
+class Smart_Search_Control_Admin_Menu {
 
     /**
      * instance
@@ -19,11 +19,11 @@ class Smart_Search_Control_Admin_Settings {
 
     /**
      * Define instance
-     * @return Smart_Search_Control_Admin_Settings
+     * @return Smart_Search_Control_Admin_Menu
      */
     public static function instance() {
 
-        if ( is_null( self::$instance ) && ! ( self::$instance instanceof Smart_Search_Control_Admin_Settings ) ) {
+        if ( is_null( self::$instance ) && ! ( self::$instance instanceof Smart_Search_Control_Admin_Menu ) ) {
             self::$instance = new self();
             self::$instance->hooks();
         }
@@ -125,7 +125,7 @@ class Smart_Search_Control_Admin_Settings {
             wp_die( __( 'You do not have permission to access this page.' , 'smart-search-control' ) );
         }
 
-        $template_path = SMART_SEARCH_CONTROL_TEMPLATES_DIR . 'admin/template-smart-search-control-admin-page.php';
+        $template_path = SSC_TEMPLATES_DIR . 'admin/template-smart-search-control-admin-page.php';
         include $template_path;
 
     }
@@ -141,10 +141,10 @@ class Smart_Search_Control_Admin_Settings {
 
         wp_enqueue_style(
             'smart-search-control-admin-style',
-            SMART_SEARCH_CONTROL_ASSETS_URL . 'css/smart-search-control-admin-style.css'
+            SSC_ASSETS_URL . 'css/smart-search-control-admin-style.css'
         );
-        wp_enqueue_script( 'smart-search-control-admin-js', SMART_SEARCH_CONTROL_ASSETS_URL . 'js/smart-search-control-admin.js', [ 'jquery' ], SMART_SEARCH_CONTROL_VERSION, true );
-        wp_localize_script( 'smart-search-control-admin-js', 'SMART_SEARCH_CONTROL_SETTING', [
+        wp_enqueue_script( 'smart-search-control-admin-js', SSC_ASSETS_URL . 'js/smart-search-control-admin.js', [ 'jquery' ], SSC_VERSION, true );
+        wp_localize_script( 'smart-search-control-admin-js', 'SSC_SETTING', [
 
             'ajaxurl'      => admin_url( 'admin-ajax.php' ),
             'nonce_add'    => wp_create_nonce( 'smart_search_control_setting_nonce_add' ),
@@ -349,7 +349,7 @@ class Smart_Search_Control_Admin_Settings {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
     
-        $database_file = SMART_SEARCH_CONTROL_INCLUDES_DIR . 'smart-search-control-database.php';
+        $database_file = SSC_INCLUDES_DIR . 'smart-search-control-database.php';
     
         if ( file_exists( $database_file ) ) {
 
@@ -373,4 +373,4 @@ class Smart_Search_Control_Admin_Settings {
     }
 }
     
-Smart_Search_Control_Admin_Settings::instance();
+Smart_Search_Control_Admin_Menu::instance();
