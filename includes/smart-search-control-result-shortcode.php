@@ -115,8 +115,10 @@ class Smart_Search_Control_Result {
             }
         
         }else{
-            wp_redirect( home_url() );
-            exit;
+            
+            $shortcode_content = '[smart_search_control id="9999"]';
+            
+            echo do_shortcode( $shortcode_content );
         }
         
         return ob_get_clean();
