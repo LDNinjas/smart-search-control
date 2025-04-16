@@ -15,25 +15,20 @@ $pages = get_pages();
  */
 $selected_page = get_option( 'smart_search_control_result_page', '' );
 
-/**
- *Save the selected result page
- */
-if ( isset( $_POST[ 'selected_page' ], $_POST[ 'smart_search_control_nonce' ] ) && wp_verify_nonce( $_POST[ 'smart_search_control_nonce' ], 'smart_search_control_save_page' ) ) {
-
-    $selected_page_id = sanitize_text_field( $_POST[ 'selected_page' ] );
-    update_option( 'smart_search_control_result_page', $selected_page_id );
-    $selected_page = $selected_page_id;
-    echo '<div class="notice notice-success is-dismissible"><p>' . __( 'Settings saved.', 'smart-search-control' ) . '</p></div>';
-
+$success_notice = '';
+if ( isset( $_GET['ssc_saved'] ) && $_GET['ssc_saved'] === 'true' ) {
+    $success_notice = '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved successfully.', 'smart-search-control' ) . '</p></div>';
 }
+
 ?>
 
 <div class="wrap">
 
     <?php echo $admin_notice; ?>
+    <?php echo $success_notice; ?>
     <h2 class="short-code-result_page-title"><?php echo __( 'Result Page Settings', 'smart-search-control' ); ?></h2>
 
-    <form method="post" action="">
+    <form method="post" action="<?php echo admin_url( 'admin-post.php' ); ?>">
         <div class="short-code-result-row">
 
                 <h3 class="shortcode-label"><?php echo __( 'Result page', 'smart-search-control' ); ?></h3>
@@ -52,9 +47,8 @@ if ( isset( $_POST[ 'selected_page' ], $_POST[ 'smart_search_control_nonce' ] ) 
                 <?php echo __( 'Page where search results will be displayed', 'smart-search-control' ); ?></p>
             </div>
         </div>
-        
+        <input type="hidden" name="action" value="ssc_save_action">
         <?php wp_nonce_field( 'smart_search_control_save_page', 'smart_search_control_nonce' ); ?>
-
         <div class="smart_search_result_btn">
             <input type="submit" value="<?php echo __( 'Save changes', 'smart-search-control' ); ?>"
                 class="button button-primary" />

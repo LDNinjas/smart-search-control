@@ -38,6 +38,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
         add_action( 'admin_menu', [ $this, 'add_admin_submenu_page' ] );
         add_action( 'current_screen', [ $this, 'setup_screen_id' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'smart_search_control_admin_assets' ] );
+        add_action( 'admin_post_ssc_save_action', [ $this, 'ssc_save_settings' ] );
         
     }
 
@@ -114,6 +115,32 @@ class Smart_Search_Control_Admin_Submenu_Setting {
         );
         wp_enqueue_script( 'smart-search-control-admin-js', SSC_ASSETS_URL . 'js/smart-search-control-admin.js', [ 'jquery' ], SSC_VERSION, true );
     }
+
+        /**
+         * Save the selected Page
+         */
+        public function ssc_save_settings() {
+        
+            if ( !isset( $_POST[ 'selected_page' ], $_POST[ 'smart_search_control_nonce' ] ) ) {
+                return;
+            }
+        
+            if ( !wp_verify_nonce( $_POST[ 'smart_search_control_nonce' ], 'smart_search_control_save_page' ) ) {
+                return;
+            }
+        
+            if ( !current_user_can( 'manage_options' ) ) {
+                return;
+            }
+        
+            $selected_page_id = absint( $_POST[ 'selected_page' ] );
+            update_option( 'smart_search_control_result_page', $selected_page_id );
+        
+            $redirect_url = add_query_arg( 'ssc_saved', 'true', admin_url( 'admin.php?page=smart_search_control_settings' ) );
+            wp_redirect( $redirect_url );
+            exit;
+        }
+    
 }
     
 Smart_Search_Control_Admin_Submenu_Setting::instance();
