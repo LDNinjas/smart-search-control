@@ -178,6 +178,8 @@ class Smart_Search_Control_Admin_Menu {
         }
 
         $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+
+
     
         $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
         $css_id       = !empty( $_POST[ 'css_id' ] ) ? sanitize_text_field( $_POST[ 'css_id' ] ) : '';
@@ -199,16 +201,7 @@ class Smart_Search_Control_Admin_Menu {
             [ '%s' ]
         );
 
-        if ( $result ) {
-
-            $notice = [
-                'message' => __( 'Search settings saved successfully!' , 'smart-search-control' ),
-                'type'    => 'success'
-            ];
-
-            wp_send_json_success( $notice );
-
-        } else {
+        if ( empty( $result ) ) {
 
             $notice = [
                 'message' => __( 'Failed to save search settings. Please try again.' , 'smart-search-control' ),
@@ -216,7 +209,15 @@ class Smart_Search_Control_Admin_Menu {
             ];
 
             wp_send_json_success( $notice );
+
         }
+
+        $notice = [
+            'message' => __( 'Search settings saved successfully!' , 'smart-search-control' ),
+            'type'    => 'success'
+        ];
+
+        wp_send_json_success( $notice );
     }
 
     /**
@@ -270,24 +271,19 @@ class Smart_Search_Control_Admin_Menu {
             
         );
 
-        if ( $result !== false ) {
-
-            $notice = [
-                'message' => __( 'Search settings updated successfully!' , 'smart-search-control' ),
-                'type' => 'success'
-            ];
-
-            wp_send_json_success( $notice );
-
-        } else {
-
-            $notice = [
-                'message' => __( 'Failed to update data. Please try again.' , 'smart-search-control' ),
-                'type' => 'error'
-            ];
-            
-            wp_send_json_success( $notice );
+        if ( $result === false ) {
+            wp_send_json_success( [
+                'message' => __( 'Failed to update data. Please try again.', 'smart-search-control' ),
+                'type'    => 'error'
+            ] );
+            return;
         }
+
+        wp_send_json_success( [
+            'message' => __( 'Search settings updated successfully!', 'smart-search-control' ),
+            'type'    => 'success'
+        ] );
+
     }
 
     /**
@@ -319,24 +315,18 @@ class Smart_Search_Control_Admin_Menu {
 
         $result = $wpdb->delete( $table_name, [ 'id' => $id ], [ '%d' ] );
 
-        if ( $result ) {
-
-            $notice = [
-                'message' => __( 'Search setting deleted successfully!' , 'smart-search-control' ),
-                'type' => 'success'
-            ];
-
-            wp_send_json_success( $notice );
-
-        } else {
-
-            $notice = [
-                'message' => __( 'Failed to delete search setting. Please try again.' , 'smart-search-control' ),
-                'type' => 'error'
-            ];
-
-            wp_send_json_error( $notice );
+        if ( ! $result ) {
+            wp_send_json_error( [
+                'message' => __( 'Failed to delete search setting. Please try again.', 'smart-search-control' ),
+                'type'    => 'error'
+            ] );
+            return;
         }
+    
+        wp_send_json_success( [
+            'message' => __( 'Search setting deleted successfully!', 'smart-search-control' ),
+            'type'    => 'success'
+        ] );
     }
 
     /**
@@ -350,25 +340,21 @@ class Smart_Search_Control_Admin_Menu {
     
         $database_file = SSC_INCLUDES_DIR . 'smart-search-control-database.php';
     
-        if ( file_exists( $database_file ) ) {
-
-            require_once $database_file;
-
-            $notice = [
-                'message' => __( 'Table for Smart Search Control created successfully!' , 'smart-search-control' ),
-                'type' => 'success'
-            ];
-
-            wp_send_json_success( $notice );
-        } else { 
-
-            $notice = [
-                'message' => __( 'Database file not found!' , 'smart-search-control' ),
-                'type' => 'error'
-            ];
-
-            wp_send_json_error( $notice );
+        if ( !file_exists( $database_file ) ) {
+            
+            wp_send_json_error( [
+                'message' => __( 'Database file not found!', 'smart-search-control' ),
+                'type'    => 'error'
+            ] );
+            return;
         }
+    
+        require_once $database_file;
+    
+        wp_send_json_success( [
+            'message' => __( 'Table for Smart Search Control created successfully!', 'smart-search-control' ),
+            'type'    => 'success'
+        ] );
     }
 
 }

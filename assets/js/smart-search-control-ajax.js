@@ -142,7 +142,7 @@
                                 )
                                 .join( '' );
 
-                                if ( searchResults.length > 10 ) {
+                                if ( searchResults.length > 9 ) {
 
                                     suggestionsHTML += `<a  href="javascript:void( 0 );" class="see-more" >${ SMART_SEARCH_CONTROL.more_msg }</a>`;
 
