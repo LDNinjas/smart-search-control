@@ -97,6 +97,12 @@ class Smart_Search_Control {
         
     
         $ssc_id = intval( $sanitized_atts['id'] );
+
+        if ( $ssc_id <= 0 ) {
+
+            return '<p>' . __( 'Invalid ID provided.', 'smart-search-control' ) . '</p>';
+            
+        }
     
         $all_public_post_types = get_post_types( [ 'public' => true ], 'names' );
 

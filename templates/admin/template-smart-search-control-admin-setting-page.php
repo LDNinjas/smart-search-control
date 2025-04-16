@@ -14,18 +14,11 @@ $pages = get_pages();
  * Get selected result page ID from options
  */
 $selected_page = get_option( 'smart_search_control_result_page', '' );
-
-$success_notice = '';
-if ( isset( $_GET['ssc_saved'] ) && $_GET['ssc_saved'] === 'true' ) {
-    $success_notice = '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved successfully.', 'smart-search-control' ) . '</p></div>';
-}
-
 ?>
 
 <div class="wrap">
 
     <?php echo $admin_notice; ?>
-    <?php echo $success_notice; ?>
     <h2 class="short-code-result_page-title"><?php echo __( 'Result Page Settings', 'smart-search-control' ); ?></h2>
 
     <form method="post" action="<?php echo admin_url( 'admin-post.php' ); ?>">

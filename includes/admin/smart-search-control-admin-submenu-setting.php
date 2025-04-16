@@ -136,9 +136,8 @@ class Smart_Search_Control_Admin_Submenu_Setting {
             $selected_page_id = absint( $_POST[ 'selected_page' ] );
             update_option( 'smart_search_control_result_page', $selected_page_id );
         
-            $redirect_url = add_query_arg( 'ssc_saved', 'true', admin_url( 'admin.php?page=smart_search_control_settings' ) );
-            wp_redirect( $redirect_url );
-            exit;
+            wp_safe_redirect( esc_url_raw( add_query_arg( 'message', 'updated', $_POST['_wp_http_referer'] ) ) );
+            exit();
         }
     
 }
