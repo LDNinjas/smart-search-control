@@ -65,7 +65,11 @@ if ( empty( $admin_notice ) ){
                             <td><?php echo esc_html( implode( ', ', explode( ' ', $data->class ) ) ); ?></td>
                             <td>
                                 <a href="#" data-entry='<?= json_encode( $entry ?: new stdClass() ); ?>' class="button edit-setting"><?php echo __( 'Edit' , 'smart-search-control' ); ?></a>
-                                <a href="#" class="button delete-setting" data-id="<?php echo $entry->id; ?>"><?php echo __( 'Delete' , 'smart-search-control'); ?></a>
+                                <button class="delete-setting " data-id="<?php echo $entry->id; ?>">
+                                    <span  id="delete-row"><?php echo __( 'Delete' , 'smart-search-control'); ?>
+                                    </span>
+                                    <span id="delete-loader" class="loading" style="display: none;"></span>
+                                </button>
                             </td>
                         </tr>
                     <?php
@@ -202,7 +206,10 @@ if ( empty( $admin_notice ) ){
 
                 <div class="modal-actions">
                     <button type="button" class="closeModal button"><?php echo __( 'Cancel' , 'smart-search-control' ); ?></button>
-                    <input type="submit" name="submit_search" class="button button-primary modal-btn" value="<?php echo __( 'Save' , 'smart-search-control' ); ?>">
+                    <button type="submit" id="submit-btn" class="button button-primary modal-btn">
+                        <span class="btn-text"><?php echo __( 'Save' , 'smart-search-control' ); ?></span>
+                        <span id="edit-loader" class="loading" style="display: none;"></span>
+                    </button>
                 </div>
             </form>
         </div>

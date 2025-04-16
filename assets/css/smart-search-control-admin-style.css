@@ -73,7 +73,7 @@
     margin-right: 5px;
     font-size: 13px;
     font-weight: 400;
-    border: 1px solid #2271b1;
+    /* border: 1px solid #2271b1; */
     border-radius: 3px;
     background: #f6f7f7;
     font-weight: 400;
@@ -85,15 +85,38 @@
         background: none;
     }
 }
-.search-table .delete-setting{
-    color:#b32d2e;
+.search-table .delete-setting {
+    margin-right: 5px;
+    font-size: 13px;
+    font-weight: 400;
+    border-radius: 3px;
+    background: #f6f7f7;
     border: 1px solid #b32d2e;
+    font-weight: 400;
+    line-height: 2.15384615;
+    padding: 0 10px;
+    min-height: 30px;
+
     &:hover{
         background: none;
-        color: #b32d2e;
         border: 1px solid #b32d2e;
+        outline: none;
     }
+    &:active{
+        border: 1px solid #b32d2e;
+        outline: none;   
+    }
+    &:focus{
+        outline: none;
+
+    }
+
 }
+
+.delete-setting #delete-row{
+    color: #b32d2e;    
+}
+
 
 /* Modal Overlay */
 .modal-overlay {
@@ -392,4 +415,20 @@
 }
 .notice, div.error, div.updated{
     margin-left: 2px;
+}
+
+.loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 3px solid rgba(0, 0, 0, 0.5);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
