@@ -212,6 +212,10 @@ class Smart_Search_Control {
             $posts_types = $all_public_post_types;
         }
 
+        if ( in_array( 'product', $posts_types, true ) && ! in_array( 'product_variation', $posts_types, true ) ) {
+            $posts_types[] = 'product_variation';
+        }
+
         $args = [
             's' => $search_query,
             'post_type' => $posts_types,
@@ -220,17 +224,6 @@ class Smart_Search_Control {
         ];
 
         $query = new WP_Query( $args );
-
-        if ( !$query->have_posts() ) {
-
-            if ( in_array( 'product', $posts_types ) && !in_array( 'product_variation', $posts_types ) ) {
-
-                $modified_post_types = array_merge( $posts_types, [ 'product_variation' ] );
-                
-                $args[ 'post_type' ] = $modified_post_types;
-                $query = new WP_Query( $args );
-            }
-        }
 
         $posts = [];
         if ( $query->have_posts() ) {
@@ -254,6 +247,14 @@ class Smart_Search_Control {
 
             wp_send_json_error(  [ 'message' => __( 'No results found.' , 'smart-search-control' )  ]  );
         }
+        
+        foreach ( $posts as &$post ) {
+
+            $decoded_title = html_entity_decode( $post[ 'title' ], ENT_QUOTES | ENT_HTML5 );
+            $parts = preg_split( '/\s*[-–—]\s*/u', $decoded_title );
+            $post[ 'title' ] = implode( ' ', $parts );
+        }
+        unset( $post );
         
         wp_send_json_success( [ 'search_results' => $posts ] );
         

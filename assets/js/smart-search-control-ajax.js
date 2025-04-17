@@ -134,10 +134,13 @@
 
                         if ( response.success && response.data.search_results ) {
 
+                            
                             let searchResults = response.data.search_results;
+                            console.log(searchResults)
                             let suggestionsHTML = searchResults
                                 .slice( 0, 10 )
                                 .map(( item ) => 
+
                                     `<li class="suggestion-item"><a href="${ item.permalink }">${ item.title }</a></li>`
                                 )
                                 .join( '' );
