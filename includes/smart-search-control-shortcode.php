@@ -67,6 +67,16 @@ class Smart_Search_Control {
     public function render_search_shortcode( $atts ) {
 
         global $wpdb;
+
+        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+
+        if ( ! $this->table_exists( $table_name ) ) {
+
+            ob_start();
+            echo '<h3>' . __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) . '</h3>';
+            return ob_get_clean();
+            
+        }
     
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_style( 'smart-search-control-style' );
@@ -77,20 +87,27 @@ class Smart_Search_Control {
                 'id'           => '',
                 'css_id'       => '',
                 'css_class'    => '',
-                'place_holder' => '',
+                'place_holder' => __( 'Search...' , 'smart-search-control' ),
                 'post_type'    => [],
             ],
             $atts,
             'smart_search_control'
         );
+
+        
     
         $ssc_id = intval( $sanitized_atts['id'] );
+
+        if ( $ssc_id <= 0 ) {
+
+            return '<p>' . __( 'Invalid ID provided.', 'smart-search-control' ) . '</p>';
+            
+        }
     
         $all_public_post_types = get_post_types( [ 'public' => true ], 'names' );
 
         $posts_types = $all_public_post_types;
-    
-        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+        
         $query      = "SELECT data FROM $table_name WHERE id = %d";
         $result     = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
     
@@ -119,6 +136,10 @@ class Smart_Search_Control {
             }
         } else {
             $posts_types = $all_public_post_types;
+        }
+
+        if ( in_array( 'product', $posts_types, true ) && ! in_array( 'product_variation', $posts_types, true ) ) {
+            $posts_types[] = 'product_variation';
         }
     
         ob_start();
@@ -155,6 +176,15 @@ class Smart_Search_Control {
         $ssc_id = sanitize_text_field( $_POST[ 'ssc_id' ] );
 
         $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+
+        if ( ! $this->table_exists( $table_name ) ) {
+
+            ob_start();
+            echo '<h3>' . __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) . '</h3>';
+            return ob_get_clean();
+            
+        }
+        
         $query = "SELECT  data FROM $table_name WHERE id = %d";
         $result = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
 
@@ -182,25 +212,18 @@ class Smart_Search_Control {
             $posts_types = $all_public_post_types;
         }
 
+        if ( in_array( 'product', $posts_types, true ) && ! in_array( 'product_variation', $posts_types, true ) ) {
+            $posts_types[] = 'product_variation';
+        }
+
         $args = [
             's' => $search_query,
             'post_type' => $posts_types,
-            'posts_per_page' => -1,
+            'posts_per_page' => 10,
             'post_status'    => 'publish',
         ];
 
         $query = new WP_Query( $args );
-
-        if ( !$query->have_posts() ) {
-
-            if ( in_array( 'product', $posts_types ) && !in_array( 'product_variation', $posts_types ) ) {
-
-                $modified_post_types = array_merge( $posts_types, [ 'product_variation' ] );
-                
-                $args[ 'post_type' ] = $modified_post_types;
-                $query = new WP_Query( $args );
-            }
-        }
 
         $posts = [];
         if ( $query->have_posts() ) {
@@ -220,14 +243,37 @@ class Smart_Search_Control {
 
         }
 
-        if ( !empty( $posts ) ) {
+        if ( empty( $posts ) ) {
 
-            wp_send_json_success( [ 'search_results' => $posts ] );
-        } else {
             wp_send_json_error(  [ 'message' => __( 'No results found.' , 'smart-search-control' )  ]  );
         }
+        
+        foreach ( $posts as &$post ) {
+
+            $decoded_title = html_entity_decode( $post[ 'title' ], ENT_QUOTES | ENT_HTML5 );
+            $parts = preg_split( '/\s*[-–—]\s*/u', $decoded_title );
+            $post[ 'title' ] = implode( ' ', $parts );
+        }
+        unset( $post );
+        
+        wp_send_json_success( [ 'search_results' => $posts ] );
+        
 
         wp_die();
+    }
+
+    /**
+     * Checks if a table exists in the database.
+     */
+    public function table_exists( $table_name ) {
+
+        global $wpdb;
+        
+        $query = $wpdb->prepare(
+            "SHOW TABLES LIKE %s",
+            $table_name
+        );
+        return $wpdb->get_var( $query ) === $table_name;
     }
     
 }

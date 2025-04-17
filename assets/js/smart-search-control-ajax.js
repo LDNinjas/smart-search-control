@@ -134,15 +134,18 @@
 
                         if ( response.success && response.data.search_results ) {
 
+                            
                             let searchResults = response.data.search_results;
+                            console.log(searchResults)
                             let suggestionsHTML = searchResults
                                 .slice( 0, 10 )
                                 .map(( item ) => 
+
                                     `<li class="suggestion-item"><a href="${ item.permalink }">${ item.title }</a></li>`
                                 )
                                 .join( '' );
 
-                                if ( searchResults.length > 10 ) {
+                                if ( searchResults.length > 9 ) {
 
                                     suggestionsHTML += `<a  href="javascript:void( 0 );" class="see-more" >${ SMART_SEARCH_CONTROL.more_msg }</a>`;
 

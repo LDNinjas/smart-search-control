@@ -82,11 +82,19 @@
                         } ).get()
                     };
 
+                    let $submitBtn = $( '#submit-btn' );
+                    let $loader = $( '#edit-loader' );
+                    let $btnText = $submitBtn.find( '.btn-text' );
+                
+                    $btnText.hide();
+                    $loader.show();
+
                     $.ajax( {
                         type: 'POST',
                         url: SSC_SETTING.ajaxurl,
                         data: formData,
                         dataType: 'json',
+                        
                         success: function ( response ) {
                             AdminSearchSetting.modalForm.trigger( "reset" );
                             AdminSearchSetting.modal.css( "display", "none" );
@@ -98,6 +106,10 @@
                             AdminSearchSetting.modal.css( "display", "none" );
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
+                        },
+                        complete: function () {
+                            $loader.hide();
+                            $btnText.show();
                         }
                     });
                 });
@@ -154,7 +166,14 @@
                             return $( this ).val();
                         } ).get()
                     };
-                    
+
+                    let $submitBtn = $( '#submit-btn' );
+                    let $loader = $( '#edit-loader' );
+                    let $btnText = $submitBtn.find( '.btn-text' );
+                
+                    $btnText.hide();
+                    $loader.show();
+
                     $.ajax( {
                         type: "POST",
                         url: SSC_SETTING.ajaxurl,
@@ -169,6 +188,10 @@
                             AdminSearchSetting.modal.css( "display", "none" );
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
+                        },
+                        complete: function () {
+                            $loader.hide();
+                            $btnText.show();
                         }
                     });
                 });
@@ -185,7 +208,15 @@
                 let id = $( event.currentTarget ).data( 'id' );
 
                 if ( confirm( SSC_SETTING.confirm_msg ) ) {
+
+                    let $loader = $( '#delete-loader' );
+                    let $btnText = $( '#delete-row' )
+                
+                    $btnText.hide();
+                    $loader.show();
+
                     $.ajax( {
+
                         type: 'POST',
                         url: SSC_SETTING.ajaxurl,
                         data: {
@@ -201,7 +232,14 @@
                         error: function () {
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
+                        },
+
+                        complete: function () {
+                            $loader.hide();
+                            $btnText.show();
                         }
+
+
                     });
                 }
             },
@@ -262,12 +300,12 @@
              */
             copyShortCode: function() {
                 
-                var text = $( "#shortcode-text" ).text().trim();
+                let text = $( "#shortcode-text" ).text().trim();
 
                 navigator.clipboard.writeText( text ).then( function() {
 
-                    var icon = $( "#copy-code .dashicons" );
-                    var container = $( "#copy-code" );
+                    let icon = $( "#copy-code .dashicons" );
+                    let container = $( "#copy-code" );
 
                     icon.removeClass( "dashicons-clipboard" ).addClass( "dashicons-yes" );
                     $( '.copy-msg' ).css("display", "inline-block");

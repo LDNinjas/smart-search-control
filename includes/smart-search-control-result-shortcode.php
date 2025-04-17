@@ -56,6 +56,14 @@ class Smart_Search_Control_Result {
     public function render_smart_search_result_shortcode( ) {
 
         global $wpdb;
+        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+
+        if ( ! $this->table_exists( $table_name ) ) {
+            ob_start();
+            echo '<h3>' . __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) . '</h3>';
+            return ob_get_clean();
+            
+        }
 
         if ( isset( $_GET[ 'query' ] ) && !empty( $_GET[ 'query' ] ) ) {
             
@@ -63,7 +71,6 @@ class Smart_Search_Control_Result {
             
             $ssc_id = isset( $_GET[ 'smartsearch' ] ) ? sanitize_text_field( $_GET[ 'smartsearch' ] ) : '';
 
-            $table_name = $wpdb->prefix . 'smart_search_control_parameters';
             
             $query = "SELECT  data FROM $table_name WHERE id = %d";
             $result = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
@@ -91,6 +98,10 @@ class Smart_Search_Control_Result {
             } else {
                 $posts_types = $all_public_post_types;
             }
+
+            if ( in_array( 'product', $posts_types, true ) && ! in_array( 'product_variation', $posts_types, true ) ) {
+                $posts_types[] = 'product_variation';
+            }
             
             $shortcode_content = '[smart_search_control id="' . esc_attr( $ssc_id ) . '"]';
             
@@ -104,8 +115,10 @@ class Smart_Search_Control_Result {
             }
         
         }else{
-            wp_redirect( home_url() );
-            exit;
+            
+            $shortcode_content = '[smart_search_control id="9999"]';
+            
+            echo do_shortcode( $shortcode_content );
         }
         
         return ob_get_clean();
@@ -127,6 +140,19 @@ class Smart_Search_Control_Result {
         return $content;
     } 
     
+    /**
+     * Checks if a table exists in the database.
+     */
+    public function table_exists( $table_name ) {
+
+        global $wpdb;
+        
+        $query = $wpdb->prepare(
+            "SHOW TABLES LIKE %s",
+            $table_name
+        );
+        return $wpdb->get_var( $query ) === $table_name;
+    }
 }
 
 Smart_Search_Control_Result::instance();

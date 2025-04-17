@@ -9,12 +9,15 @@ global $wpdb;
 $admin_notice = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
 $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
+$items_per_page = 10;
+$page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 1;
+$offset = ( $page - 1 ) * $items_per_page;
+
+$search_entries = [];
+
+$total_pages = 1 ;
 
 if ( empty( $admin_notice ) ){
-
-    $items_per_page = 10;
-    $page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 1;
-    $offset = ( $page - 1 ) * $items_per_page;
 
     $total_items = $wpdb->get_var( "SELECT COUNT( id ) FROM $table_name" );
     $total_pages = ceil( $total_items / $items_per_page );
@@ -62,7 +65,11 @@ if ( empty( $admin_notice ) ){
                             <td><?php echo esc_html( implode( ', ', explode( ' ', $data->class ) ) ); ?></td>
                             <td>
                                 <a href="#" data-entry='<?= json_encode( $entry ?: new stdClass() ); ?>' class="button edit-setting"><?php echo __( 'Edit' , 'smart-search-control' ); ?></a>
-                                <a href="#" class="button delete-setting" data-id="<?php echo $entry->id; ?>"><?php echo __( 'Delete' , 'smart-search-control'); ?></a>
+                                <button class="delete-setting " data-id="<?php echo $entry->id; ?>">
+                                    <span  id="delete-row"><?php echo __( 'Delete' , 'smart-search-control'); ?>
+                                    </span>
+                                    <span id="delete-loader" class="loading" style="display: none;"></span>
+                                </button>
                             </td>
                         </tr>
                     <?php
@@ -199,7 +206,10 @@ if ( empty( $admin_notice ) ){
 
                 <div class="modal-actions">
                     <button type="button" class="closeModal button"><?php echo __( 'Cancel' , 'smart-search-control' ); ?></button>
-                    <input type="submit" name="submit_search" class="button button-primary modal-btn" value="<?php echo __( 'Save' , 'smart-search-control' ); ?>">
+                    <button type="submit" id="submit-btn" class="button button-primary modal-btn">
+                        <span class="btn-text"><?php echo __( 'Save' , 'smart-search-control' ); ?></span>
+                        <span id="edit-loader" class="loading" style="display: none;"></span>
+                    </button>
                 </div>
             </form>
         </div>
