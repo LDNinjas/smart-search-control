@@ -116,7 +116,7 @@ class Smart_Search_Control_Result {
         
         }else{
             
-            $shortcode_content = '[smart_search_control id="9999"]';
+            $shortcode_content = '[smart_search_control id="0"]';
             
             echo do_shortcode( $shortcode_content );
         }

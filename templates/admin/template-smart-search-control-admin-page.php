@@ -78,7 +78,7 @@ if ( empty( $admin_notice ) ){
                 }
                 else { ?>
                     <tr>
-                        <td colspan="5" class="no-search-parm"><?php echo __( 'No search parameters found.', 'smart-search-control' ); ?></td>
+                        <td colspan="5" class="no-search-parm"> <?php echo __( 'Default Shortcode:', 'smart-search-control' ) . ' [smart_search_control id="0"]'; ?></td>
                     </tr>
                 <?php } ?>
             </tbody>
