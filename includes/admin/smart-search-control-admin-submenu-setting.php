@@ -39,6 +39,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
         add_action( 'current_screen', [ $this, 'setup_screen_id' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'smart_search_control_admin_assets' ] );
         add_action( 'admin_post_ssc_save_action', [ $this, 'ssc_save_settings' ] );
+        add_action( 'admin_notices', [ $this , 'ssc_admin_notices' ] );
         
     }
 
@@ -136,8 +137,25 @@ class Smart_Search_Control_Admin_Submenu_Setting {
             $selected_page_id = absint( $_POST[ 'selected_page' ] );
             update_option( 'smart_search_control_result_page', $selected_page_id );
         
-            wp_safe_redirect( esc_url_raw( add_query_arg( 'message', 'updated', $_POST['_wp_http_referer'] ) ) );
+            wp_safe_redirect( esc_url_raw( add_query_arg( 'message', 'ssc_updated', $_POST['_wp_http_referer'] ) ) );
             exit();
+        }
+
+        /**
+         * Set the Admin Notic
+         */
+        public function ssc_admin_notices(){
+
+            if( isset( $_GET[ 'message' ] ) && $_GET[ 'message' ] == 'ssc_updated' ){
+
+                ?>
+                <div class="notice notice-success is-dismissible">
+                <p><?php echo __( 'Result page saved successfully!', 'smart-search-control' ); ?></p>
+                </div>
+                <?php
+
+            }
+                
         }
     
 }

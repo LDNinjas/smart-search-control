@@ -96,6 +96,8 @@
                         dataType: 'json',
                         
                         success: function ( response ) {
+                            $loader.hide();
+                            $btnText.show();
                             AdminSearchSetting.modalForm.trigger( "reset" );
                             AdminSearchSetting.modal.css( "display", "none" );
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
@@ -103,13 +105,11 @@
                             
                         },
                         error: function () {
+                            $loader.hide();
+                            $btnText.show();
                             AdminSearchSetting.modal.css( "display", "none" );
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
-                        },
-                        complete: function () {
-                            $loader.hide();
-                            $btnText.show();
                         }
                     });
                 });
@@ -180,18 +180,18 @@
                         data: formData,
                         dataType: "json",
                         success: function ( response ) {
+                            $loader.hide();
+                            $btnText.show();
                             AdminSearchSetting.modal.css( "display", "none" );
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
                         },
                         error: function () {
+                            $loader.hide();
+                            $btnText.show();
                             AdminSearchSetting.modal.css( "display", "none" );
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
-                        },
-                        complete: function () {
-                            $loader.hide();
-                            $btnText.show();
                         }
                     });
                 });
@@ -225,21 +225,18 @@
                             id: id
                         },
                         success: function ( response ) {
+                            $loader.hide();
+                            $btnText.show();
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
                         
                         },
                         error: function () {
-                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
-                            location.reload();
-                        },
-
-                        complete: function () {
                             $loader.hide();
                             $btnText.show();
+                            localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
+                            location.reload();
                         }
-
-
                     });
                 }
             },

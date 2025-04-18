@@ -136,7 +136,7 @@
 
                             
                             let searchResults = response.data.search_results;
-                            console.log(searchResults)
+                            
                             let suggestionsHTML = searchResults
                                 .slice( 0, 10 )
                                 .map(( item ) => 
