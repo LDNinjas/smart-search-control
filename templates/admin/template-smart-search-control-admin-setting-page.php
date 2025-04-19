@@ -21,6 +21,24 @@ $selected_page = get_option( 'smart_search_control_result_page', '' );
     <?php echo $admin_notice; ?>
     <h2 class="short-code-result_page-title"><?php echo __( 'Result Page Settings', 'smart-search-control' ); ?></h2>
 
+    <div class="short-code-result-row">
+        <h3 class="shortcode-label"><?php echo __( 'Default ShortCode', 'smart-search-control' ); ?></h3>
+
+        <div class="short-code-result-container">
+            <div class="shortcode-container short-code-result-wrapper">
+                <p class="short-code-copy">
+                    <span id="copy-code">
+                        <span class="dashicons dashicons-clipboard"></span>
+                        <span class="copy-msg"><?php echo __( 'Copied!', 'smart-search-control' ); ?></span>
+                    </span>
+                    <span id="shortcode-text">[smart_search_control id="0"]</span>
+                </p>
+            </div>
+            <p class="short-code-result-desc">
+                <?php echo __( 'Shortcode to display search form and results', 'smart-search-control' ); ?></p>
+        </div>
+    </div>
+
     <form method="post" action="<?php echo admin_url( 'admin-post.php' ); ?>">
         <div class="short-code-result-row">
 

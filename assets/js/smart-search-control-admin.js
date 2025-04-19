@@ -264,6 +264,9 @@
              */
             createDatabaseTable: function(){
 
+                let $loader = $( '#database-loader' );
+                $loader.show();
+
                 $.ajax( {
                     url: SSC_SETTING.ajaxurl,
                     type: "POST",
@@ -272,11 +275,13 @@
                         nonce: SSC_SETTING.nonce_table,
                     },
                     success: function ( response ) {
+                        $loader.hide();
                         localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                         location.reload();
                     
                     },
                     error: function () {
+                        $loader.hide();
                         localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                         location.reload();
                     }

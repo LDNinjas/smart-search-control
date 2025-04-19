@@ -36,7 +36,6 @@ class Smart_Search_Control {
     private function hooks() {
 
         add_action( 'wp_enqueue_scripts', [ $this, 'smart_search_control_assets' ] );
-        add_action( 'wp_ajax_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
         add_action( 'wp_ajax_nopriv_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
         add_shortcode( 'smart_search_control', [ $this, 'render_search_shortcode' ] );
     
@@ -93,18 +92,23 @@ class Smart_Search_Control {
             $atts,
             'smart_search_control'
         );
-
-        
     
         $ssc_id = intval( $sanitized_atts['id'] );
 
-        if ( $ssc_id < 0 ) {
+        if ( filter_var( $ssc_id, FILTER_VALIDATE_INT ) === false || intval( $ssc_id ) < 0 ) {
 
-            return '<p>' . __( 'Invalid ID provided.', 'smart-search-control' ) . '</p>';
+            return '<p>' . __( 'Invalid ID provided. 1st chck', 'smart-search-control' ) . '</p>';
             
         }
     
-        $all_public_post_types = get_post_types( [ 'public' => true ], 'names' );
+        $all_post_types = get_post_types( [], 'objects' );
+        $all_public_post_types = [];
+        
+        foreach ( $all_post_types as $post_type => $obj ) {
+            if ( $obj->public === true || $obj->show_in_menu === true ) {
+                $all_public_post_types[] = $post_type;
+            }
+        }
 
         $posts_types = $all_public_post_types;
         
@@ -134,8 +138,12 @@ class Smart_Search_Control {
             } else {
                 $posts_types = $all_public_post_types;
             }
-        } else {
-            $posts_types = $all_public_post_types;
+        }else {
+            if ( $ssc_id === 0 ) {
+                $posts_types = $all_public_post_types;
+            } else {
+                return '<p>' . __( 'Invalid ID provided.', 'smart-search-control' ) . '</p>';
+            }
         }
 
         if ( in_array( 'product', $posts_types, true ) && ! in_array( 'product_variation', $posts_types, true ) ) {
@@ -188,7 +196,16 @@ class Smart_Search_Control {
         $query = "SELECT  data FROM $table_name WHERE id = %d";
         $result = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
 
-        $all_public_post_types = get_post_types( [ 'public' => true ], 'names' );
+        $all_post_types = get_post_types( [], 'objects' );
+        $all_public_post_types = [];
+        
+        foreach ( $all_post_types as $post_type => $obj ) {
+            if ( $obj->public === true || $obj->show_in_menu === true ) {
+                $all_public_post_types[] = $post_type;
+            }
+        }
+
+        $posts_types = $all_public_post_types;
 
         if ( ! empty( $result ) && isset( $result->data ) ) {
 
