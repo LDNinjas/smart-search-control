@@ -167,13 +167,13 @@ class Smart_Search_Control {
 
         global $wpdb;
 
-        if ( !isset( $_POST['nonce'] ) || !check_ajax_referer( 'smart_search_control_result_nonce', 'nonce', false ) ) {
+        if ( !isset( $_POST[ 'nonce' ] ) || !check_ajax_referer( 'smart_search_control_result_nonce', 'nonce', false ) ) {
 
             wp_send_json_error( [ 'message' => __( 'Nonce verification failed' , 'smart-search-control' ) ] );
 
         }
 
-        if ( empty( $_POST['search_query'] ) ) {
+        if ( empty( $_POST[ 'search_query' ] ) ) {
 
             wp_send_json_error( [ 'message' => __( 'Search query is empty.' , 'smart-search-control' ) ] );
 
