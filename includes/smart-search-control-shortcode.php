@@ -97,7 +97,7 @@ class Smart_Search_Control {
 
         if ( filter_var( $ssc_id, FILTER_VALIDATE_INT ) === false || intval( $ssc_id ) < 0 ) {
 
-            return '<p>' . __( 'Invalid ID provided.', 'smart-search-control' ) . '</p>';
+            return '<p>' . __( 'Invalid ID provided 1st .', 'smart-search-control' ) . '</p>';
             
         }
     
@@ -139,7 +139,7 @@ class Smart_Search_Control {
                 $posts_types = $all_public_post_types;
             }
         }else {
-            if ( $ssc_id === 0 ) {
+            if ( $ssc_id === '0' ) {
                 $posts_types = $all_public_post_types;
             } else {
                 return '<p>' . __( 'Invalid ID provided.', 'smart-search-control' ) . '</p>';
