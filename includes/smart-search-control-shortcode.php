@@ -97,7 +97,7 @@ class Smart_Search_Control {
 
         if ( filter_var( $ssc_id, FILTER_VALIDATE_INT ) === false || intval( $ssc_id ) < 0 ) {
 
-            return '<p>' . __( 'Invalid ID provided 1st .', 'smart-search-control' ) . '</p>';
+            return '<p>' . __( 'Invalid ID provided.', 'smart-search-control' ) . '</p>';
             
         }
     
