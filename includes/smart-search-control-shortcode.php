@@ -93,11 +93,11 @@ class Smart_Search_Control {
             'smart_search_control'
         );
     
-        $ssc_id = intval( $sanitized_atts['id'] );
+        $ssc_id =  $sanitized_atts['id'] ;
 
         if ( filter_var( $ssc_id, FILTER_VALIDATE_INT ) === false || intval( $ssc_id ) < 0 ) {
 
-            return '<p>' . __( 'Invalid ID provided. 1st chck', 'smart-search-control' ) . '</p>';
+            return '<p>' . __( 'Invalid ID provided.', 'smart-search-control' ) . '</p>';
             
         }
     
