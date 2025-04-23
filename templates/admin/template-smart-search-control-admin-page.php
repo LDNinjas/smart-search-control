@@ -30,8 +30,7 @@ if ( empty( $admin_notice ) ){
     
     foreach ( $all_post_types as $key => $post_type ) {
         if ( $post_type->public === true &&
-                $post_type->show_ui === true &&
-                $post_type->show_in_menu === true ) {
+            $post_type->show_ui === true ) {
             $post_types[ $key ] = $post_type;
         }
     }

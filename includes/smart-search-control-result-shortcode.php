@@ -165,8 +165,7 @@ class Smart_Search_Control_Result {
         foreach ( $all_post_types as $post_type => $obj ) {
             if (
                 $obj->public === true &&
-                $obj->show_ui === true &&
-                $obj->show_in_menu === true
+                $obj->show_ui === true
             ) {
                 $all_public_post_types[] = $post_type;
             }
