@@ -24,7 +24,14 @@ if ( empty( $admin_notice ) ){
 
     $search_entries = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM $table_name LIMIT %d OFFSET %d", $items_per_page, $offset ) );
 
-    $post_types = get_post_types( [ 'public' => true ], 'objects' );
+    $all_post_types = get_post_types( [], 'objects' );
+    $post_types = [];
+    
+    foreach ( $all_post_types as $key => $post_type ) {
+        if ( $post_type->public === true || $post_type->show_in_menu === true ) {
+            $post_types[ $key ] = $post_type;
+        }
+    }
 
 }
 ?>
@@ -92,8 +99,6 @@ if ( empty( $admin_notice ) ){
                 </tr>
             </tfoot>
         </table>
-
-    
 
     <!-- Pagination -->
     <div class="tablenav">
@@ -190,6 +195,7 @@ if ( empty( $admin_notice ) ){
                             <span><?php echo __( 'Select All' , 'smart-search-control' ); ?></span>
                         </label>
                     </div>
+                    <?php if ( !empty( $post_types ) ){ ?>
                     <div class="post-type-options">
                         <?php foreach ( $post_types as $key => $post_type ): ?>
 
@@ -200,6 +206,10 @@ if ( empty( $admin_notice ) ){
 
                         <?php endforeach; ?>
                     </div>
+                    <?php }
+                    else {?>
+                        <p><?php echo __( 'No post types available.' , 'smart-search-control' );
+                    }?>
                 </div>
 
                 <hr>

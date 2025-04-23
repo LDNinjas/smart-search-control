@@ -90,9 +90,10 @@ class Smart_Search_Control_Admin_Menu {
                 <p><?php echo esc_html__( 'The table for Smart Search Control does not exist. Click here to ' , 'smart-search-control' ); ?>
                     <strong class="create-table">
                         <a href="#">
-                            <?php echo esc_html__( 'Create Table' , 'smart-search-control' ); ?>
+                            <?php echo esc_html__( 'Create Table ' , 'smart-search-control' ) ; ?>
                         </a>
                     </strong>
+                    <span id="database-loader" class="loading" style="display: none;"></span>
                 </p>
             </div>
             <?php
@@ -178,9 +179,6 @@ class Smart_Search_Control_Admin_Menu {
         }
 
         $table_name = $wpdb->prefix . 'smart_search_control_parameters';
-
-
-    
         $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
         $css_id       = !empty( $_POST[ 'css_id' ] ) ? sanitize_text_field( $_POST[ 'css_id' ] ) : '';
         $class        = !empty( $_POST[ 'class' ] ) ? sanitize_text_field( $_POST[ 'class' ] ) : '';
