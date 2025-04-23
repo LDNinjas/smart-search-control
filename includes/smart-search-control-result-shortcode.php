@@ -75,16 +75,7 @@ class Smart_Search_Control_Result {
             $query = "SELECT  data FROM $table_name WHERE id = %d";
             $result = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
 
-            $all_post_types = get_post_types( [], 'objects' );
-            
-            $all_public_post_types = [];
-            
-            foreach ( $all_post_types as $post_type => $obj ) {
-                if ( $obj->public === true || $obj->show_in_menu === true ) {
-                    $all_public_post_types[] = $post_type;
-                }
-            }
-
+            $all_public_post_types = self::ssc_get_visible_post_types();
             $posts_types = $all_public_post_types; 
 
             if ( ! empty( $result ) && isset( $result->data ) ) {
@@ -162,6 +153,28 @@ class Smart_Search_Control_Result {
         );
         return $wpdb->get_var( $query ) === $table_name;
     }
+
+    /**
+     * Get all visible post types
+     */
+    public function ssc_get_visible_post_types() {
+
+        $all_post_types = get_post_types( [], 'objects' );
+        $all_public_post_types = [];
+
+        foreach ( $all_post_types as $post_type => $obj ) {
+            if (
+                $obj->public === true &&
+                $obj->show_ui === true &&
+                $obj->show_in_menu === true
+            ) {
+                $all_public_post_types[] = $post_type;
+            }
+        }
+
+        return $all_public_post_types;
+    }
+    
 }
 
 Smart_Search_Control_Result::instance();

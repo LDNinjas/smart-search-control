@@ -16,6 +16,13 @@ class Smart_Search_Control {
      */
     private $atts = [];
 
+
+    /**
+     * Summary of visible_post_types
+     * @var array
+     */
+    private static $visible_post_types = [];
+
     /**
      * Constructor
      */
@@ -28,6 +35,15 @@ class Smart_Search_Control {
         }
 
         return self::$instance;
+    }
+
+    /**
+     * Static method to initialize visible_post_types
+     */
+    public static function initialize_visible_post_types() {
+        if ( empty( self::$visible_post_types ) ) {
+            self::$visible_post_types = Smart_Search_Control_Result::instance()->ssc_get_visible_post_types();
+        }
     }
 
     /**
@@ -101,15 +117,7 @@ class Smart_Search_Control {
             
         }
     
-        $all_post_types = get_post_types( [], 'objects' );
-        $all_public_post_types = [];
-        
-        foreach ( $all_post_types as $post_type => $obj ) {
-            if ( $obj->public === true || $obj->show_in_menu === true ) {
-                $all_public_post_types[] = $post_type;
-            }
-        }
-
+        $all_public_post_types[] = self::$visible_post_types;
         $posts_types = $all_public_post_types;
         
         $query      = "SELECT data FROM $table_name WHERE id = %d";
@@ -196,15 +204,7 @@ class Smart_Search_Control {
         $query = "SELECT  data FROM $table_name WHERE id = %d";
         $result = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
 
-        $all_post_types = get_post_types( [], 'objects' );
-        $all_public_post_types = [];
-        
-        foreach ( $all_post_types as $post_type => $obj ) {
-            if ( $obj->public === true || $obj->show_in_menu === true ) {
-                $all_public_post_types[] = $post_type;
-            }
-        }
-
+        $all_public_post_types[] = self::$visible_post_types;
         $posts_types = $all_public_post_types;
 
         if ( ! empty( $result ) && isset( $result->data ) ) {
