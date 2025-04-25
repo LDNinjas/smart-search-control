@@ -88,6 +88,7 @@
                 
                     $btnText.hide();
                     $loader.show();
+                    $submitBtn.prop("disabled", true);
 
                     $.ajax( {
                         type: 'POST',
@@ -102,6 +103,7 @@
                             AdminSearchSetting.modal.css( "display", "none" );
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
+                            $submitBtn.prop("disabled", false);
                             
                         },
                         error: function () {
@@ -110,6 +112,7 @@
                             AdminSearchSetting.modal.css( "display", "none" );
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
+                            $submitBtn.prop("disabled", false);
                         }
                     });
                 });
@@ -173,6 +176,7 @@
                 
                     $btnText.hide();
                     $loader.show();
+                    $submitBtn.prop("disabled", true);
 
                     $.ajax( {
                         type: "POST",
@@ -185,6 +189,8 @@
                             AdminSearchSetting.modal.css( "display", "none" );
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
+                            $submitBtn.prop("disabled", false);
+
                         },
                         error: function () {
                             $loader.hide();
@@ -192,6 +198,8 @@
                             AdminSearchSetting.modal.css( "display", "none" );
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
+                            $submitBtn.prop("disabled", false);
+
                         }
                     });
                 });
@@ -205,13 +213,16 @@
             deleteSetting: function ( event ) {
 
                 event.preventDefault();
-                let id = $( event.currentTarget ).data( 'id' );
+
+                let $btn = $( event.currentTarget );
+                let id = $btn.data( 'id' );
 
                 if ( confirm( SSC_SETTING.confirm_msg ) ) {
 
-                    let $loader = $( '#delete-loader' );
-                    let $btnText = $( '#delete-row' )
-                
+                    let $row = $btn.closest( 'tr' );
+                    let $loader = $row.find( '#delete-loader' );
+                    let $btnText = $btn.find( '#delete-row' );
+
                     $btnText.hide();
                     $loader.show();
 

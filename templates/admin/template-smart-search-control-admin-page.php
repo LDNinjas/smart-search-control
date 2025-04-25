@@ -7,6 +7,7 @@ if ( !defined( 'ABSPATH' ) ) {
 global $wpdb;
 
 $admin_notice = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
+
 $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
 $items_per_page = 10;
@@ -28,7 +29,8 @@ if ( empty( $admin_notice ) ){
     $post_types = [];
     
     foreach ( $all_post_types as $key => $post_type ) {
-        if ( $post_type->public === true || $post_type->show_in_menu === true ) {
+        if ( $post_type->public === true &&
+            $post_type->show_ui === true ) {
             $post_types[ $key ] = $post_type;
         }
     }

@@ -1,17 +1,20 @@
 <?php
 
-if ( !defined( 'ABSPATH' ) ){
+if ( !defined( 'ABSPATH' ) ) {
     exit;
-
 }
 
-    $fallback_page_id = get_option( 'smart_search_control_result_page' );
-    if ( $fallback_page_id ) {
-        $url = get_permalink( $fallback_page_id );
-    }
+$url = '';
+$fallback_page_id = get_option( 'smart_search_control_result_page' );
 
-if( isset( $_GET[ 'query' ] )  ){
+if ( !$fallback_page_id ) {
+    echo '<p>' . __( 'Please set a result page in the Smart Search Control settings.', 'smart-search-control' ) . '</p>';
+    return; 
+}
 
+$url = get_permalink( $fallback_page_id );
+
+if ( isset( $_GET[ 'query' ] ) ) {
     $search_query = sanitize_text_field( $_GET[ 'query' ] );
 }
 ?>
