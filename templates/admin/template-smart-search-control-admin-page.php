@@ -25,15 +25,21 @@ if ( empty( $admin_notice ) ){
 
     $search_entries = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM $table_name LIMIT %d OFFSET %d", $items_per_page, $offset ) );
 
-    $all_post_types = get_post_types( [], 'objects' );
     $post_types = [];
-    
-    foreach ( $all_post_types as $key => $post_type ) {
-        if ( $post_type->public === true &&
-            $post_type->show_ui === true ) {
-            $post_types[ $key ] = $post_type;
-        }
+
+    $args = [
+        'public' => true,
+        'publicly_queryable' => true,
+    ];
+
+    $visible_post_types = get_post_types( $args, 'objects' );
+
+    if ( !array_key_exists( 'page', $visible_post_types ) ) {
+        $visible_post_types[ 'page' ] = get_post_type_object( 'page' );
     }
+
+    $post_types = $visible_post_types;
+    
 
 }
 ?>
