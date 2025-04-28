@@ -159,17 +159,21 @@ class Smart_Search_Control_Result {
      */
     public function ssc_get_visible_post_types() {
 
-        $all_post_types = get_post_types( [], 'objects' );
+
         $all_public_post_types = [];
 
-        foreach ( $all_post_types as $post_type => $obj ) {
-            if (
-                $obj->public === true &&
-                $obj->show_ui === true
-            ) {
-                $all_public_post_types[] = $post_type;
-            }
+        $args = [
+            'public' => true,
+            'publicly_queryable' => true,
+        ];
+    
+        $visible_post_types = get_post_types( $args, 'objects' );
+    
+        if ( !array_key_exists( 'page', $visible_post_types ) ) {
+            $visible_post_types[ 'page' ] = get_post_type_object( 'page' );
         }
+
+        $all_public_post_types = $visible_post_types;
 
         return $all_public_post_types;
     }
