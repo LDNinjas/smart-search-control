@@ -37,24 +37,30 @@ class Smart_Search_Control {
         return self::$instance;
     }
 
-    /**
-     * Static method to initialize visible_post_types
-     */
-    public static function initialize_visible_post_types() {
-        if ( empty( self::$visible_post_types ) ) {
-            self::$visible_post_types = Smart_Search_Control_Result::instance()->ssc_get_visible_post_types();
-        }
-    }
 
     /**
      * All the required hooks are called here.
      */
     private function hooks() {
 
+        add_action( 'init', [ $this, 'initialize_visible_post_types' ], 100 );
         add_action( 'wp_enqueue_scripts', [ $this, 'smart_search_control_assets' ] );
+        add_action( 'wp_ajax_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
         add_action( 'wp_ajax_nopriv_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
         add_shortcode( 'smart_search_control', [ $this, 'render_search_shortcode' ] );
     
+    }
+
+    /**
+     * Static method to initialize visible_post_types
+     */
+    public static function initialize_visible_post_types() {
+
+        if ( empty( self::$visible_post_types ) ) {
+            
+            self::$visible_post_types = Smart_Search_Control_Result::instance()->ssc_get_visible_post_types();
+
+        }
     }
 
     /**
@@ -117,7 +123,7 @@ class Smart_Search_Control {
             
         }
     
-        $all_public_post_types[] = self::$visible_post_types;
+        $all_public_post_types = self::$visible_post_types;
         $posts_types = $all_public_post_types;
         
         $query      = "SELECT data FROM $table_name WHERE id = %d";
@@ -204,7 +210,7 @@ class Smart_Search_Control {
         $query = "SELECT  data FROM $table_name WHERE id = %d";
         $result = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
 
-        $all_public_post_types[] = self::$visible_post_types;
+        $all_public_post_types = self::$visible_post_types;
         $posts_types = $all_public_post_types;
 
         if ( ! empty( $result ) && isset( $result->data ) ) {

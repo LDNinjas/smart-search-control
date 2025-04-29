@@ -2,6 +2,16 @@
 
 if ( !defined( 'ABSPATH' ) ) exit;
 
+if ( is_object( $posts_types ) && isset( $posts_types->name ) ) {
+    $posts_types = $posts_types->name;
+}
+
+if ( is_array( $posts_types ) ) {
+    $posts_types = array_map( function( $post_type_object ) {
+        return is_object( $post_type_object ) && isset( $post_type_object->name ) ? $post_type_object->name : $post_type_object;
+    }, $posts_types );
+}
+
 $args = [
     's' => $search_query,
     'post_type' => $posts_types,
@@ -15,7 +25,9 @@ $query = new WP_Query( $args );
 ?>
 
 <div class="smart-search-control-result-header">
-    <h2 class="result-header"><?php echo __( 'Search Results for:', 'smart-search-control' ) . ' ' . esc_html( $search_query ); ?></h2>
+    <?php if( $search_query != null ){ ?>
+        <h2 class="result-header"><?php echo __( 'Search Results for:', 'smart-search-control' ) . ' ' . esc_html( $search_query ); ?></h2>
+    <?php }?>
     <div class="result-header">
         <?php echo do_shortcode( $shortcode_content ); ?>
     </div>
@@ -25,7 +37,7 @@ $query = new WP_Query( $args );
 
     <?php
 
-    if ( $query->have_posts() ) {
+    if ( $query->have_posts() && $search_query != null ) {
 
         while ( $query->have_posts() ) {
             $query->the_post();
