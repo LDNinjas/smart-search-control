@@ -56,6 +56,10 @@ class Smart_Search_Control_Result {
     public function render_smart_search_result_shortcode( ) {
 
         global $wpdb;
+
+        wp_enqueue_style( 'smart-search-control-result-style' );
+        wp_enqueue_script( 'smart-search-control-result-js' );
+
         $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
         if ( ! $this->table_exists( $table_name ) ) {
@@ -64,6 +68,9 @@ class Smart_Search_Control_Result {
             return ob_get_clean();
             
         }
+
+        $all_public_post_types = self::ssc_get_visible_post_types();
+        $posts_types = $all_public_post_types; 
 
         if ( isset( $_GET[ 'query' ] ) && !empty( $_GET[ 'query' ] ) ) {
             
@@ -74,9 +81,6 @@ class Smart_Search_Control_Result {
             
             $query = "SELECT  data FROM $table_name WHERE id = %d";
             $result = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
-
-            $all_public_post_types = self::ssc_get_visible_post_types();
-            $posts_types = $all_public_post_types; 
 
             if ( ! empty( $result ) && isset( $result->data ) ) {
 
@@ -106,21 +110,27 @@ class Smart_Search_Control_Result {
             
             $shortcode_content = '[smart_search_control id="' . esc_attr( $ssc_id ) . '"]';
             
+        
+        }else{
+            
             ob_start();
-            $template_path = SSC_TEMPLATES_DIR . 'template-smart-search-control-result.php';
+
+            $search_query = null;
+            $posts_types = $all_public_post_types; 
+
+            $shortcode_content = '[smart_search_control id="0"]';
+
+        }
+
+        
+
+        $template_path = SSC_TEMPLATES_DIR . 'template-smart-search-control-result.php';
         
             if ( file_exists( $template_path ) ) {
 
                 include $template_path;
 
             }
-        
-        }else{
-            
-            $shortcode_content = '[smart_search_control id="0"]';
-            
-            echo do_shortcode( $shortcode_content );
-        }
         
         return ob_get_clean();
     }
@@ -159,9 +169,6 @@ class Smart_Search_Control_Result {
      */
     public function ssc_get_visible_post_types() {
 
-
-        $all_public_post_types = [];
-
         $args = [
             'public' => true,
             'publicly_queryable' => true,
@@ -169,14 +176,15 @@ class Smart_Search_Control_Result {
     
         $visible_post_types = get_post_types( $args, 'objects' );
     
-        if ( !array_key_exists( 'page', $visible_post_types ) ) {
+        if (!array_key_exists( 'page', $visible_post_types ) ) {
             $visible_post_types[ 'page' ] = get_post_type_object( 'page' );
         }
-
-        $all_public_post_types = $visible_post_types;
+    
+        $all_public_post_types = array_keys( $visible_post_types );
 
         return $all_public_post_types;
     }
+    
     
 }
 
