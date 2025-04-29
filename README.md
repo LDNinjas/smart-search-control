@@ -1,58 +1,94 @@
-**Smart Search Control Plugin Documentation**
+**WordPress Smart Search Control Plugin**
 
-**Shortcode Usage**
+**Description**
 
-Insert the shortcode into any page or post to display the search bar.
+Enhance the search functionality of your WordPress site with the Smart Search Control Plugin. This plugin replaces the default WordPress search with a more intelligent and efficient search engine, providing your users with accurate and relevant results.
 
-**Basic Shortcode**
+**Key Features**
 
-[smart_search_control]
+    <strong>Improved Accuracy: </strong> Delivers more relevant search results by analyzing content beyond titles and excerpts.
+    <strong>Customizable Search Algorithm:</strong> Fine-tune the search algorithm to prioritize specific content types or fields.
+    <strong>Live Search Suggestions:</strong> Provides real-time search suggestions as users type, improving the search experience.
+    <strong>Custom Fields Support:</strong> Indexes and searches within custom fields created by plugins like Advanced Custom Fields (ACF).
+    <strong>WooCommerce Compatibility:</strong> Optimizes search for WooCommerce products, including product attributes and variations.
+    <strong>Search Analytics:</strong> Track user search queries to gain insights into what your visitors are looking for.
+    <strong>Easy Installation and Setup:</strong> Simple installation and configuration process.
 
-This shortcode will display a search bar with an "Advanced Filters" button.
+**Installation**
 
-**Shortcode Attributes**
+    <strong>WordPress Plugin Repository:</strong>
+        Go to your WordPress admin panel.
+        Navigate to "Plugins" > "Add New".
+        Search for "Smart Search Control".
+        Click "Install Now" and then "Activate".
+    <strong>Manual Installation:</strong>
+        Download the plugin ZIP file.
+        In your WordPress admin panel, go to "Plugins" > "Add New".
+        Click "Upload Plugin" and select the ZIP file.
+        Click "Install Now" and then "Activate".
 
-Customize the search bar using the following shortcode attributes:
 
-**Placeholder TextSet a custom placeholder in the search bar:**
+**Configuration**
 
-[smart_search_control]
+    Navigate to the plugin settings page in your WordPress admin panel.
+    Configure the search settings according to your preferences, including:
+        Selecting which content types to include in the search.
+        Prioritizing specific fields or content.
+        Enabling or disabling live search suggestions.
+    Save your changes.
 
-**Custom CSS ClassesAdd your own CSS classes to style the search bar:**
+
+**Usage**
 
 [smart_search_control class="custom-class"]
 
-**Post Type FilteringRestrict the search to specific post types (e.g., pages):**
+**Frequently Asked Questions**
 
-[smart_search_control type="page"]
+    No, the plugin is designed to be efficient and optimized for performance.
 
-**Advanced Filters**
+**Is this plugin compatible with WooCommerce?**
 
-Clicking the "Advanced Filters" button allows users to:
+    Yes, the plugin enhances search for WooCommerce products.
 
-Select Post TypesChoose which post types to include in the search.
+**Can I customize the search results page?**
 
-WooCommerce IntegrationIf WooCommerce is installed, a checkbox will appear in the advanced filters, enabling users to include product variations in their search.
+    The plugin improves the search results, and you can further customize the appearance using your theme's templates.
 
-**Search Results Template**
+**Does it support custom post types?**
 
-Create a template to display all search results. Ensure that the template is styled to match the overall design of your website for a seamless user experience.
+    Yes, the plugin supports custom post types.
 
-**Empty Search Handling**
+**Troubleshooting**
 
-A message box will appear if the user attempts to search with an empty search bar. Customize this message to guide users appropriately.
+    If you encounter any issues, please refer to the plugin documentation or contact our support team.
 
-**Example Implementations**
+**Support**
 
-**Basic Search Bar with Custom Placeholder:**
+For support, please visit our support forums or contact us through our website.
 
-[smart_search_control placeholder="Search for articles..."]
+**Changelog**
 
-**Search Bar with Custom Class and Post Type Restriction:**
+    <strong>1.0.0</strong>
+        Initial release
+    <strong>1.1.0</strong>
+        Added WooCommerce compatibility.
+    <strong>1.2.0</strong>
+        Improved search accuracy.
+    <strong>1.3.0</strong>
+        Added support for custom fields.
 
-[wp_search_bar class="my-custom-style" type="page,post"]
+**Screenshots**
+    
+    Admin settings page
+        ![](assets/screenshot/SSC 1.png)
+        ![](assets/screenshot/SSC 2.png)
+        ![](assets/screenshot/SSC 3.png)
+        ![](assets/screenshot/SSC 4.png)
+        ![](assets/screenshot/SSC 7.png)
+        ![](assets/screenshot/SSC 8.png)
+        ![](assets/screenshot/SSC 6.png)
 
-**Full-Featured Search with WooCommerce Variations:**
-
-[wp_search_bar placeholder="Search products and posts" type="product"]
-
+    Search page
+        ![](assets/screenshot/SSC 5.png)
+    Results page
+        ![](assets/screenshot/SSC 9.png)
