@@ -3,7 +3,7 @@
 
 ## Description
 
-Enhance the search functionality of your WordPress site with the Smart Search Control Plugin. This plugin replaces the default WordPress search with a more intelligent and efficient search engine, providing your users with accurate and relevant results.
+Enhance the search functionality of your WordPress site with the **Smart Search Control** Plugin. This plugin adds a powerful and intelligent search engine to your site without replacing the default WordPress search. It allows you to display customizable search forms anywhere using shortcodes, offering users more accurate and relevant results where needed.
 
 ## Key Features
 
@@ -31,18 +31,24 @@ Enhance the search functionality of your WordPress site with the Smart Search Co
 
 ## Configuration
 
-1. Navigate to the plugin settings page in your WordPress admin panel.  
-2. Configure the search settings according to your preferences, including:  
+1. Navigate to the **Smart Search Control** settings page in your WordPress admin panel.  
+2. Configure the search settings based on your preferences, including:  
     - Selecting which content types to include in the search.  
-    - Prioritizing specific fields or content.  
-    - Enabling or disabling live search suggestions.  
-3. Save your changes.
+    - Prioritizing specific fields or content for more accurate results.  
+    - Adding a custom **placeholder, CSS ID,** and **CSS class** for styling and customization.  
+3. Select the page where you want to display the search results from the available options or create a new one for this purpose.
+4. Click **Save** to apply your configuration.
 
 ## Usage
 
+To use the smart_search_control shortcode, simply insert the following shortcode into your post, page, or widget and provide an existing id associated with a configured search control. This will display the smart search form on that page.
+
+**Example**
 ```php
 [smart_search_control id="123"]
 ```
+In this example, 123 should be replaced with the ID of an existing smart search setup. Once added, the corresponding search form will appear on the page and be fully functional.
+
 
 ## Frequently Asked Questions
 
