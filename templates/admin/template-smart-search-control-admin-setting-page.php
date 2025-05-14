@@ -64,7 +64,5 @@ $selected_page = get_option( 'smart_search_control_result_page', '' );
             <input type="submit" value="<?php echo __( 'Save changes', 'smart-search-control' ); ?>"
                 class="button button-primary" />
         </div>
-
     </form>
-
 </div>

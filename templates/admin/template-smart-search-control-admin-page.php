@@ -38,9 +38,7 @@ if ( empty( $admin_notice ) ){
         $visible_post_types[ 'page' ] = get_post_type_object( 'page' );
     }
 
-    $post_types = $visible_post_types;
-    
-
+    $post_types = apply_filter( 'visible_post_types', $visible_post_types );
 }
 ?>
 
@@ -53,60 +51,60 @@ if ( empty( $admin_notice ) ){
 
 </div>
 
-    <p><?php echo __( 'Customize the search bar settings to enhance your website’s search functionality.', 'smart-search-control' ); ?></p>
+<p><?php echo __( 'Customize the search bar settings to enhance your website’s search functionality.', 'smart-search-control' ); ?></p>
 
-        <table class="search-table">
-            <thead>
-                <tr>
-                    <th><?php echo __( 'Shortcode' , 'smart-search-control' ); ?></th>
-                    <th><?php echo __( 'Place Holder' , 'smart-search-control' ); ?></th>
-                    <th><?php echo __( 'CSS ID' , 'smart-search-control' ); ?></th>
-                    <th><?php echo __( 'CSS Class' , 'smart-search-control' ); ?></th>
-                    <th><?php echo __( 'Action' , 'smart-search-control' ); ?></th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php if ( isset( $search_entries ) && is_array( $search_entries ) && $search_entries ) { ?>
-                    <?php foreach ( $search_entries as $entry ){
+    <table class="search-table">
+        <thead>
+            <tr>
+                <th><?php echo __( 'Shortcode' , 'smart-search-control' ); ?></th>
+                <th><?php echo __( 'Place Holder' , 'smart-search-control' ); ?></th>
+                <th><?php echo __( 'CSS ID' , 'smart-search-control' ); ?></th>
+                <th><?php echo __( 'CSS Class' , 'smart-search-control' ); ?></th>
+                <th><?php echo __( 'Action' , 'smart-search-control' ); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php if ( isset( $search_entries ) && is_array( $search_entries ) && $search_entries ) { ?>
+                <?php foreach ( $search_entries as $entry ){
+                
+                    $data = json_decode( $entry->data ); ?>
                     
-                        $data = json_decode( $entry->data ); ?>
-                        
-                        <tr class="search-table-data">
-                            <strong>
-                                <td>[smart_search_control id="<?php echo esc_html( $entry->id ); ?>"]</td>
-                            </strong>
-                            <td><?php echo esc_html( $data->place_holder ); ?></td>
-                            <td><?php echo esc_html( $data->css_id ); ?></td>
-                            <td><?php echo esc_html( implode( ', ', explode( ' ', $data->class ) ) ); ?></td>
-                            <td>
-                                <a href="#" data-entry='<?= json_encode( $entry ?: new stdClass() ); ?>' class="button edit-setting"><?php echo __( 'Edit' , 'smart-search-control' ); ?></a>
-                                <button class="delete-setting " data-id="<?php echo $entry->id; ?>">
-                                    <span  id="delete-row"><?php echo __( 'Delete' , 'smart-search-control'); ?>
-                                    </span>
-                                    <span id="delete-loader" class="loading" style="display: none;"></span>
-                                </button>
-                            </td>
-                        </tr>
-                    <?php
-                    } 
-                    
-                }
-                else { ?>
-                    <tr>
-                        <td colspan="5" class="no-search-parm"> <?php echo __( 'Default Shortcode:', 'smart-search-control' ) . ' [smart_search_control id="0"]'; ?></td>
+                    <tr class="search-table-data">
+                        <strong>
+                            <td>[smart_search_control id="<?php echo esc_html( $entry->id ); ?>"]</td>
+                        </strong>
+                        <td><?php echo esc_html( $data->place_holder ); ?></td>
+                        <td><?php echo esc_html( $data->css_id ); ?></td>
+                        <td><?php echo esc_html( implode( ', ', explode( ' ', $data->class ) ) ); ?></td>
+                        <td>
+                            <a href="#" data-entry='<?= json_encode( $entry ?: new stdClass() ); ?>' class="button edit-setting"><?php echo __( 'Edit' , 'smart-search-control' ); ?></a>
+                            <button class="delete-setting " data-id="<?php echo $entry->id; ?>">
+                                <span  id="delete-row"><?php echo __( 'Delete' , 'smart-search-control'); ?>
+                                </span>
+                                <span id="delete-loader" class="loading" style="display: none;"></span>
+                            </button>
+                        </td>
                     </tr>
-                <?php } ?>
-            </tbody>
-        <tfoot>
+                <?php
+                } 
+                
+            }
+            else { ?>
                 <tr>
-                    <th><?php echo __( 'Shortcode' , 'smart-search-control' ); ?></th>
-                    <th><?php echo __( 'Place Holder' , 'smart-search-control' ); ?></th>
-                    <th><?php echo __( 'CSS ID' , 'smart-search-control' ); ?></th>
-                    <th><?php echo __( 'CSS Class' , 'smart-search-control' ); ?></th>
-                    <th><?php echo __( 'Action' , 'smart-search-control' ); ?></th>
+                    <td colspan="5" class="no-search-parm"> <?php echo __( 'Default Shortcode:', 'smart-search-control' ) . ' [smart_search_control id="0"]'; ?></td>
                 </tr>
-            </tfoot>
-        </table>
+            <?php } ?>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th><?php echo __( 'Shortcode' , 'smart-search-control' ); ?></th>
+                <th><?php echo __( 'Place Holder' , 'smart-search-control' ); ?></th>
+                <th><?php echo __( 'CSS ID' , 'smart-search-control' ); ?></th>
+                <th><?php echo __( 'CSS Class' , 'smart-search-control' ); ?></th>
+                <th><?php echo __( 'Action' , 'smart-search-control' ); ?></th>
+            </tr>
+        </tfoot>
+    </table>
 
     <!-- Pagination -->
     <div class="tablenav">
@@ -139,10 +137,8 @@ if ( empty( $admin_notice ) ){
                     <a class="next page-numbers" href="<?php echo admin_url( 'admin.php?page=smart_search_control&paged=' . $next_page ); ?>"><?php echo __( 'Next »' , 'smart-search-control' ); ?></a>
                 <?php } ?>
             <?php } ?>
-
         </div>
     </div>
-
 </div>
 
 <!-- Modal Structure -->

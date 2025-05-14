@@ -1,13 +1,12 @@
 <?php
 /**
  * Plugin Name: Smart Search Control
- * Plugin URI: http://www.smart-search-control.com
+ * Plugin URI: https://ldninjas.com/smartsearch-control/
  * Description: A simple search plugin for WordPress
  * Version: 1.0.0
  * Author: LDNinjas
- * Author URI: http://www.ldninjas.com
+ * Author URI: https://ldninjas.com/
  * Text Domain: smart-search-control
- * License: GPL2
  */
 
 if ( !defined( 'ABSPATH' ) ) exit;
@@ -32,11 +31,57 @@ class LD_Smart_Search_Control {
             self::$instance = new self;
             self::$instance->constants_setup(); 
             self::$instance->includes_files();
+            self::$instance->enable_freemius();
             self::$instance->hooks();
         }
 
         return self::$instance;
     }
+
+    /**
+     *  create a function enable freemius 
+     */
+    public function enable_freemius() {
+
+        if ( ! function_exists( 'ssc_fs' ) ) {
+            // Create a helper function for easy SDK access.
+            function ssc_fs() {
+                global $ssc_fs;
+
+                if ( ! isset( $ssc_fs ) ) {
+                    // Activate multisite network integration.
+                    if ( ! defined( 'WP_FS__PRODUCT_19073_MULTISITE' ) ) {
+                        define( 'WP_FS__PRODUCT_19073_MULTISITE', true );
+                    }
+
+                    // Include Freemius SDK.
+                    require_once dirname( __FILE__ ) . '/vendor/freemius/start.php';
+                    $ssc_fs = fs_dynamic_init( array(
+                        'id'                  => '19073',
+                        'slug'                => 'smart-search-control',
+                        'type'                => 'plugin',
+                        'public_key'          => 'pk_060713b590b492dd1c8dd77854d88',
+                        'is_premium'          => false,
+                        'has_addons'          => false,
+                        'has_paid_plans'      => false,
+                        'menu'                => array(
+                            'slug'           => 'smart-search-control',
+                            'first-path'     => 'admin.php?page=smart_search_control',
+                            'support'        => false,
+                            'network'        => true,
+                        ),
+                    ) );
+                }
+
+                return $ssc_fs;
+            }
+
+            // Init Freemius.
+            ssc_fs();
+            // Signal that SDK was initiated.
+            do_action( 'ssc_fs_loaded' );
+        }
+    } 
 
     /**
      * Define plugin constants 
@@ -78,7 +123,6 @@ class LD_Smart_Search_Control {
 
         add_filter( 'plugin_action_links_' . SSC_BASE_DIR, [ $this, 'smart_search_control_setting_links' ] );
         register_activation_hook( __FILE__, [ $this,  'smart_search_control_plugin_activate' ] );
-
     }
 
     /**
