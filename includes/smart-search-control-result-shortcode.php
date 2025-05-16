@@ -175,7 +175,7 @@ class Smart_Search_Control_Result {
     
         $all_public_post_types = array_keys( $visible_post_types );
 
-        return apply_filter( 'visible_post_types', $all_public_post_types );
+        return apply_filters( 'visible_post_types', $all_public_post_types );
     } 
 }
 Smart_Search_Control_Result::instance();

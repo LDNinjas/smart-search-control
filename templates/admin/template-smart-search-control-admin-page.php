@@ -38,7 +38,7 @@ if ( empty( $admin_notice ) ){
         $visible_post_types[ 'page' ] = get_post_type_object( 'page' );
     }
 
-    $post_types = apply_filter( 'visible_post_types', $visible_post_types );
+    $post_types = apply_filters( 'visible_post_types', $visible_post_types );
 }
 ?>
 
