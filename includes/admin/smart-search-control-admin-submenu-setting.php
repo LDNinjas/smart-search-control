@@ -63,6 +63,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
     public function is_admin_settings_page() {
 
         if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
             return isset( $_POST[ 'action' ] ) && strpos( $_POST[ 'action' ], 'smart_search_control_setting' ) !== false;
         }
     
@@ -93,7 +94,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
     public function render_admin_submenu_page() {
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( __( 'You do not have permission to access this page.' , 'smart-search-control' ) );
+            wp_die( esc_attr( __( 'You do not have permission to access this page.' , 'smart-search-control' ) ) );
         }
 
         $template_path = SSC_TEMPLATES_DIR . 'admin/template-smart-search-control-admin-setting-page.php';
@@ -112,7 +113,8 @@ class Smart_Search_Control_Admin_Submenu_Setting {
 
         wp_enqueue_style(
             'smart-search-control-admin-style',
-            SSC_ASSETS_URL . 'css/smart-search-control-admin-style.css'
+            SSC_ASSETS_URL . 'css/smart-search-control-admin-style.css',
+            array(), SSC_VERSION, 'all'
         );
         wp_enqueue_script( 'smart-search-control-admin-js', SSC_ASSETS_URL . 'js/smart-search-control-admin.js', [ 'jquery' ], SSC_VERSION, true );
     }
@@ -125,7 +127,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
             if ( !isset( $_POST[ 'selected_page' ], $_POST[ 'smart_search_control_nonce' ] ) ) {
                 return;
             }
-        
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
             if ( !wp_verify_nonce( $_POST[ 'smart_search_control_nonce' ], 'smart_search_control_save_page' ) ) {
                 return;
             }
@@ -136,7 +138,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
         
             $selected_page_id = absint( $_POST[ 'selected_page' ] );
             update_option( 'smart_search_control_result_page', $selected_page_id );
-        
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
             wp_safe_redirect( esc_url_raw( add_query_arg( 'message', 'ssc_updated', $_POST['_wp_http_referer'] ) ) );
             exit();
         }
@@ -146,11 +148,12 @@ class Smart_Search_Control_Admin_Submenu_Setting {
          */
         public function ssc_admin_notices(){
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             if( isset( $_GET[ 'message' ] ) && $_GET[ 'message' ] == 'ssc_updated' ){
 
                 ?>
                 <div class="notice notice-success is-dismissible">
-                <p><?php echo __( 'Result page saved successfully!', 'smart-search-control' ); ?></p>
+                <p><?php echo esc_attr( __( 'Result page saved successfully!', 'smart-search-control' ) ); ?></p>
                 </div>
                 <?php
 

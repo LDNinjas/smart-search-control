@@ -18,50 +18,50 @@ $selected_page = get_option( 'smart_search_control_result_page', '' );
 
 <div class="wrap">
 
-    <?php echo $admin_notice; ?>
-    <h2 class="short-code-result_page-title"><?php echo __( 'Result Page Settings', 'smart-search-control' ); ?></h2>
+    <?php echo esc_html( $admin_notice ); ?>
+    <h2 class="short-code-result_page-title"><?php echo esc_attr( __( 'Result Page Settings', 'smart-search-control' ) ); ?></h2>
 
     <div class="short-code-result-row">
-        <h3 class="shortcode-label"><?php echo __( 'Default ShortCode', 'smart-search-control' ); ?></h3>
+        <h3 class="shortcode-label"><?php echo esc_attr( __( 'Default ShortCode', 'smart-search-control' ) ); ?></h3>
 
         <div class="short-code-result-container">
             <div class="shortcode-container short-code-result-wrapper">
                 <p class="short-code-copy">
                     <span id="copy-code">
                         <span class="dashicons dashicons-clipboard"></span>
-                        <span class="copy-msg"><?php echo __( 'Copied!', 'smart-search-control' ); ?></span>
+                        <span class="copy-msg"><?php echo esc_attr( __( 'Copied!', 'smart-search-control' ) ); ?></span>
                     </span>
                     <span id="shortcode-text">[smart_search_control id="0"]</span>
                 </p>
             </div>
             <p class="short-code-result-desc">
-                <?php echo __( 'Shortcode to display search form and results', 'smart-search-control' ); ?></p>
+                <?php echo esc_attr( __( 'Shortcode to display search form and results', 'smart-search-control' ) ); ?></p>
         </div>
     </div>
 
-    <form method="post" action="<?php echo admin_url( 'admin-post.php' ); ?>">
+    <form method="post" action="<?php echo esc_html( admin_url( 'admin-post.php' ) ); ?>">
         <div class="short-code-result-row">
 
-                <h3 class="shortcode-label"><?php echo __( 'Result page', 'smart-search-control' ); ?></h3>
+                <h3 class="shortcode-label"><?php echo esc_attr( __( 'Result page', 'smart-search-control' ) ); ?></h3>
 
             <div class="select-page-container">
                 <select name="selected_page" id="selected_page">
-                    <option value=""><?php echo __( 'Select result page', 'smart-search-control' ); ?></option>
+                    <option value=""><?php echo esc_attr( __( 'Select result page', 'smart-search-control' ) ); ?></option>
                     <?php
                         foreach ( $pages as $page ) {
                             $selected = ( $selected_page == $page->ID ) ? 'selected' : '';
-                            echo '<option value="' . esc_attr( $page->ID ) . '" ' . $selected . '>' . esc_html( $page->post_title ) . '(ID: ' . esc_html( $page->ID ) . ')' . '</option>';
+                            echo '<option value="' . esc_attr( $page->ID ) . '" ' . esc_html( $selected ). '>' . esc_html( $page->post_title ) . '(ID: ' . esc_html( $page->ID ) . ')' . '</option>';
                         }
                     ?>
                 </select>
                 <p class="short-code-result-desc">
-                <?php echo __( 'Page where search results will be displayed', 'smart-search-control' ); ?></p>
+                <?php echo esc_attr( __( 'Page where search results will be displayed', 'smart-search-control' ) ); ?></p>
             </div>
         </div>
         <input type="hidden" name="action" value="ssc_save_action">
         <?php wp_nonce_field( 'smart_search_control_save_page', 'smart_search_control_nonce' ); ?>
         <div class="smart_search_result_btn">
-            <input type="submit" value="<?php echo __( 'Save changes', 'smart-search-control' ); ?>"
+            <input type="submit" value="<?php echo esc_attr( __( 'Save changes', 'smart-search-control' ) ); ?>"
                 class="button button-primary" />
         </div>
     </form>

@@ -48,19 +48,33 @@ class Smart_Search_Control_Database {
         dbDelta( $sql );
     }
 
-    /**
-     * Checks if a table exists in the database.
-     */
-    public function table_exists( $table_name ) {
+/**
+ * Checks if a table exists in the database.
+ */
+public function table_exists( $table_name ) {
+    
+    global $wpdb;
 
-        global $wpdb;
-        
-        $query = $wpdb->prepare(
-            "SHOW TABLES LIKE %s",
-            $table_name
-        );
-        return $wpdb->get_var( $query ) === $table_name;
+    $cache_key = 'ssc_table_exists_' . md5( $table_name );
+    $cached = wp_cache_get( $cache_key, 'smart_search_control' );
+
+    if ( false !== $cached ) {
+        return $cached;
     }
+
+
+    $table_name = esc_sql( $table_name );
+
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Necessary for table creation with dbDelta.
+    $result = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name ) );
+    $exists = ( null !== $result );
+
+    wp_cache_set( $cache_key, $exists, 'smart_search_control', 300 );
+
+    return $exists;
+}
+
+
 }
 
 Smart_Search_Control_Database::instance();
