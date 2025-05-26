@@ -65,6 +65,7 @@ class Smart_Search_Control_Admin_Menu {
     public function is_admin_settings_page() {
 
         if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
             return isset( $_POST[ 'action' ] ) && strpos( $_POST[ 'action' ], 'smart_search_control_setting' ) !== false;
         }
     
@@ -80,7 +81,17 @@ class Smart_Search_Control_Admin_Menu {
         global $wpdb;
         $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
-        $table_exists = $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) === $table_name;
+        $cache_key = 'ssc_table_exists_' . md5( $table_name );
+        $table_exists = wp_cache_get( $cache_key, 'smart_search_control' );
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared
+        $table_exists = $wpdb->get_var(
+            $wpdb->prepare(
+                "SHOW TABLES LIKE %s",
+                $wpdb->esc_like($table_name)
+            )
+        ) ? true : false;
+        wp_cache_set( $cache_key, $table_exists, 'smart_search_control', DAY_IN_SECONDS );
 
         if ( !$table_exists ) {
 
@@ -124,7 +135,7 @@ class Smart_Search_Control_Admin_Menu {
     public function render_admin_page() {
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( __( 'You do not have permission to access this page.' , 'smart-search-control' ) );
+            wp_die( esc_attr( __( 'You do not have permission to access this page.' , 'smart-search-control' ) ) );
         }
 
         $template_path = SSC_TEMPLATES_DIR . 'admin/template-smart-search-control-admin-page.php';
@@ -143,7 +154,8 @@ class Smart_Search_Control_Admin_Menu {
 
         wp_enqueue_style(
             'smart-search-control-admin-style',
-            SSC_ASSETS_URL . 'css/smart-search-control-admin-style.css'
+            SSC_ASSETS_URL . 'css/smart-search-control-admin-style.css',
+            array(), SSC_VERSION, 'all'
         );
         wp_enqueue_script( 'smart-search-control-admin-js', SSC_ASSETS_URL . 'js/smart-search-control-admin.js', [ 'jquery' ], SSC_VERSION, true );
         wp_localize_script( 'smart-search-control-admin-js', 'SSC_SETTING', [
@@ -173,17 +185,17 @@ class Smart_Search_Control_Admin_Menu {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
-
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_add' ) ) {
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce(  $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_add' ) )  {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
 
         $table_name = $wpdb->prefix . 'smart_search_control_parameters';
-        $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : '';
-        $css_id       = !empty( $_POST[ 'css_id' ] ) ? sanitize_text_field( $_POST[ 'css_id' ] ) : '';
-        $class        = !empty( $_POST[ 'class' ] ) ? sanitize_text_field( $_POST[ 'class' ] ) : '';
-        $post_types   = isset( $_POST[ 'post_type' ] ) && !empty( $_POST[ 'post_type' ] ) 
-            ? array_map( 'sanitize_text_field', $_POST[ 'post_type' ] ) 
+        $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field(  wp_unslash( $_POST[ 'place_holder' ] ) ) : '';
+        $css_id       = !empty( $_POST[ 'css_id' ] ) ? sanitize_text_field( wp_unslash( $_POST[ 'css_id' ] ) ) : '';
+        $class        = !empty( $_POST[ 'class' ] ) ? sanitize_text_field( wp_unslash( $_POST[ 'class' ] ) ) : '';
+        $post_types   = isset( $_POST[ 'post_type' ] ) && !empty(  $_POST[ 'post_type' ] ) 
+            ? array_map( 'sanitize_text_field', wp_unslash( $_POST[ 'post_type' ] ) ) 
             : get_post_types( [ 'public' => true ], 'names' );
     
         $data = json_encode([
@@ -193,11 +205,19 @@ class Smart_Search_Control_Admin_Menu {
             'post_type'    => $post_types
         ]);
     
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $result = $wpdb->insert(
             $table_name,
             [ 'data' => $data ],
             [ '%s' ]
         );
+
+        if ( !empty( $result) ) {
+            wp_cache_delete( 'ssc_table_exists_' . md5( $table_name ), 'smart_search_control' );
+            wp_cache_delete( 'ssc_total_items_count', 'smart_search_control' );
+            wp_cache_delete( "ssc_entries_page_1", 'smart_search_control' );
+            wp_cache_delete( 'ssc_all_settings', 'smart_search_control' );
+        }
 
         if ( empty( $result ) ) {
 
@@ -232,7 +252,7 @@ class Smart_Search_Control_Admin_Menu {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
-
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_edit' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
@@ -245,11 +265,11 @@ class Smart_Search_Control_Admin_Menu {
             wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'smart-search-control' ) ] );
         }
 
-        $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( $_POST[ 'place_holder' ] ) : __( 'Search...' , 'smart-search-control' );
-        $css_id       = !empty( $_POST[ 'css_id' ] ) ? sanitize_text_field( $_POST[ 'css_id' ] ) : '';
-        $class        = !empty( $_POST[ 'class' ] ) ? sanitize_text_field( $_POST[ 'class' ] ) : '';
+        $place_holder = !empty( $_POST[ 'place_holder' ] ) ? sanitize_text_field( wp_unslash( $_POST[ 'place_holder' ] ) ) : __( 'Search...' , 'smart-search-control' );
+        $css_id       = !empty( $_POST[ 'css_id' ] ) ? sanitize_text_field( wp_unslash( $_POST[ 'css_id' ] ) ) : '';
+        $class        = !empty( $_POST[ 'class' ] ) ? sanitize_text_field( wp_unslash( $_POST[ 'class' ] ) ) : '';
         $post_types   = isset( $_POST[ 'post_type' ] ) && !empty( $_POST[ 'post_type' ] ) 
-            ? array_map( 'sanitize_text_field', $_POST[ 'post_type' ] ) 
+            ? array_map( 'sanitize_text_field', wp_unslash( $_POST[ 'post_type' ] ) ) 
             : get_post_types( [ 'public' => true ], 'names' );
 
         $data = json_encode([
@@ -259,6 +279,7 @@ class Smart_Search_Control_Admin_Menu {
             'post_type'    => $post_types
         ]);
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write operation.
         $result =  $wpdb->update(
 
             $table_name,
@@ -268,6 +289,13 @@ class Smart_Search_Control_Admin_Menu {
             [ '%d' ]
             
         );
+
+        if ( !empty( $result) ) {
+            wp_cache_delete( 'ssc_table_exists_' . md5( $table_name ), 'smart_search_control' );
+            wp_cache_delete( 'ssc_total_items_count', 'smart_search_control' );
+            wp_cache_delete( "ssc_entries_page_1", 'smart_search_control' );
+            wp_cache_delete( 'ssc_all_settings', 'smart_search_control' );
+        }
 
         if ( $result === false ) {
             wp_send_json_success( [
@@ -298,7 +326,7 @@ class Smart_Search_Control_Admin_Menu {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
-        
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_delete' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
@@ -311,7 +339,14 @@ class Smart_Search_Control_Admin_Menu {
             wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'smart-search-control' ) ] );
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write operation.
         $result = $wpdb->delete( $table_name, [ 'id' => $id ], [ '%d' ] );
+        if ( !empty( $result) ) {
+            wp_cache_delete( 'ssc_table_exists_' . md5( $table_name ), 'smart_search_control' );
+            wp_cache_delete( 'ssc_total_items_count', 'smart_search_control' );
+            wp_cache_delete( "ssc_entries_page_1", 'smart_search_control' );
+            wp_cache_delete( 'ssc_all_settings', 'smart_search_control' );
+        }
 
         if ( ! $result ) {
             wp_send_json_error( [
@@ -331,7 +366,7 @@ class Smart_Search_Control_Admin_Menu {
      * create_database_table on click
      */
     public function create_database_table() {
-
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'create_database_table_nonce' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }

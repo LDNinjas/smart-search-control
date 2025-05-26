@@ -7,6 +7,8 @@
  * Author: LDNinjas
  * Author URI: https://ldninjas.com/
  * Text Domain: smart-search-control
+ * License: GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 if ( !defined( 'ABSPATH' ) ) exit;

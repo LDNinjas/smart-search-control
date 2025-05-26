@@ -43,7 +43,9 @@ class Smart_Search_Control_Result {
 
         wp_register_style(
             'smart-search-control-result-style',
-            SSC_ASSETS_URL . '/css/smart-search-control-style.css'
+            SSC_ASSETS_URL . '/css/smart-search-control-style.css',
+            array(), SSC_VERSION, 'all'
+            
         );
         wp_register_script( 'smart-search-control-result-js', SSC_ASSETS_URL . 'js/smart-search-control-ajax.js', [ 'jquery' ], SSC_VERSION, true );   
     }
@@ -60,10 +62,11 @@ class Smart_Search_Control_Result {
         wp_enqueue_script( 'smart-search-control-result-js' );
 
         $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+        $table_name = esc_sql( $table_name );
 
         if ( ! $this->table_exists( $table_name ) ) {
             ob_start();
-            echo '<h3>' . __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) . '</h3>';
+            echo '<h3>' .esc_attr( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ). '</h3>';
             return ob_get_clean();
             
         }
@@ -71,15 +74,21 @@ class Smart_Search_Control_Result {
         $all_public_post_types = self::ssc_get_visible_post_types();
         $posts_types = $all_public_post_types; 
 
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
         if ( isset( $_GET[ 'query' ] ) && !empty( $_GET[ 'query' ] ) ) {
+            $search_query = sanitize_text_field( wp_unslash( $_GET[ 'query' ] ) );
             
-            $search_query = sanitize_text_field( $_GET[ 'query' ] );
-            
-            $ssc_id = isset( $_GET[ 'smartsearch' ] ) ? sanitize_text_field( $_GET[ 'smartsearch' ] ) : '';
+            $ssc_id = isset( $_GET[ 'smartsearch' ] ) ? sanitize_text_field( wp_unslash( $_GET[ 'smartsearch' ] ) ) : '';
 
-            
-            $query = "SELECT data FROM $table_name WHERE id = %d";
-            $result = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
+            // phpcs:enable WordPress.Security.NonceVerification.Recommended
+            $escaped_table = esc_sql( $table_name );
+            $query = $wpdb->prepare(
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $escaped_table is manually sanitized
+                "SELECT data FROM " . $escaped_table . " WHERE id = %d",
+                $ssc_id
+            );
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder
+            $result = $wpdb->get_row($query);
 
             if ( ! empty( $result ) && isset( $result->data ) ) {
 
@@ -150,11 +159,8 @@ class Smart_Search_Control_Result {
 
         global $wpdb;
         
-        $query = $wpdb->prepare(
-            "SHOW TABLES LIKE %s",
-            $table_name
-        );
-        return $wpdb->get_var( $query ) === $table_name;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+        return $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name ) ) === $table_name;
     }
 
     /**

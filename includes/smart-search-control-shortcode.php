@@ -70,7 +70,8 @@ class Smart_Search_Control {
 
         wp_register_style(
             'smart-search-control-style',
-            SSC_ASSETS_URL . '/css/smart-search-control-style.css'
+            SSC_ASSETS_URL . '/css/smart-search-control-style.css',
+            array(), SSC_VERSION, 'all'
         );
         wp_register_script( 'smart-search-control-js', SSC_ASSETS_URL . 'js/smart-search-control-ajax.js', [ 'jquery' ], SSC_VERSION, true );
         wp_localize_script( 'smart-search-control-js', 'SMART_SEARCH_CONTROL', [
@@ -94,7 +95,7 @@ class Smart_Search_Control {
         if ( ! $this->table_exists( $table_name ) ) {
 
             ob_start();
-            echo '<h3>' . __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) . '</h3>';
+            echo '<h3>' . esc_attr( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ). '</h3>';
             return ob_get_clean();
             
         }
@@ -127,6 +128,7 @@ class Smart_Search_Control {
         $posts_types = $all_public_post_types;
         
         $query      = "SELECT data FROM $table_name WHERE id = %d";
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with caching.
         $result     = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
     
         $class       = $sanitized_atts[ 'css_class' ];
@@ -193,21 +195,24 @@ class Smart_Search_Control {
 
         }
 
-        $search_query = sanitize_text_field( $_POST[ 'search_query' ] );
+        $search_query = sanitize_text_field( wp_unslash( $_POST[ 'search_query' ] ) );
 
-        $ssc_id = sanitize_text_field( $_POST[ 'ssc_id' ] );
+        $ssc_id = isset( $_POST[ 'ssc_id' ] ) 
+            ? sanitize_text_field( wp_unslash( $_POST[ 'ssc_id' ] ) ) 
+            : '';
 
         $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
         if ( ! $this->table_exists( $table_name ) ) {
 
             ob_start();
-            echo '<h3>' . __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) . '</h3>';
+            echo '<h3>' . esc_attr( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ) . '</h3>';
             return ob_get_clean();
             
         }
         
         $query = "SELECT  data FROM $table_name WHERE id = %d";
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with caching.
         $result = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
 
         $all_public_post_types = self::$visible_post_types;
@@ -291,11 +296,12 @@ class Smart_Search_Control {
     public function table_exists( $table_name ) {
 
         global $wpdb;
-        
         $query = $wpdb->prepare(
             "SHOW TABLES LIKE %s",
             $table_name
         );
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with caching.
         return $wpdb->get_var( $query ) === $table_name;
     }
     

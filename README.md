@@ -1,5 +1,16 @@
 
-# WordPress Smart Search Control Plugin
+#  Smart Search Control
+
+Contributors: LDNinjas
+Tags: search, smart-search, filter
+Requires at least: 5.0
+Tested up to: 6.8
+Stable tag: 1.0.0
+Requires PHP: 7.4
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+A powerful plugin to enhance search functionality with smart controls and customization.
 
 ## Description
 
@@ -53,7 +64,7 @@ In this example, 123 should be replaced with the ID of an existing smart search 
 ## Frequently Asked Questions
 
 - **Is the plugin performance optimized?**  
-    - No, the plugin is designed to be efficient and optimized for performance.
+    - Yes, the plugin is designed to be efficient and optimized for performance.
 
 - **Is this plugin compatible with WooCommerce?**  
     - Yes, the plugin enhances search for WooCommerce products.
@@ -86,16 +97,16 @@ For support, please visit our support forums or contact us through our website.
 ## Screenshots
 
 ### Admin settings page  
-![](assets/screenshot/SSC%201.png)  
-![](assets/screenshot/SSC%202.png)  
-![](assets/screenshot/SSC%203.png)  
-![](assets/screenshot/SSC%204.png)  
-![](assets/screenshot/SSC%207.png)  
-![](assets/screenshot/SSC%208.png)  
-![](assets/screenshot/SSC%206.png)
+![](assets/screenshot/ssc_1.png)  
+![](assets/screenshot/ssc_2.png)  
+![](assets/screenshot/ssc_3.png)  
+![](assets/screenshot/ssc_4.png)  
+![](assets/screenshot/ssc_7.png)  
+![](assets/screenshot/ssc_8.png)  
+![](assets/screenshot/ssc_6.png)
 
 ### Search page  
-![](assets/screenshot/SSC%205.png)
+![](assets/screenshot/ssc_5.png)
 
 ### Results page  
-![](assets/screenshot/SSC%209.png)
+![](assets/screenshot/ssc_9.png)
