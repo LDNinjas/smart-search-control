@@ -63,7 +63,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
     public function is_admin_settings_page() {
 
         if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-            // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+            
             return isset( $_POST[ 'action' ] ) && strpos( $_POST[ 'action' ], 'smart_search_control_setting' ) !== false;
         }
     
@@ -138,7 +138,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
         
             $selected_page_id = absint( $_POST[ 'selected_page' ] );
             update_option( 'smart_search_control_result_page', $selected_page_id );
-            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+            
             wp_safe_redirect( esc_url_raw( add_query_arg( 'message', 'ssc_updated', $_POST['_wp_http_referer'] ) ) );
             exit();
         }
@@ -148,7 +148,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
          */
         public function ssc_admin_notices(){
 
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            
             if( isset( $_GET[ 'message' ] ) && $_GET[ 'message' ] == 'ssc_updated' ){
 
                 ?>

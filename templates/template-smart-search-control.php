@@ -14,9 +14,7 @@ if ( !$fallback_page_id ) {
 
 $url = get_permalink( $fallback_page_id );
 
-// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 if ( isset( $_GET[ 'query' ] ) ) {
-    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
     $search_query = sanitize_text_field( wp_unslash( $_GET[ 'query' ] ) );
 }
 ?>

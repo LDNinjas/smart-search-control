@@ -50,7 +50,6 @@ $query = new WP_Query( $args );
                         if ( has_post_thumbnail() ) {
                             the_post_thumbnail( 'medium' );
                         } else {
-                            // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage -- Static fallback image used intentionally.
                             echo '<img src="' . esc_url( SSC_ASSETS_URL . 'default-img/no-feature-image.jpg' ) . '"
                                     alt="' . esc_attr__( 'Default placeholder image', 'smart-search-control' ) . '">';
                             

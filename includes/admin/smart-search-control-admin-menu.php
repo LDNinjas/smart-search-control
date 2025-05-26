@@ -65,7 +65,6 @@ class Smart_Search_Control_Admin_Menu {
     public function is_admin_settings_page() {
 
         if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-            // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
             return isset( $_POST[ 'action' ] ) && strpos( $_POST[ 'action' ], 'smart_search_control_setting' ) !== false;
         }
     
@@ -84,7 +83,6 @@ class Smart_Search_Control_Admin_Menu {
         $cache_key = 'ssc_table_exists_' . md5( $table_name );
         $table_exists = wp_cache_get( $cache_key, 'smart_search_control' );
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared
         $table_exists = $wpdb->get_var(
             $wpdb->prepare(
                 "SHOW TABLES LIKE %s",
@@ -185,7 +183,7 @@ class Smart_Search_Control_Admin_Menu {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+        
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce(  $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_add' ) )  {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
@@ -205,7 +203,6 @@ class Smart_Search_Control_Admin_Menu {
             'post_type'    => $post_types
         ]);
     
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $result = $wpdb->insert(
             $table_name,
             [ 'data' => $data ],
@@ -252,7 +249,7 @@ class Smart_Search_Control_Admin_Menu {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+        
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_edit' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
@@ -279,7 +276,6 @@ class Smart_Search_Control_Admin_Menu {
             'post_type'    => $post_types
         ]);
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write operation.
         $result =  $wpdb->update(
 
             $table_name,
@@ -326,7 +322,7 @@ class Smart_Search_Control_Admin_Menu {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+        
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_delete' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
@@ -339,7 +335,6 @@ class Smart_Search_Control_Admin_Menu {
             wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'smart-search-control' ) ] );
         }
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write operation.
         $result = $wpdb->delete( $table_name, [ 'id' => $id ], [ '%d' ] );
         if ( !empty( $result) ) {
             wp_cache_delete( 'ssc_table_exists_' . md5( $table_name ), 'smart_search_control' );
@@ -366,7 +361,7 @@ class Smart_Search_Control_Admin_Menu {
      * create_database_table on click
      */
     public function create_database_table() {
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+        
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'create_database_table_nonce' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }

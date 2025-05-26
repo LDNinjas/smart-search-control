@@ -127,9 +127,7 @@ class Smart_Search_Control {
         $all_public_post_types = self::$visible_post_types;
         $posts_types = $all_public_post_types;
         
-        $query      = "SELECT data FROM $table_name WHERE id = %d";
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with caching.
-        $result     = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
+        $result     = $wpdb->get_row( $wpdb->prepare( "SELECT data FROM %s WHERE id = %d", [$table_name, $ssc_id] ) );
     
         $class       = $sanitized_atts[ 'css_class' ];
         $css_id      = $sanitized_atts[ 'css_id' ];
@@ -211,9 +209,7 @@ class Smart_Search_Control {
             
         }
         
-        $query = "SELECT  data FROM $table_name WHERE id = %d";
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with caching.
-        $result = $wpdb->get_row( $wpdb->prepare( $query, $ssc_id ) );
+        $result = $wpdb->get_row( $wpdb->prepare( "SELECT  data FROM %s WHERE id = %d", [$table_name, $ssc_id] ) );
 
         $all_public_post_types = self::$visible_post_types;
         $posts_types = $all_public_post_types;
@@ -296,13 +292,8 @@ class Smart_Search_Control {
     public function table_exists( $table_name ) {
 
         global $wpdb;
-        $query = $wpdb->prepare(
-            "SHOW TABLES LIKE %s",
-            $table_name
-        );
-
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query with caching.
-        return $wpdb->get_var( $query ) === $table_name;
+        
+        return $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name ) ) === $table_name;
     }
     
 }

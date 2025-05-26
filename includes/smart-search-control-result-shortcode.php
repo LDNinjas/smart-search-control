@@ -74,21 +74,17 @@ class Smart_Search_Control_Result {
         $all_public_post_types = self::ssc_get_visible_post_types();
         $posts_types = $all_public_post_types; 
 
-        // phpcs:disable WordPress.Security.NonceVerification.Recommended
         if ( isset( $_GET[ 'query' ] ) && !empty( $_GET[ 'query' ] ) ) {
             $search_query = sanitize_text_field( wp_unslash( $_GET[ 'query' ] ) );
             
             $ssc_id = isset( $_GET[ 'smartsearch' ] ) ? sanitize_text_field( wp_unslash( $_GET[ 'smartsearch' ] ) ) : '';
 
-            // phpcs:enable WordPress.Security.NonceVerification.Recommended
             $escaped_table = esc_sql( $table_name );
-            $query = $wpdb->prepare(
-                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $escaped_table is manually sanitized
-                "SELECT data FROM " . $escaped_table . " WHERE id = %d",
-                $ssc_id
-            );
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder
-            $result = $wpdb->get_row($query);
+            
+            $result = $wpdb->get_row( $wpdb->prepare(
+                "SELECT data FROM %s WHERE id = %d",
+                [$escaped_table, $ssc_id]
+            ) );
 
             if ( ! empty( $result ) && isset( $result->data ) ) {
 
@@ -159,7 +155,6 @@ class Smart_Search_Control_Result {
 
         global $wpdb;
         
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name ) ) === $table_name;
     }
 

@@ -11,9 +11,7 @@ $admin_notice = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
 $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
 $items_per_page = 10;
-// phpcs:disable WordPress.Security.NonceVerification.Recommended
 $page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 1;
-// phpcs:enable WordPress.Security.NonceVerification.Recommended
 $offset = ( $page - 1 ) * $items_per_page;
 
 $search_entries = [];
@@ -22,11 +20,9 @@ $total_pages = 1 ;
 
 if ( empty( $admin_notice ) ){
 
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     $total_items = $wpdb->get_var("SELECT COUNT(id) FROM $table_name");
     $total_pages = ceil($total_items / $items_per_page);
 
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching
     $search_entries = $wpdb->get_results(
         $wpdb->prepare(
             "SELECT id, data FROM " . esc_sql($table_name) . " LIMIT %d OFFSET %d",

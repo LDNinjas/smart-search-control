@@ -65,7 +65,6 @@ public function table_exists( $table_name ) {
 
     $table_name = esc_sql( $table_name );
 
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Necessary for table creation with dbDelta.
     $result = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name ) );
     $exists = ( null !== $result );
 
