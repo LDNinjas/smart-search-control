@@ -50,6 +50,7 @@ class LD_Smart_Search_Control {
         define( 'SSC_INCLUDES_DIR', SSC_DIR . 'includes/' );
         define( 'SSC_TEMPLATES_DIR', SSC_DIR . 'templates/' );
         define( 'SSC_ASSETS_URL', SSC_URL . 'assets/' );
+        define( 'SSC_ASSETS_PATH', SSC_DIR . 'assets/' );
         define( 'SSC_VERSION', '1.0.0' );
     }
 
@@ -101,9 +102,29 @@ class LD_Smart_Search_Control {
     public function smart_search_control_plugin_activate() {
 
         require_once SSC_INCLUDES_DIR . 'smart-search-control-database.php';
+        require_once SSC_INCLUDES_DIR . 'smart-search-control-default-img.php';
     
     }
-    
+
+    public static function smart_search_control_create_table( $table_name = ""  ) {
+
+        global $wpdb;
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+        $table_name = $wpdb->prefix . 'smart_search_control_parameters';        
+        $charset_collate = $wpdb->get_charset_collate();
+        $sql = "CREATE TABLE $table_name (
+            id MEDIUMINT( 9 ) NOT NULL AUTO_INCREMENT,
+            data JSON NULL,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY ( id )
+        ) $charset_collate;"; 
+
+        $exists = maybe_create_table( $table_name, $sql );
+
+        return $exists;
+    }
+
 }
 
 LD_Smart_Search_Control::instance();

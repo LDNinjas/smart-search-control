@@ -14,7 +14,8 @@ if ( !$fallback_page_id ) {
 
 $url = get_permalink( $fallback_page_id );
 
-if ( isset( $_GET[ 'query' ] ) ) {
+if ( isset( $_GET[ 'query' ] ) && isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET[ 'nonce' ] ) ) , 'ssc_search_nonce') )  {
+
     $search_query = sanitize_text_field( wp_unslash( $_GET[ 'query' ] ) );
 }
 ?>
@@ -30,7 +31,7 @@ if ( isset( $_GET[ 'query' ] ) ) {
 
             <!-- Hidden Post Type Input -->
             <input type="hidden" name="smartsearch" value="<?php echo esc_attr( $ssc_id); ?>">
-            
+            <input type="hidden" name="nonce" value="<?php echo esc_attr( wp_create_nonce( 'ssc_search_nonce' ) ); ?>">
             <!-- Search Button -->
             <button type="submit" class="ssc-default-search-btn search-btn "> 
                 <span class="ssc-default-search-icon">

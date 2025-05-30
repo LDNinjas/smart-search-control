@@ -31,11 +31,12 @@ class Smart_Search_Control_Database {
         global $wpdb;
         $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
-        if ( $this->table_exists( $table_name ) ) {
+        if ( LD_Smart_Search_Control::smart_search_control_create_table() ){
             return;
         }
 
         $charset_collate = $wpdb->get_charset_collate();
+        
 
         $sql = "CREATE TABLE $table_name (
             id MEDIUMINT( 9 ) NOT NULL AUTO_INCREMENT,
@@ -51,27 +52,27 @@ class Smart_Search_Control_Database {
 /**
  * Checks if a table exists in the database.
  */
-public function table_exists( $table_name ) {
+// public function table_exists( $table_name ) {
     
-    global $wpdb;
+//     global $wpdb;
 
-    $cache_key = 'ssc_table_exists_' . md5( $table_name );
-    $cached = wp_cache_get( $cache_key, 'smart_search_control' );
+//     $cache_key = 'ssc_table_exists_' . md5( $table_name );
+//     $cached = wp_cache_get( $cache_key, 'smart_search_control' );
 
-    if ( false !== $cached ) {
-        return $cached;
-    }
+//     if ( false !== $cached ) {
+//         return $cached;
+//     }
 
 
-    $table_name = esc_sql( $table_name );
+//     $table_name = esc_sql( $table_name );
 
-    $result = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name ) );
-    $exists = ( null !== $result );
+//     $all_tables = $wpdb->tables();
+//     $exists = in_array( str_replace( $wpdb->prefix, '', $table_name ), $all_tables, true );
 
-    wp_cache_set( $cache_key, $exists, 'smart_search_control', 300 );
+//     wp_cache_set( $cache_key, $exists, 'smart_search_control', 300 );
 
-    return $exists;
-}
+//     return $exists;
+// }
 
 
 }

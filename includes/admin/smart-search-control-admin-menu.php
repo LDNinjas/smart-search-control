@@ -65,9 +65,26 @@ class Smart_Search_Control_Admin_Menu {
     public function is_admin_settings_page() {
 
         if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-            return isset( $_POST[ 'action' ] ) && strpos( $_POST[ 'action' ], 'smart_search_control_setting' ) !== false;
+            
+            if ( isset( $_POST['action'] ) && strpos( sanitize_text_field( wp_unslash( $_POST['action'] ) ), 'smart_search_control_setting' ) !== false ) {
+
+                $nonce_action_map = [
+                    'smart_search_control_setting'        => 'smart_search_control_setting_nonce_add',
+                    'smart_search_control_setting_edit'   => 'smart_search_control_setting_nonce_edit',
+                    'smart_search_control_setting_delete' => 'smart_search_control_setting_nonce_delete',
+                ];
+                $action = sanitize_text_field( wp_unslash( $_POST['action'] ) );
+                $nonce_action = isset( $nonce_action_map[ $action ] ) ? $nonce_action_map[ $action ] : '';
+                if ( $nonce_action && isset( $_POST['nonce'] ) ) {
+                    if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), $nonce_action ) ) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
         }
-    
+        
         $screen = get_current_screen();
         return $screen && $screen->id === $this->screen_id;
     }
@@ -77,19 +94,8 @@ class Smart_Search_Control_Admin_Menu {
      */
     public function get_admin_notice() {
 
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
-
-        $cache_key = 'ssc_table_exists_' . md5( $table_name );
-        $table_exists = wp_cache_get( $cache_key, 'smart_search_control' );
-
-        $table_exists = $wpdb->get_var(
-            $wpdb->prepare(
-                "SHOW TABLES LIKE %s",
-                $wpdb->esc_like($table_name)
-            )
-        ) ? true : false;
-        wp_cache_set( $cache_key, $table_exists, 'smart_search_control', DAY_IN_SECONDS );
+        
+        $table_exists = LD_Smart_Search_Control::smart_search_control_create_table() ;
 
         if ( !$table_exists ) {
 
@@ -145,6 +151,7 @@ class Smart_Search_Control_Admin_Menu {
      * wp_search_admin_assets
      */
     public function smart_search_control_admin_assets() {
+        
 
         if ( !$this->is_admin_settings_page() ) {
             return;
@@ -184,7 +191,7 @@ class Smart_Search_Control_Admin_Menu {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
         
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce(  $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_add' ) )  {
+        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash(  $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_add' ) )  {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
 
@@ -202,14 +209,11 @@ class Smart_Search_Control_Admin_Menu {
             'class'        => $class,
             'post_type'    => $post_types
         ]);
-    
-        $result = $wpdb->insert(
-            $table_name,
-            [ 'data' => $data ],
-            [ '%s' ]
-        );
+        
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        $result = $wpdb->insert( $table_name,[ 'data' => $data ], [ '%s' ] );
 
-        if ( !empty( $result) ) {
+        if ( !empty( $result ) ) {
             wp_cache_delete( 'ssc_table_exists_' . md5( $table_name ), 'smart_search_control' );
             wp_cache_delete( 'ssc_total_items_count', 'smart_search_control' );
             wp_cache_delete( "ssc_entries_page_1", 'smart_search_control' );
@@ -250,7 +254,7 @@ class Smart_Search_Control_Admin_Menu {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
         
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_edit' ) ) {
+        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_edit' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
 
@@ -276,8 +280,8 @@ class Smart_Search_Control_Admin_Menu {
             'post_type'    => $post_types
         ]);
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $result =  $wpdb->update(
-
             $table_name,
             [ 'data' => $data ],  
             [ 'id' => $id ],      
@@ -323,7 +327,7 @@ class Smart_Search_Control_Admin_Menu {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
         
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'smart_search_control_setting_nonce_delete' ) ) {
+        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_delete' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
 
@@ -335,7 +339,8 @@ class Smart_Search_Control_Admin_Menu {
             wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'smart-search-control' ) ] );
         }
 
-        $result = $wpdb->delete( $table_name, [ 'id' => $id ], [ '%d' ] );
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        $result =  $wpdb->delete( $table_name, [ 'id' => $id ], [ '%d' ] ) ;
         if ( !empty( $result) ) {
             wp_cache_delete( 'ssc_table_exists_' . md5( $table_name ), 'smart_search_control' );
             wp_cache_delete( 'ssc_total_items_count', 'smart_search_control' );
@@ -362,7 +367,7 @@ class Smart_Search_Control_Admin_Menu {
      */
     public function create_database_table() {
         
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( $_POST[ 'nonce' ], 'create_database_table_nonce' ) ) {
+        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'create_database_table_nonce' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
     

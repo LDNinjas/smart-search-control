@@ -1,55 +1,108 @@
 <?php
 
-if ( !defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
 global $wpdb;
 
-$admin_notice = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
-
 $table_name = $wpdb->prefix . 'smart_search_control_parameters';
 
+/**
+ * Get total items from the table with caching.
+ */
+function ssc_get_total_items( $table_name ) {
+    global $wpdb;
+
+    $allowed_table = $wpdb->prefix . 'smart_search_control_parameters';
+    if ( $table_name !== $allowed_table ) {
+        return 0;
+    }
+
+    $cache_key = 'ssc_total_count_' . md5( $table_name );
+
+    $total_items = wp_cache_get( $cache_key );
+
+    if ( false === $total_items ) {
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        $total_items = (int) ($wpdb->get_var("SELECT COUNT(id) FROM {$wpdb->prefix}smart_search_control_parameters") ?? 0);
+        wp_cache_set( $cache_key, $total_items, '', 300 );
+    }
+    return $total_items;
+}
+
+/**
+ * Get paginated search entries from the table with caching.
+ */
+function ssc_get_search_entries( $table_name, $items_per_page, $offset ) {
+    global $wpdb;
+
+    // Allow only this specific table for safety
+    $allowed_table = $wpdb->prefix . 'smart_search_control_parameters';
+    if ( $table_name !== $allowed_table ) {
+        return [];
+    }
+
+    $cache_key = 'ssc_data_' . md5( $table_name . '_' . $items_per_page . '_' . $offset );
+
+    $entries = wp_cache_get( $cache_key );
+
+    if ( false === $entries ) {
+
+        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        $entries = $wpdb->get_results( $wpdb->prepare ( "SELECT id, data FROM `{$wpdb->prefix}smart_search_control_parameters` LIMIT %d OFFSET %d",  [ $items_per_page, $offset ] ) );
+        wp_cache_set( $cache_key, $entries, '', 300 );
+    }
+
+    return $entries;
+}
+
+$admin_notice   = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
 $items_per_page = 10;
-$page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 1;
-$offset = ( $page - 1 ) * $items_per_page;
+
+if ( isset( $_GET['paged'] ) && isset( $_GET['nonce'] ) ) {
+    $ssc_pagination_nonce = sanitize_text_field( wp_unslash( $_GET['nonce'] ) );
+    if ( wp_verify_nonce( $ssc_pagination_nonce, 'ssc_admin_pagination' ) ) {
+        $page = absint( $_GET['paged'] );
+    } else {
+        $page = 1;
+    }
+} else {
+    $page = 1;
+}
+
+$offset         = ( $page - 1 ) * $items_per_page;
 
 $search_entries = [];
+$total_pages    = 1;
 
-$total_pages = 1 ;
-
-if ( empty( $admin_notice ) ){
-
-    $total_items = $wpdb->get_var("SELECT COUNT(id) FROM $table_name");
-    $total_pages = ceil($total_items / $items_per_page);
-
-    $search_entries = $wpdb->get_results(
-        $wpdb->prepare(
-            "SELECT id, data FROM " . esc_sql($table_name) . " LIMIT %d OFFSET %d",
-            $items_per_page,
-            $offset
-        )
-    );
-
-    $post_types = [];
+if ( empty( $admin_notice ) ) {
+    $total_items    = ssc_get_total_items( $table_name );
+    $total_pages    = ceil( $total_items / $items_per_page );
+    $search_entries = ssc_get_search_entries( $table_name, $items_per_page, $offset );
 
     $args = [
-        'public' => true,
+        'public'             => true,
         'publicly_queryable' => true,
     ];
 
     $visible_post_types = get_post_types( $args, 'objects' );
 
-    if ( !array_key_exists( 'page', $visible_post_types ) ) {
-        $visible_post_types[ 'page' ] = get_post_type_object( 'page' );
+    if ( ! array_key_exists( 'page', $visible_post_types ) ) {
+        $visible_post_types['page'] = get_post_type_object( 'page' );
     }
 
     $post_types = apply_filters( 'visible_post_types', $visible_post_types );
 }
+
+
 ?>
 
 <div class="wrap">
-    <?php echo esc_html( $admin_notice ) ?>
+    <?php
+        echo wp_kses_post( $admin_notice );
+    ?>
 
     <div class="page-header">
     <p class="page-title"><?php echo esc_html__( 'Smart Search Control' , 'smart-search-control' ); ?></p>
@@ -121,18 +174,20 @@ if ( empty( $admin_notice ) ){
 
                 $prev_page = max( 1, $page - 1 );
                 $next_page = min( $total_pages, $page + 1 );
+
+                $nonce = wp_create_nonce( "ssc_admin_pagination" );
                 ?>
 
                 <!-- Previous Button -->
                 <?php if ( $page > 1 ) { ?>
-                    <a class="prev page-numbers" href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $prev_page ) ); ?>"><?php echo esc_html__( '« Prev' , 'smart-search-control' ); ?></a>
+                    <a class="prev page-numbers" href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $prev_page .'$nonce=' .$nonce  ) ); ?>"><?php echo esc_html__( '« Prev' , 'smart-search-control' ); ?></a>
                 <?php } ?>
 
                 <!-- Numbered Pagination -->
                 <?php for ( $i = 1; $i <= $total_pages; $i++ ) { ?>
 
                     <a class="page-numbers <?php echo ( $i == $page ) ? 'current' : ''; ?>" 
-                    href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $i ) ); ?>">
+                    href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $i .'$nonce=' .$nonce ) ); ?>">
                     <?php echo esc_html( $i ); ?>
                     </a>
 
@@ -140,7 +195,7 @@ if ( empty( $admin_notice ) ){
 
                 <!-- Next Button -->
                 <?php if ( $page < $total_pages ) { ?>
-                    <a class="next page-numbers" href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $next_page ) ); ?>"><?php echo esc_html__( 'Next »' , 'smart-search-control' ); ?></a>
+                    <a class="next page-numbers" href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $next_page .'$nonce=' .$nonce ) ); ?>"><?php echo esc_html__( 'Next »' , 'smart-search-control' ); ?></a>
                 <?php } ?>
             <?php } ?>
         </div>
@@ -156,7 +211,7 @@ if ( empty( $admin_notice ) ){
         </div>
         <hr>
 
-        <?php echo esc_html( $admin_notice ); ?>
+        <?php echo wp_kses_post( $admin_notice ) ;?>
 
         <div class="modal-body">
             
