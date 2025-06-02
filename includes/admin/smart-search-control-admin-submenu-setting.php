@@ -63,8 +63,11 @@ class Smart_Search_Control_Admin_Submenu_Setting {
     public function is_admin_settings_page() {
 
         if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-            
-            return isset( $_POST[ 'action' ] ) && strpos( $_POST[ 'action' ], 'smart_search_control_setting' ) !== false;
+            if ( ! isset( $_POST['smart_search_control_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['smart_search_control_nonce'] ) ), 'smart_search_control_save_page' ) ) {
+                return false;
+            }
+
+            return isset( $_POST[ 'action' ] ) && strpos( sanitize_text_field( wp_unslash( $_POST[ 'action' ] ) ), 'smart_search_control_setting' ) !== false;
         }
     
         $screen = get_current_screen();
@@ -127,8 +130,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
             if ( !isset( $_POST[ 'selected_page' ], $_POST[ 'smart_search_control_nonce' ] ) ) {
                 return;
             }
-            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-            if ( !wp_verify_nonce( $_POST[ 'smart_search_control_nonce' ], 'smart_search_control_save_page' ) ) {
+            if ( !wp_verify_nonce( sanitize_text_field( wp_unslash(  $_POST[ 'smart_search_control_nonce' ] ) ), 'smart_search_control_save_page' ) ) {
                 return;
             }
         
@@ -139,8 +141,19 @@ class Smart_Search_Control_Admin_Submenu_Setting {
             $selected_page_id = absint( $_POST[ 'selected_page' ] );
             update_option( 'smart_search_control_result_page', $selected_page_id );
             
-            wp_safe_redirect( esc_url_raw( add_query_arg( 'message', 'ssc_updated', $_POST['_wp_http_referer'] ) ) );
-            exit();
+            if ( isset( $_POST['_wp_http_referer'] ) ) {
+
+                $nonce = wp_create_nonce( 'ssc_nonce' );
+                $arrg = [
+                    "message" => "ssc_updated",
+                    "nonce"   => $nonce
+
+                ];
+                $referer = sanitize_text_field( wp_unslash( $_POST['_wp_http_referer'] ) );
+                $redirect_url = esc_url_raw( add_query_arg( $arrg, $referer  ) );
+                wp_safe_redirect( $redirect_url );
+                exit;
+            }
         }
 
         /**
@@ -149,14 +162,15 @@ class Smart_Search_Control_Admin_Submenu_Setting {
         public function ssc_admin_notices(){
 
             
-            if( isset( $_GET[ 'message' ] ) && $_GET[ 'message' ] == 'ssc_updated' ){
-
+            
+            if( isset( $_GET[ 'message' ] ) && $_GET[ 'message' ] == 'ssc_updated' && isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'ssc_nonce' ) ) {
+            
                 ?>
                 <div class="notice notice-success is-dismissible">
                 <p><?php echo esc_attr( __( 'Result page saved successfully!', 'smart-search-control' ) ); ?></p>
                 </div>
                 <?php
-
+            
             }
                 
         }

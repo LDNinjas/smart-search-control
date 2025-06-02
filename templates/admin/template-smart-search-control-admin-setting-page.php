@@ -18,7 +18,7 @@ $selected_page = get_option( 'smart_search_control_result_page', '' );
 
 <div class="wrap">
 
-    <?php echo esc_html( $admin_notice ); ?>
+    <?php echo wp_kses_post( $admin_notice ); ?>
     <h2 class="short-code-result_page-title"><?php echo esc_attr( __( 'Result Page Settings', 'smart-search-control' ) ); ?></h2>
 
     <div class="short-code-result-row">
@@ -59,6 +59,7 @@ $selected_page = get_option( 'smart_search_control_result_page', '' );
             </div>
         </div>
         <input type="hidden" name="action" value="ssc_save_action">
+        
         <?php wp_nonce_field( 'smart_search_control_save_page', 'smart_search_control_nonce' ); ?>
         <div class="smart_search_result_btn">
             <input type="submit" value="<?php echo esc_attr( __( 'Save changes', 'smart-search-control' ) ); ?>"
