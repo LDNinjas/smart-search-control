@@ -48,33 +48,6 @@ class Smart_Search_Control_Database {
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );
     }
-
-/**
- * Checks if a table exists in the database.
- */
-// public function table_exists( $table_name ) {
-    
-//     global $wpdb;
-
-//     $cache_key = 'ssc_table_exists_' . md5( $table_name );
-//     $cached = wp_cache_get( $cache_key, 'smart_search_control' );
-
-//     if ( false !== $cached ) {
-//         return $cached;
-//     }
-
-
-//     $table_name = esc_sql( $table_name );
-
-//     $all_tables = $wpdb->tables();
-//     $exists = in_array( str_replace( $wpdb->prefix, '', $table_name ), $all_tables, true );
-
-//     wp_cache_set( $cache_key, $exists, 'smart_search_control', 300 );
-
-//     return $exists;
-// }
-
-
 }
 
 Smart_Search_Control_Database::instance();
