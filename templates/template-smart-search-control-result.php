@@ -50,8 +50,8 @@ $query = new WP_Query( $args );
                         if ( has_post_thumbnail() ) {
                             the_post_thumbnail( 'medium' );
                         } else {
-                            $default_img = get_template_directory_uri(  ) . 'default-img/no-feature-image.jpg';
-                            echo '<img src="' . esc_url( default_img ) . '"
+                            $result_img =  SSC_ASSETS_URL . 'default-img/no-feature-image.jpg' ;
+                            echo '<img src="' . esc_url( $result_img ). '"
                                     alt="' . esc_attr__( 'Default placeholder image', 'smart-search-control' ) . '">';
                             
                         }
