@@ -2,11 +2,6 @@
 
 if ( !defined( 'ABSPATH' ) ) exit;
 
-/**
- * Get the default image attachment ID from the option
- */
-$attachment_id = get_option( 'my_plugin_default_image_id', 0 );
-
 if ( is_object( $posts_types ) && isset( $posts_types->name ) ) {
     $posts_types = $posts_types->name;
 }
@@ -52,25 +47,14 @@ $query = new WP_Query( $args );
 
                     <a href="<?php the_permalink(); ?>">
                         <?php
-                            if ( has_post_thumbnail() ) {
-                                the_post_thumbnail( 'medium' );
-                            }elseif ( $attachment_id ) {
-                                echo wp_get_attachment_image(
-                                    $attachment_id,
-                                    'medium',
-                                    false,
-                                    [
-                                        'alt' => esc_attr__( 'Default placeholder image', 'smart-search-control' ),
-                                    ]
-                                );
-                            } else {
-                                echo wp_kses_post(
-                                    '<div class="no-image-placeholder">' .
-                                    esc_html__( 'No image available', 'smart-search-control' ) .
-                                    '</div>'
-                                );
-                            }
-                        
+                        if ( has_post_thumbnail() ) {
+                            the_post_thumbnail( 'medium' );
+                        } else {
+                            $default_img = get_template_directory_uri(  ) . 'default-img/no-feature-image.jpg';
+                            echo '<img src="' . esc_url( default_img ) . '"
+                                    alt="' . esc_attr__( 'Default placeholder image', 'smart-search-control' ) . '">';
+                            
+                        }
                         ?>
                     </a>
 
