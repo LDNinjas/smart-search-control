@@ -102,7 +102,6 @@ class LD_Smart_Search_Control {
     public function smart_search_control_plugin_activate() {
 
         require_once SSC_INCLUDES_DIR . 'smart-search-control-database.php';
-        require_once SSC_INCLUDES_DIR . 'smart-search-control-default-img.php';
     
     }
 
