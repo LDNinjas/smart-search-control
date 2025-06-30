@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Smart Search Control
  * Plugin URI: https://ldninjas.com/smartsearch-control/
- * Description: A simple search plugin for WordPress
+ * Description: A powerful WordPress search plugin that enables advanced filtering by post types and custom criteria. Easily create multiple search fields with distinct rules for different sections, offering flexible and precise search functionality.
  * Version: 1.0.0
  * Author: LDNinjas
  * Author URI: https://ldninjas.com/
@@ -29,7 +29,6 @@ class LD_Smart_Search_Control {
     public static function instance() {
 
         if ( is_null( self::$instance ) && !( self::$instance instanceof LD_Smart_Search_Control ) ) {
-
             self::$instance = new self;
             self::$instance->constants_setup(); 
             self::$instance->includes_files();
@@ -60,13 +59,11 @@ class LD_Smart_Search_Control {
     private function includes_files() {
 
         if ( is_admin() ) {
-
             require_once SSC_INCLUDES_DIR . 'admin/smart-search-control-admin-menu.php';
             require_once SSC_INCLUDES_DIR . 'admin/smart-search-control-admin-submenu-setting.php';
         }
 
         if( !is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ){
-
             require_once SSC_INCLUDES_DIR . 'smart-search-control-shortcode.php';
             require_once SSC_INCLUDES_DIR . 'smart-search-control-result-shortcode.php';
         }
@@ -88,23 +85,24 @@ class LD_Smart_Search_Control {
     public function smart_search_control_setting_links( $links ) {
 
         $main_link = '<a href="' . admin_url( 'admin.php?page=smart_search_control' ) . '">' . __( 'Settings', 'smart-search-control' ) . '</a>';
-        $setting_link = '<a href="' . admin_url( 'admin.php?page=smart_search_control_settings' ) . '">' . __( 'Settings', 'smart-search-control' ) . '</a>';
-    
         array_unshift( $links, $main_link );
 
         return $links;
     }   
 
     /**
-     * plugin_activate cretae database table
+     * Runs on plugin activation
      * 
      */
     public function smart_search_control_plugin_activate() {
 
         require_once SSC_INCLUDES_DIR . 'smart-search-control-database.php';
-    
     }
 
+    /**
+     * Main function to cretae database table
+     * 
+     */
     public static function smart_search_control_create_table( $table_name = ""  ) {
 
         global $wpdb;
@@ -123,7 +121,6 @@ class LD_Smart_Search_Control {
 
         return $exists;
     }
-
 }
 
 LD_Smart_Search_Control::instance();
