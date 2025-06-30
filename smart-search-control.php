@@ -103,7 +103,7 @@ class LD_Smart_Search_Control {
      * Main function to cretae database table
      * 
      */
-    public static function smart_search_control_create_table( $table_name = ""  ) {
+    public static function smart_search_control_create_table() {
 
         global $wpdb;
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
