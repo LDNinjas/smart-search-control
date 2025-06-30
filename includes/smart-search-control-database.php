@@ -28,25 +28,7 @@ class Smart_Search_Control_Database {
      */
     public function create_database_table() {
 
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
-
-        if ( LD_Smart_Search_Control::smart_search_control_create_table() ){
-            return;
-        }
-
-        $charset_collate = $wpdb->get_charset_collate();
-        
-
-        $sql = "CREATE TABLE $table_name (
-            id MEDIUMINT( 9 ) NOT NULL AUTO_INCREMENT,
-            data JSON NULL,
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY ( id )
-        ) $charset_collate;";
-
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-        dbDelta( $sql );
+        LD_Smart_Search_Control::smart_search_control_create_table();
     }
 }
 
