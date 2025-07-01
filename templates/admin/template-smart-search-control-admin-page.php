@@ -3,107 +3,12 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-
-global $wpdb;
-
-$table_name = $wpdb->prefix . 'smart_search_control_parameters';
-
-/**
- * Get total items from the table with caching.
- */
-function ssc_get_total_items( $table_name ) {
-    global $wpdb;
-
-    $allowed_table = $wpdb->prefix . 'smart_search_control_parameters';
-    if ( $table_name !== $allowed_table ) {
-        return 0;
-    }
-
-    $cache_key = 'ssc_total_count_' . md5( $table_name );
-
-    $total_items = wp_cache_get( $cache_key );
-
-    if ( false === $total_items ) {
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $total_items = (int) ($wpdb->get_var("SELECT COUNT(id) FROM {$wpdb->prefix}smart_search_control_parameters") ?? 0);
-        wp_cache_set( $cache_key, $total_items, '', 300 );
-    }
-    return $total_items;
-}
-
-/**
- * Get paginated search entries from the table with caching.
- */
-function ssc_get_search_entries( $table_name, $items_per_page, $offset ) {
-    global $wpdb;
-
-    // Allow only this specific table for safety
-    $allowed_table = $wpdb->prefix . 'smart_search_control_parameters';
-    if ( $table_name !== $allowed_table ) {
-        return [];
-    }
-
-    $cache_key = 'ssc_data_' . md5( $table_name . '_' . $items_per_page . '_' . $offset );
-
-    $entries = wp_cache_get( $cache_key );
-
-    if ( false === $entries ) {
-
-        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $entries = $wpdb->get_results( $wpdb->prepare ( "SELECT id, data FROM `{$wpdb->prefix}smart_search_control_parameters` LIMIT %d OFFSET %d",  [ $items_per_page, $offset ] ) );
-        wp_cache_set( $cache_key, $entries, '', 300 );
-    }
-
-    return $entries;
-}
-
-$admin_notice   = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
-$items_per_page = 10;
-
-if ( isset( $_GET['paged'] ) && isset( $_GET['nonce'] ) ) {
-    $ssc_pagination_nonce = sanitize_text_field( wp_unslash( $_GET['nonce'] ) );
-    if ( wp_verify_nonce( $ssc_pagination_nonce, 'ssc_admin_pagination' ) ) {
-        $page = absint( $_GET['paged'] );
-    } else {
-        $page = 1;
-    }
-} else {
-    $page = 1;
-}
-
-$offset         = ( $page - 1 ) * $items_per_page;
-
-$search_entries = [];
-$total_pages    = 1;
-
-if ( empty( $admin_notice ) ) {
-    $total_items    = ssc_get_total_items( $table_name );
-    $total_pages    = ceil( $total_items / $items_per_page );
-    $search_entries = ssc_get_search_entries( $table_name, $items_per_page, $offset );
-
-    $args = [
-        'public'             => true,
-        'publicly_queryable' => true,
-    ];
-
-    $visible_post_types = get_post_types( $args, 'objects' );
-
-    if ( ! array_key_exists( 'page', $visible_post_types ) ) {
-        $visible_post_types['page'] = get_post_type_object( 'page' );
-    }
-
-    $post_types = apply_filters( 'visible_post_types', $visible_post_types );
-}
-
-
 ?>
 
 <div class="wrap">
     <?php
         echo wp_kses_post( $admin_notice );
     ?>
-
     <div class="page-header">
     <p class="page-title"><?php echo esc_html__( 'Smart Search Control' , 'smart-search-control' ); ?></p>
     <a href="#" id="openModal" class="new-rec-btn"><?php echo esc_html__( 'Add New Search', 'smart-search-control' ); ?></a>
@@ -190,7 +95,6 @@ if ( empty( $admin_notice ) ) {
                     href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $i .'$nonce=' .$nonce ) ); ?>">
                     <?php echo esc_html( $i ); ?>
                     </a>
-
                 <?php } ?>
 
                 <!-- Next Button -->
@@ -210,9 +114,7 @@ if ( empty( $admin_notice ) ) {
             <button class="closeModal modal-header-close">×</button>
         </div>
         <hr>
-
         <?php echo wp_kses_post( $admin_notice ) ;?>
-
         <div class="modal-body">
             
             <!-- Short code display -->

@@ -1,27 +1,6 @@
 <?php
 
 if ( !defined( 'ABSPATH' ) ) exit;
-
-if ( is_object( $posts_types ) && isset( $posts_types->name ) ) {
-    $posts_types = $posts_types->name;
-}
-
-if ( is_array( $posts_types ) ) {
-    $posts_types = array_map( function( $post_type_object ) {
-        return is_object( $post_type_object ) && isset( $post_type_object->name ) ? $post_type_object->name : $post_type_object;
-    }, $posts_types );
-}
-
-$args = [
-    's' => $search_query,
-    'post_type' => $posts_types,
-    'posts_per_page' => 10,
-    'post_status'    => 'publish',
-    'paged' => get_query_var( 'paged', 1 ),
-];
-
-$query = new WP_Query( $args );
-
 ?>
 
 <div class="smart-search-control-result-header">
@@ -36,7 +15,6 @@ $query = new WP_Query( $args );
     <div class="custom-search-results">
 
     <?php
-
     if ( $query->have_posts() && $search_query != null ) {
 
         while ( $query->have_posts() ) {
@@ -51,6 +29,7 @@ $query = new WP_Query( $args );
                             the_post_thumbnail( 'medium' );
                         } else {
                             $result_img =  SSC_ASSETS_URL . 'default-img/no-feature-image.jpg' ;
+                            // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
                             echo '<img src="' . esc_url( $result_img ). '"
                                     alt="' . esc_attr__( 'Default placeholder image', 'smart-search-control' ) . '">';
                             

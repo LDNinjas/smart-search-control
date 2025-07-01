@@ -33,10 +33,8 @@ class Smart_Search_Control {
             self::$instance = new self;
             self::$instance->hooks();
         }
-
         return self::$instance;
     }
-
 
     /**
      * All the required hooks are called here.
@@ -48,7 +46,6 @@ class Smart_Search_Control {
         add_action( 'wp_ajax_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
         add_action( 'wp_ajax_nopriv_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
         add_shortcode( 'smart_search_control', [ $this, 'render_search_shortcode' ] );
-    
     }
 
     /**
@@ -59,7 +56,6 @@ class Smart_Search_Control {
         if ( empty( self::$visible_post_types ) ) {
             
             self::$visible_post_types = Smart_Search_Control_Result::instance()->ssc_get_visible_post_types();
-
         }
     }
 
@@ -80,7 +76,6 @@ class Smart_Search_Control {
             'search_msg' => __( 'Searching...' , 'smart-search-control' ),
             'more_msg'   => __( 'See more...', 'smart-search-control' ),
         ]);   
-        
     }
 
     /**
@@ -94,9 +89,7 @@ class Smart_Search_Control {
             ob_start();
             echo '<h3>' . esc_attr( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ). '</h3>';
             return ob_get_clean();
-            
         }
-    
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_style( 'smart-search-control-style' );
         wp_enqueue_script( 'smart-search-control-js' );
@@ -112,15 +105,11 @@ class Smart_Search_Control {
             $atts,
             'smart_search_control'
         );
-    
         $ssc_id =  $sanitized_atts['id'] ;
-
         if ( filter_var( $ssc_id, FILTER_VALIDATE_INT ) === false || intval( $ssc_id ) < 0 ) {
 
             return '<p>' . __( 'Invalid ID provided.', 'smart-search-control' ) . '</p>';
-            
         }
-    
         $all_public_post_types = self::$visible_post_types;
         $posts_types = $all_public_post_types;
 
@@ -130,7 +119,6 @@ class Smart_Search_Control {
         if ( false === $result ) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $result = $wpdb->get_row( $wpdb->prepare( "SELECT data FROM `{$wpdb->prefix}smart_search_control_parameters` WHERE id = %d",$ssc_id  ) );
-
             wp_cache_set( $cache_key, $result, 'smart_search_control', 12 * HOUR_IN_SECONDS );
         }
             
@@ -140,12 +128,10 @@ class Smart_Search_Control {
     
         if ( ! empty( $result ) && isset( $result->data ) ) {
 
-            $data = json_decode( $result->data );
-    
+            $data        = json_decode( $result->data );
             $class       = isset( $data->class ) ? $data->class : $class;
             $css_id      = isset( $data->css_id ) ? $data->css_id : $css_id;
             $placeholder = isset( $data->place_holder ) ? $data->place_holder : $placeholder;
-    
             if ( isset( $data->post_type ) && !empty( $data->post_type ) ) {
                 if ( is_array( $data->post_type ) ) {
                     $posts_types = $data->post_type;
@@ -168,14 +154,24 @@ class Smart_Search_Control {
         if ( in_array( 'product', $posts_types, true ) && ! in_array( 'product_variation', $posts_types, true ) ) {
             $posts_types[] = 'product_variation';
         }
-    
+        
+        $url = '';
+        $fallback_page_id = get_option( 'smart_search_control_result_page' );
+        if ( !$fallback_page_id ) {
+            echo '<p>' . esc_attr( __( 'Please set a result page in the Smart Search Control settings.', 'smart-search-control' ) ) . '</p>';
+            return; 
+        }
+        $url = get_permalink( $fallback_page_id );
+
+        if ( isset( $_GET[ 'query' ] ) && isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET[ 'nonce' ] ) ) , 'ssc_search_nonce') )  {
+            $search_query = sanitize_text_field( wp_unslash( $_GET[ 'query' ] ) );
+        }
+
         ob_start();
         $template_path = SSC_TEMPLATES_DIR . 'template-smart-search-control.php';
-    
         if ( file_exists( $template_path ) ) {
             include $template_path;
         }
-    
         return ob_get_clean();
     }
     
@@ -183,18 +179,15 @@ class Smart_Search_Control {
      * Summary of search_suggestion
      */
     public function smart_search_control_suggestion() {
-        global $wpdb;
 
+        global $wpdb;
         if ( ! isset( $_POST['nonce'] ) || ! check_ajax_referer( 'smart_search_control_result_nonce', 'nonce', false ) ) {
             wp_send_json_error( [ 'message' => __( 'Nonce verification failed', 'smart-search-control' ) ] );
         }
-
         if ( empty( $_POST['search_query'] ) ) {
             wp_send_json_error( [ 'message' => __( 'Search query is empty.', 'smart-search-control' ) ] );
         }
-
         $search_query = sanitize_text_field( wp_unslash( $_POST['search_query'] ) );
-
         $ssc_id = isset( $_POST['ssc_id'] ) 
             ? intval( $_POST['ssc_id'] )
             : 0;
@@ -206,12 +199,10 @@ class Smart_Search_Control {
 
         $cache_key = 'ssc_data_' . $ssc_id;
         $cache_group = 'smart_search_control';
-
         $result = wp_cache_get( $cache_key, $cache_group );
         if ( false === $result ) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $result = $wpdb->get_row( $wpdb->prepare( "SELECT data FROM `{$wpdb->prefix}smart_search_control_parameters` WHERE id = %d",  $ssc_id  ) );
-
             wp_cache_set( $cache_key, $result, $cache_group, 12 * HOUR_IN_SECONDS );
         }
 
@@ -220,7 +211,6 @@ class Smart_Search_Control {
 
         if ( ! empty( $result ) && isset( $result->data ) ) {
             $data = json_decode( $result->data );
-
             if ( isset( $data->post_type ) && ! empty( $data->post_type ) ) {
                 if ( is_array( $data->post_type ) ) {
                     $posts_types = $data->post_type;
@@ -235,7 +225,6 @@ class Smart_Search_Control {
         } else {
             $posts_types = $all_public_post_types;
         }
-
         if ( in_array( 'product', $posts_types, true ) && ! in_array( 'product_variation', $posts_types, true ) ) {
             $posts_types[] = 'product_variation';
         }
@@ -246,9 +235,7 @@ class Smart_Search_Control {
             'posts_per_page'=> 10,
             'post_status'   => 'publish',
         ];
-
         $query = new WP_Query( $args );
-
         $posts = [];
         if ( $query->have_posts() ) {
             while ( $query->have_posts() ) {
@@ -261,20 +248,16 @@ class Smart_Search_Control {
             }
             wp_reset_postdata();
         }
-
         if ( empty( $posts ) ) {
             wp_send_json_error( [ 'message' => __( 'No results found.', 'smart-search-control' ) ] );
         }
-
         foreach ( $posts as &$post ) {
             $decoded_title = html_entity_decode( $post['title'], ENT_QUOTES | ENT_HTML5 );
             $parts = preg_split( '/\s*[-–—]\s*/u', $decoded_title );
             $post['title'] = implode( ' ', $parts );
         }
         unset( $post );
-
         wp_send_json_success( [ 'search_results' => $posts ] );
-
         wp_die();
     }
 
@@ -284,10 +267,7 @@ class Smart_Search_Control {
     public function table_exists( ) {
 
         $exists = LD_Smart_Search_Control::smart_search_control_create_table();
-
         return $exists;
     }
-    
 }
-
 Smart_Search_Control::instance();
