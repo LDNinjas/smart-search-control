@@ -138,54 +138,7 @@ class Smart_Search_Control_Admin_Menu {
         }
 
         global $wpdb;
-        $table_name = $wpdb->prefix . 'smart_search_control_parameters';
-
-        /**
-         * Get total items from the table with caching.
-         */
-        function ssc_get_total_items( $table_name ) {
-
-            global $wpdb;
-            $allowed_table = $wpdb->prefix . 'smart_search_control_parameters';
-            if ( $table_name !== $allowed_table ) {
-                return 0;
-            }
-
-            $cache_key = 'ssc_total_count_' . md5( $table_name );
-            $total_items = wp_cache_get( $cache_key );
-
-            if ( false === $total_items ) {
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-                $total_items = (int) ($wpdb->get_var("SELECT COUNT(id) FROM {$wpdb->prefix}smart_search_control_parameters") ?? 0);
-                wp_cache_set( $cache_key, $total_items, '', 300 );
-            }
-            return $total_items;
-        }
-
-        /**
-         * Get paginated search entries from the table with caching.
-         */
-        function ssc_get_search_entries( $table_name, $items_per_page, $offset ) {
-
-            global $wpdb;
-            // Allow only this specific table for safety
-            $allowed_table = $wpdb->prefix . 'smart_search_control_parameters';
-            if ( $table_name !== $allowed_table ) {
-                return [];
-            }
-
-            $cache_key = 'ssc_data_' . md5( $table_name . '_' . $items_per_page . '_' . $offset );
-            $entries = wp_cache_get( $cache_key );
-
-            if ( false === $entries ) {
-
-                $table_name = $wpdb->prefix . 'smart_search_control_parameters';
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-                $entries = $wpdb->get_results( $wpdb->prepare ( "SELECT id, data FROM `{$wpdb->prefix}smart_search_control_parameters` LIMIT %d OFFSET %d",  [ $items_per_page, $offset ] ) );
-                wp_cache_set( $cache_key, $entries, '', 300 );
-            }
-            return $entries;
-        }
+        $table_name     = $wpdb->prefix . 'smart_search_control_parameters';
         $admin_notice   = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
         $items_per_page = 10;
 
@@ -204,9 +157,9 @@ class Smart_Search_Control_Admin_Menu {
         $total_pages    = 1;
 
         if ( empty( $admin_notice ) ) {
-            $total_items    = ssc_get_total_items( $table_name );
+            $total_items    = $this->ssc_get_total_items( $table_name );
             $total_pages    = ceil( $total_items / $items_per_page );
-            $search_entries = ssc_get_search_entries( $table_name, $items_per_page, $offset );
+            $search_entries = $this->ssc_get_search_entries( $table_name, $items_per_page, $offset );
             $args = [
                 'public'             => true,
                 'publicly_queryable' => true,
@@ -225,7 +178,6 @@ class Smart_Search_Control_Admin_Menu {
      * wp_search_admin_assets
      */
     public function smart_search_control_admin_assets() {
-        
 
         if ( !$this->is_admin_settings_page() ) {
             return;
@@ -311,7 +263,6 @@ class Smart_Search_Control_Admin_Menu {
     public function smart_search_control_setting_edit() {
 
         global $wpdb;
-
         if( !$this->is_admin_settings_page() ) {
             return;
         }
@@ -425,6 +376,53 @@ class Smart_Search_Control_Admin_Menu {
             'message' => __( 'Search setting deleted successfully!', 'smart-search-control' ),
             'type'    => 'success'
         ] );
+    }
+
+    /**
+    * Get paginated search entries from the table with caching.
+    */
+    public function ssc_get_search_entries( $table_name, $items_per_page, $offset ) {
+
+        global $wpdb;
+        // Allow only this specific table for safety
+        $allowed_table = $wpdb->prefix . 'smart_search_control_parameters';
+        if ( $table_name !== $allowed_table ) {
+            return [];
+        }
+
+        $cache_key = 'ssc_data_' . md5( $table_name . '_' . $items_per_page . '_' . $offset );
+        $entries = wp_cache_get( $cache_key );
+
+        if ( false === $entries ) {
+
+            $table_name = $wpdb->prefix . 'smart_search_control_parameters';
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $entries = $wpdb->get_results( $wpdb->prepare ( "SELECT id, data FROM `{$wpdb->prefix}smart_search_control_parameters` LIMIT %d OFFSET %d",  [ $items_per_page, $offset ] ) );
+            wp_cache_set( $cache_key, $entries, '', 300 );
+        }
+        return $entries;
+    }
+
+    /**
+     * Get total items from the table with caching.
+     */
+    public function ssc_get_total_items( $table_name ) {
+
+        global $wpdb;
+        $allowed_table = $wpdb->prefix . 'smart_search_control_parameters';
+        if ( $table_name !== $allowed_table ) {
+            return 0;
+        }
+
+        $cache_key = 'ssc_total_count_' . md5( $table_name );
+        $total_items = wp_cache_get( $cache_key );
+
+        if ( false === $total_items ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $total_items = (int) ($wpdb->get_var("SELECT COUNT(id) FROM {$wpdb->prefix}smart_search_control_parameters") ?? 0);
+            wp_cache_set( $cache_key, $total_items, '', 300 );
+        }
+        return $total_items;
     }
 
     /**
