@@ -31,5 +31,4 @@ class Smart_Search_Control_Database {
         LD_Smart_Search_Control::smart_search_control_create_table();
     }
 }
-
 Smart_Search_Control_Database::instance();

@@ -2,18 +2,6 @@
 if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
-
-$admin_notice = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
-
-/**
- * all pages
- */ 
-$pages = get_pages();
-
-/**
- * Get selected result page ID from options
- */
-$selected_page = get_option( 'smart_search_control_result_page', '' );
 ?>
 
 <div class="wrap">
@@ -41,9 +29,7 @@ $selected_page = get_option( 'smart_search_control_result_page', '' );
 
     <form method="post" action="<?php echo esc_html( admin_url( 'admin-post.php' ) ); ?>">
         <div class="short-code-result-row">
-
                 <h3 class="shortcode-label"><?php echo esc_attr( __( 'Result page', 'smart-search-control' ) ); ?></h3>
-
             <div class="select-page-container">
                 <select name="selected_page" id="selected_page">
                     <option value=""><?php echo esc_attr( __( 'Select result page', 'smart-search-control' ) ); ?></option>

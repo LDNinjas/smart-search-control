@@ -40,7 +40,6 @@ class Smart_Search_Control_Admin_Submenu_Setting {
         add_action( 'admin_enqueue_scripts', [ $this, 'smart_search_control_admin_assets' ] );
         add_action( 'admin_post_ssc_save_action', [ $this, 'ssc_save_settings' ] );
         add_action( 'admin_notices', [ $this , 'ssc_admin_notices' ] );
-        
     }
 
     /**
@@ -49,12 +48,9 @@ class Smart_Search_Control_Admin_Submenu_Setting {
     public function setup_screen_id() {
 
         $screen = get_current_screen();
-
         if ( $screen ) {
-
             $this->screen_id = $screen->id;
         }
-
     }
 
     /**
@@ -66,10 +62,8 @@ class Smart_Search_Control_Admin_Submenu_Setting {
             if ( ! isset( $_POST['smart_search_control_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['smart_search_control_nonce'] ) ), 'smart_search_control_save_page' ) ) {
                 return false;
             }
-
             return isset( $_POST[ 'action' ] ) && strpos( sanitize_text_field( wp_unslash( $_POST[ 'action' ] ) ), 'smart_search_control_setting' ) !== false;
         }
-    
         $screen = get_current_screen();
         return $screen && $screen->id === $this->screen_id;
     }
@@ -80,14 +74,12 @@ class Smart_Search_Control_Admin_Submenu_Setting {
     public function add_admin_submenu_page() {
 
         add_submenu_page(
-
             'smart_search_control',
             __( 'Settings', 'smart-search-control' ),
             __( 'Settings', 'smart-search-control' ),
             'manage_options',
             'smart_search_control_settings',
             [ $this, 'render_admin_submenu_page']
-
         );
     }
 
@@ -99,10 +91,20 @@ class Smart_Search_Control_Admin_Submenu_Setting {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( esc_attr( __( 'You do not have permission to access this page.' , 'smart-search-control' ) ) );
         }
+        
+        $admin_notice = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
 
+        /**
+         * all pages
+         */ 
+        $pages = get_pages();
+
+        /**
+         * Get selected result page ID from options
+         */
+        $selected_page = get_option( 'smart_search_control_result_page', '' );
         $template_path = SSC_TEMPLATES_DIR . 'admin/template-smart-search-control-admin-setting-page.php';
         include $template_path;
-
     }
 
     /**
@@ -113,7 +115,6 @@ class Smart_Search_Control_Admin_Submenu_Setting {
         if ( !$this->is_admin_settings_page() ) {
             return;
         }
-
         wp_enqueue_style(
             'smart-search-control-admin-style',
             SSC_ASSETS_URL . 'css/smart-search-control-admin-style.css',
@@ -122,59 +123,48 @@ class Smart_Search_Control_Admin_Submenu_Setting {
         wp_enqueue_script( 'smart-search-control-admin-js', SSC_ASSETS_URL . 'js/smart-search-control-admin.js', [ 'jquery' ], SSC_VERSION, true );
     }
 
-        /**
-         * Save the selected Page
-         */
-        public function ssc_save_settings() {
+    /**
+    * Save the selected Page
+    */
+    public function ssc_save_settings() {
         
-            if ( !isset( $_POST[ 'selected_page' ], $_POST[ 'smart_search_control_nonce' ] ) ) {
-                return;
-            }
-            if ( !wp_verify_nonce( sanitize_text_field( wp_unslash(  $_POST[ 'smart_search_control_nonce' ] ) ), 'smart_search_control_save_page' ) ) {
-                return;
-            }
-        
-            if ( !current_user_can( 'manage_options' ) ) {
-                return;
-            }
-        
-            $selected_page_id = absint( $_POST[ 'selected_page' ] );
-            update_option( 'smart_search_control_result_page', $selected_page_id );
-            
-            if ( isset( $_POST['_wp_http_referer'] ) ) {
-
-                $nonce = wp_create_nonce( 'ssc_nonce' );
-                $arrg = [
-                    "message" => "ssc_updated",
-                    "nonce"   => $nonce
-
-                ];
-                $referer = sanitize_text_field( wp_unslash( $_POST['_wp_http_referer'] ) );
-                $redirect_url = esc_url_raw( add_query_arg( $arrg, $referer  ) );
-                wp_safe_redirect( $redirect_url );
-                exit;
-            }
+        if ( !isset( $_POST[ 'selected_page' ], $_POST[ 'smart_search_control_nonce' ] ) ) {
+            return;
         }
-
-        /**
-         * Set the Admin Notic
-         */
-        public function ssc_admin_notices(){
-
-            
-            
-            if( isset( $_GET[ 'message' ] ) && $_GET[ 'message' ] == 'ssc_updated' && isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'ssc_nonce' ) ) {
-            
-                ?>
-                <div class="notice notice-success is-dismissible">
-                <p><?php echo esc_attr( __( 'Result page saved successfully!', 'smart-search-control' ) ); ?></p>
-                </div>
-                <?php
-            
-            }
-                
+        if ( !wp_verify_nonce( sanitize_text_field( wp_unslash(  $_POST[ 'smart_search_control_nonce' ] ) ), 'smart_search_control_save_page' ) ) {
+            return;
         }
-    
+        if ( !current_user_can( 'manage_options' ) ) {
+            return;
+        }        
+        $selected_page_id = absint( $_POST[ 'selected_page' ] );
+        update_option( 'smart_search_control_result_page', $selected_page_id );
+            
+        if ( isset( $_POST['_wp_http_referer'] ) ) {
+
+            $nonce = wp_create_nonce( 'ssc_nonce' );
+            $arrg = [
+                "message" => "ssc_updated",
+                "nonce"   => $nonce
+            ];
+            $referer = sanitize_text_field( wp_unslash( $_POST['_wp_http_referer'] ) );
+            $redirect_url = esc_url_raw( add_query_arg( $arrg, $referer  ) );
+            wp_safe_redirect( $redirect_url );
+            exit;
+        }
+    }
+
+    /**
+    * Set the Admin Notic
+    */
+    public function ssc_admin_notices(){
+
+        if( isset( $_GET[ 'message' ] ) && $_GET[ 'message' ] == 'ssc_updated' && isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'ssc_nonce' ) ) {?>
+            <div class="notice notice-success is-dismissible">
+            <p><?php echo esc_attr( __( 'Result page saved successfully!', 'smart-search-control' ) ); ?></p>
+            </div>
+            <?php
+        }        
+    }
 }
-    
 Smart_Search_Control_Admin_Submenu_Setting::instance();
