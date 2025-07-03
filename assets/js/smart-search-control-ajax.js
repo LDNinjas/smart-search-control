@@ -33,18 +33,18 @@
 
                     if ( searchQuery.length === 0 ) {
 
-                        searchSuggestion.empty().hide();
+                        searchSuggestion.empty().hide().change();
                         return;
                     }
 
                     if ( searchQuery.length <= 2 ) {
 
-                        searchSuggestion.empty().hide();
+                        searchSuggestion.empty().hide().change();
                         SearchForm.lastQuery = '';
 
                         if ( SearchForm.ajaxRequest ) {
 
-                            SearchForm.ajaxRequest.abort();
+                            SearchForm.ajaxRequest.abort().change();
                             SearchForm.ajaxRequest = null;
                         }
 
@@ -76,7 +76,7 @@
                     let selectedLink = $( this ).find( 'a' ).attr( 'href' );
 
                     searchQuery.val( selectedText );
-                    $( '.search-suggestions' ).fadeOut( 200 );
+                    $( '.search-suggestions' ).fadeOut( 200 ).change();
 
                     if ( selectedLink ) {
 
@@ -90,7 +90,7 @@
                 $( document ).on( 'click', function ( e ) {
 
                     if ( $( e.target ).closest( '.search-container' ).length === 0 ) {
-                        $( '.search-suggestions' ).fadeOut( 200 );
+                        $( '.search-suggestions' ).fadeOut( 200 ).change();
                     }
                 });
             },
@@ -102,11 +102,11 @@
 
                 if ( !searchQuery ) return;
 
-                let ssc_id = parentContainer.find(  'input[ name="smartsearch" ]' ).val() ;
+                let ssc_id = parentContainer.find(  'input[ name="smartsearch" ]' ).val();
 
                 if ( SearchForm.ajaxRequest ) {
 
-                    SearchForm.ajaxRequest.abort();
+                    SearchForm.ajaxRequest.abort().change();
                 }
 
                 SearchForm.ajaxRequest = $.ajax( {
@@ -124,12 +124,12 @@
 
                         searchSuggestionContainer.html(
                             `<div class="no-results">${ SMART_SEARCH_CONTROL.search_msg }</div>` 
-                        ).show();
+                        ).show().change();
                     },
 
                     success: function( response ) {
 
-                        searchSuggestionContainer.empty();
+                        searchSuggestionContainer.empty().change();
                         SearchForm.selectedIndex = -1;
 
                         if ( response.success && response.data.search_results ) {
@@ -151,12 +151,12 @@
 
                                 }
 
-                            searchSuggestionContainer.html( `<ul class="suggestions-list">${ suggestionsHTML }</ul>` ).show();
+                            searchSuggestionContainer.html( `<ul class="suggestions-list">${ suggestionsHTML }</ul>` ).show().change();
 
                         } else {
 
                             let errorMessage = response.data.message;
-                            searchSuggestionContainer.html( `<div class="no-results">${ errorMessage }</div>` ).show();
+                            searchSuggestionContainer.html( `<div class="no-results">${ errorMessage }</div>` ).show().change();
                         }
                     },
 
@@ -194,8 +194,8 @@
                         } 
 
                         items.removeClass( 'highlighted' );
-                        items.eq( SearchForm.selectedIndex ).addClass( 'highlighted' );
-                        $( '.ssc-default-search-input' ).val( items.eq( SearchForm.selectedIndex ).text() );
+                        items.eq( SearchForm.selectedIndex ).addClass( 'highlighted' ).change();
+                        $( '.ssc-default-search-input' ).val( items.eq( SearchForm.selectedIndex ).text() ).change();
                     }
                 });
 
