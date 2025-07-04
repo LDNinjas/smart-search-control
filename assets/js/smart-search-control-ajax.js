@@ -44,7 +44,7 @@
 
                         if ( SearchForm.ajaxRequest ) {
 
-                            SearchForm.ajaxRequest.abort().change();
+                            SearchForm.ajaxRequest.abort();
                             SearchForm.ajaxRequest = null;
                         }
 
@@ -106,7 +106,7 @@
 
                 if ( SearchForm.ajaxRequest ) {
 
-                    SearchForm.ajaxRequest.abort().change();
+                    SearchForm.ajaxRequest.abort();
                 }
 
                 SearchForm.ajaxRequest = $.ajax( {

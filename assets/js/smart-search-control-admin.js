@@ -24,11 +24,9 @@
                 this.codeCopy         = $( ".shortcode-container" )
                 this.selectAll        = $( "#select-all" )
                 this.singleOptions    = $( ".custom-checkbox" )
-
                 this.addBtn           = $( "#openModal" );
                 this.editBtn          = $( ".edit-setting" );
                 this.deleteBtn        = $( ".delete-setting" );
-
                 this.shortcode        = $( ".shortcode-container" )
                 this.modal            = $( "#searchModal" );
                 this.closeModal       = $( ".closeModal" );
@@ -50,15 +48,11 @@
                 this.editBtn.on( "click", this.editSetting.bind( this ) );
                 this.deleteBtn.on( "click", this.deleteSetting.bind( this ) );
                 this.closeModal.on( "click", this.closeModalHandler.bind( this ) );
-
                 this.createtable.on( "click", this.createDatabaseTable.bind( this ) );
-
                 this.advanceSetting.on( "click", this.showAdvanceSetting.bind( this) );
                 this.codeCopy.on( "click", this.copyShortCode.bind( this) );
-
                 this.selectAll.on( "change", this.selectAllPost.bind( this) );
                 this.singleOptions.on( "change", this.allsingleoptions.bind( this) );
-
             },
 
             /**
@@ -66,8 +60,7 @@
              */
             addNewSetting: function () {
 
-                this.modalForm.trigger( "reset" );
-
+                this.modalForm.trigger( "reset" ).change();
                 this.modalForm.off( 'submit' ).on( 'submit', function ( e ) {
                     e.preventDefault();
 
@@ -97,19 +90,19 @@
                         dataType: 'json',
                         
                         success: function ( response ) {
-                            $loader.hide();
-                            $btnText.show();
-                            AdminSearchSetting.modalForm.trigger( "reset" );
-                            AdminSearchSetting.modal.css( "display", "none" );
+                            $loader.hide().change();
+                            $btnText.show().change();
+                            AdminSearchSetting.modalForm.trigger( "reset" ).change();
+                            AdminSearchSetting.modal.css( "display", "none" ).change();
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
                             $submitBtn.prop("disabled", false);
                             
                         },
                         error: function () {
-                            $loader.hide();
-                            $btnText.show();
-                            AdminSearchSetting.modal.css( "display", "none" );
+                            $loader.hide().change();
+                            $btnText.show().change();
+                            AdminSearchSetting.modal.css( "display", "none" ).change();
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
                             $submitBtn.prop("disabled", false);
@@ -134,7 +127,7 @@
                 this.modelClass.val( parsedData.class );
                 this.modelID.val( parsedData.css_id );
                 
-                this.shortcode.css( "display", "inline-block" );
+                this.shortcode.css( "display", "inline-block" ).change();
                 
                 this.modelPostType.prop( "checked", false );
                 
@@ -157,7 +150,6 @@
                 this.modalForm.off( "submit" ).on( "submit", function ( e ) {
 
                     e.preventDefault();
-
                     let formData = {
                         action: "smart_search_control_setting_edit",
                         nonce: SSC_SETTING.nonce_edit,
@@ -174,8 +166,8 @@
                     let $loader = $( '#edit-loader' );
                     let $btnText = $submitBtn.find( '.btn-text' );
                 
-                    $btnText.hide();
-                    $loader.show();
+                    $btnText.hide().change();
+                    $loader.show().change();
                     $submitBtn.prop("disabled", true);
 
                     $.ajax( {
@@ -184,18 +176,18 @@
                         data: formData,
                         dataType: "json",
                         success: function ( response ) {
-                            $loader.hide();
-                            $btnText.show();
-                            AdminSearchSetting.modal.css( "display", "none" );
+                            $loader.hide().change();
+                            $btnText.show().change();
+                            AdminSearchSetting.modal.css( "display", "none" ).change();
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
                             $submitBtn.prop("disabled", false);
 
                         },
                         error: function () {
-                            $loader.hide();
-                            $btnText.show();
-                            AdminSearchSetting.modal.css( "display", "none" );
+                            $loader.hide().change();
+                            $btnText.show().change();
+                            AdminSearchSetting.modal.css( "display", "none" ).chnge();
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
                             $submitBtn.prop("disabled", false);
@@ -223,8 +215,8 @@
                     let $loader = $row.find( '#delete-loader' );
                     let $btnText = $btn.find( '#delete-row' );
 
-                    $btnText.hide();
-                    $loader.show();
+                    $btnText.hide().change();
+                    $loader.show().change();
 
                     $.ajax( {
 
@@ -236,15 +228,15 @@
                             id: id
                         },
                         success: function ( response ) {
-                            $loader.hide();
-                            $btnText.show();
+                            $loader.hide().change();
+                            $btnText.show().change();
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
                         
                         },
                         error: function () {
-                            $loader.hide();
-                            $btnText.show();
+                            $loader.hide().change();
+                            $btnText.show().change();
                             localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                             location.reload();
                         }
@@ -256,7 +248,7 @@
              * Open the modal form
              */
             openModal: function () {
-                this.modal.css( "display", "flex" );
+                this.modal.css( "display", "flex" ).change();
             },
 
             /**
@@ -265,9 +257,9 @@
             closeModalHandler: function ( event ) {
 
                 event.preventDefault();
-                this.modal.css( "display", "none" );
-                this.shortcode.css( "display", "none" );
-                this.modalForm.trigger( "reset" );
+                this.modal.css( "display", "none" ).change();
+                this.shortcode.css( "display", "none" ).change();
+                this.modalForm.trigger( "reset" ).change();
             },
 
             /**
@@ -276,7 +268,7 @@
             createDatabaseTable: function(){
 
                 let $loader = $( '#database-loader' );
-                $loader.show();
+                $loader.show().change();
 
                 $.ajax( {
                     url: SSC_SETTING.ajaxurl,
@@ -286,13 +278,13 @@
                         nonce: SSC_SETTING.nonce_table,
                     },
                     success: function ( response ) {
-                        $loader.hide();
+                        $loader.hide().change();
                         localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                         location.reload();
                     
                     },
                     error: function () {
-                        $loader.hide();
+                        $loader.hide().change();
                         localStorage.setItem( "admin_notice", JSON.stringify( response.data ) );
                         location.reload();
                     }
@@ -304,7 +296,7 @@
              */
             showAdvanceSetting: function () {
 
-                $( "#advance-content" ).slideToggle( 300 );
+                $( "#advance-content" ).slideToggle( 300 ).change();
                 this.advanceSetting.toggleClass( "active" );
             },
 
@@ -376,7 +368,7 @@
                     localStorage.removeItem( "admin_notice" );
 
                     $( document ).on( "click", ".notice-dismiss", function () {
-                        $( this ).closest( ".notice" ).fadeOut();
+                        $( this ).closest( ".notice" ).fadeOut().change();
                     });
                 }
             }
