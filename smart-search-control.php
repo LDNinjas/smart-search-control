@@ -1,15 +1,16 @@
 <?php
 /**
  * Plugin Name: Smart Search Control
- * Plugin URI: https://ldninjas.com/smartsearch-control/
+ * Plugin URI: https://github.com/LDNinjas/smart-search-control
  * Description: A powerful WordPress search plugin that enables advanced filtering by post types and custom criteria. Easily create multiple search fields with distinct rules for different sections, offering flexible and precise search functionality.
  * Version: 1.0.0
  * Author: LDNinjas
- * Author URI: https://ldninjas.com/
+ * Author URI: https://ldninjas.com
  * Text Domain: smart-search-control
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
+
 
 if ( !defined( 'ABSPATH' ) ) exit;
 
