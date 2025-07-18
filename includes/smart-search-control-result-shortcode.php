@@ -2,7 +2,8 @@
 
 /**
  * Smart_Search_Control_Result Shortcode
- */
+*/
+if ( ! defined( 'ABSPATH' ) ) exit;
 class Smart_Search_Control_Result {
         
     /**
