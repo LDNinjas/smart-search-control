@@ -43,7 +43,7 @@ class Smart_Search_Control_Result {
 
         wp_register_style(
             'smart-search-control-result-style',
-            SSC_ASSETS_URL . '/css/smart-search-control-style.css',
+            plugin_dir_url(__DIR__) . 'assets/css/smart-search-control-style.css',
             array(), SSC_VERSION, 'all'
             
         );
