@@ -66,7 +66,7 @@ class Smart_Search_Control {
 
         wp_register_style(
             'smart-search-control-style',
-            SSC_ASSETS_URL . '/css/smart-search-control-style.css',
+            plugin_dir_url(__DIR__) . 'assets/css/smart-search-control-style.css',
             array(), SSC_VERSION, 'all'
         );
         wp_register_script( 'smart-search-control-js', SSC_ASSETS_URL . 'js/smart-search-control-ajax.js', [ 'jquery' ], SSC_VERSION, true );
