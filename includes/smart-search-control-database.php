@@ -1,7 +1,10 @@
 <?php
+
 /**
  * Create the Database
- */
+*/
+
+if ( ! defined( 'ABSPATH' ) ) exit;
 class Smart_Search_Control_Database {
 
     /**
