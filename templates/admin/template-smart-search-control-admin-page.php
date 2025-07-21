@@ -41,7 +41,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <td><?php echo esc_html( $data->css_id ); ?></td>
                         <td><?php echo esc_html( implode( ', ', explode( ' ', $data->class ) ) ); ?></td>
                         <td>
-                            <a href="#" data-entry='<?php echo json_encode( $entry  ?: new stdClass() ); ?>' class="button edit-setting"><?php echo esc_html__( 'Edit' , 'smart-search-control' ); ?></a>
+                            <a href="#" data-entry='<?php echo esc_attr( wp_json_encode( $entry ?: new stdClass() ) ); ?>' class="button edit-setting"><?php echo esc_html__( 'Edit', 'smart-search-control' ); ?></a>
                             <button class="delete-setting " data-id="<?php echo esc_html(  $entry->id ); ?>">
                                 <span  id="delete-row"><?php echo esc_html__( 'Delete' , 'smart-search-control'); ?>
                                 </span>
