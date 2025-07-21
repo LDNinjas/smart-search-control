@@ -66,7 +66,7 @@
 
                     let formData = {
                         action: 'smart_search_control_setting',
-                        nonce: SSC_SETTING.nonce_add,
+                        nonce: SMARSECO_SETTING.nonce_add,
                         place_holder: AdminSearchSetting.modelPlaceHolder.val(),
                         class: AdminSearchSetting.modelClass.val(),
                         css_id:  AdminSearchSetting.modelID.val(),
@@ -85,7 +85,7 @@
 
                     $.ajax( {
                         type: 'POST',
-                        url: SSC_SETTING.ajaxurl,
+                        url: SMARSECO_SETTING.ajaxurl,
                         data: formData,
                         dataType: 'json',
                         
@@ -152,7 +152,7 @@
                     e.preventDefault();
                     let formData = {
                         action: "smart_search_control_setting_edit",
-                        nonce: SSC_SETTING.nonce_edit,
+                        nonce: SMARSECO_SETTING.nonce_edit,
                         id: entry.id,
                         place_holder: AdminSearchSetting.modelPlaceHolder.val(),
                         class: AdminSearchSetting.modelClass.val(),
@@ -172,7 +172,7 @@
 
                     $.ajax( {
                         type: "POST",
-                        url: SSC_SETTING.ajaxurl,
+                        url: SMARSECO_SETTING.ajaxurl,
                         data: formData,
                         dataType: "json",
                         success: function ( response ) {
@@ -209,7 +209,7 @@
                 let $btn = $( event.currentTarget );
                 let id = $btn.data( 'id' );
 
-                if ( confirm( SSC_SETTING.confirm_msg ) ) {
+                if ( confirm( SMARSECO_SETTING.confirm_msg ) ) {
 
                     let $row = $btn.closest( 'tr' );
                     let $loader = $row.find( '#delete-loader' );
@@ -221,10 +221,10 @@
                     $.ajax( {
 
                         type: 'POST',
-                        url: SSC_SETTING.ajaxurl,
+                        url: SMARSECO_SETTING.ajaxurl,
                         data: {
                             action: 'smart_search_control_setting_delete',
-                            nonce: SSC_SETTING.nonce_delete,
+                            nonce: SMARSECO_SETTING.nonce_delete,
                             id: id
                         },
                         success: function ( response ) {
@@ -271,11 +271,11 @@
                 $loader.show().change();
 
                 $.ajax( {
-                    url: SSC_SETTING.ajaxurl,
+                    url: SMARSECO_SETTING.ajaxurl,
                     type: "POST",
                     data: {
                         action: "create_database_table",
-                        nonce: SSC_SETTING.nonce_table,
+                        nonce: SMARSECO_SETTING.nonce_table,
                     },
                     success: function ( response ) {
                         $loader.hide().change();

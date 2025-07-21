@@ -44,14 +44,14 @@ class LD_Smart_Search_Control {
      */
     private function constants_setup() {
 
-        define( 'SSC_DIR', plugin_dir_path( __FILE__ ) );
-        define( 'SSC_URL', plugin_dir_url( __FILE__ ) );
-        define( 'SSC_BASE_DIR',  plugin_basename( __FILE__ ) );        
-        define( 'SSC_INCLUDES_DIR', SSC_DIR . 'includes/' );
-        define( 'SSC_TEMPLATES_DIR', SSC_DIR . 'templates/' );
-        define( 'SSC_ASSETS_URL', SSC_URL . 'assets/' );
-        define( 'SSC_ASSETS_PATH', SSC_DIR . 'assets/' );
-        define( 'SSC_VERSION', '1.0.0' );
+        define( 'SMARSECO_DIR', plugin_dir_path( __FILE__ ) );
+        define( 'SMARSECO_URL', plugin_dir_url( __FILE__ ) );
+        define( 'SMARSECO_BASE_DIR',  plugin_basename( __FILE__ ) );        
+        define( 'SMARSECO_INCLUDES_DIR', SMARSECO_DIR . 'includes/' );
+        define( 'SMARSECO_TEMPLATES_DIR', SMARSECO_DIR . 'templates/' );
+        define( 'SMARSECO_ASSETS_URL', SMARSECO_URL . 'assets/' );
+        define( 'SMARSECO_ASSETS_PATH', SMARSECO_DIR . 'assets/' );
+        define( 'SMARSECO_VERSION', '1.0.0' );
     }
 
     /**
@@ -60,13 +60,13 @@ class LD_Smart_Search_Control {
     private function includes_files() {
 
         if ( is_admin() ) {
-            require_once SSC_INCLUDES_DIR . 'admin/smart-search-control-admin-menu.php';
-            require_once SSC_INCLUDES_DIR . 'admin/smart-search-control-admin-submenu-setting.php';
+            require_once SMARSECO_INCLUDES_DIR . 'admin/smart-search-control-admin-menu.php';
+            require_once SMARSECO_INCLUDES_DIR . 'admin/smart-search-control-admin-submenu-setting.php';
         }
 
         if( !is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ){
-            require_once SSC_INCLUDES_DIR . 'smart-search-control-shortcode.php';
-            require_once SSC_INCLUDES_DIR . 'smart-search-control-result-shortcode.php';
+            require_once SMARSECO_INCLUDES_DIR . 'smart-search-control-shortcode.php';
+            require_once SMARSECO_INCLUDES_DIR . 'smart-search-control-result-shortcode.php';
         }
 
     }
@@ -76,7 +76,7 @@ class LD_Smart_Search_Control {
      */
     public function hooks() {
 
-        add_filter( 'plugin_action_links_' . SSC_BASE_DIR, [ $this, 'smart_search_control_setting_links' ] );
+        add_filter( 'plugin_action_links_' . SMARSECO_BASE_DIR, [ $this, 'smart_search_control_setting_links' ] );
         register_activation_hook( __FILE__, [ $this,  'smart_search_control_plugin_activate' ] );
     }
 
@@ -97,7 +97,7 @@ class LD_Smart_Search_Control {
      */
     public function smart_search_control_plugin_activate() {
 
-        require_once SSC_INCLUDES_DIR . 'smart-search-control-database.php';
+        require_once SMARSECO_INCLUDES_DIR . 'smart-search-control-database.php';
     }
 
     /**
