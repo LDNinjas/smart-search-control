@@ -61,22 +61,32 @@ class Smart_Search_Control_Admin_Menu {
     public function is_admin_settings_page() {
 
         if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-            
-            if ( isset( $_POST['action'] ) && strpos( sanitize_text_field( wp_unslash( $_POST['action'] ) ), 'smart_search_control_setting' ) !== false ) {
 
-                $nonce_action_map = [
-                    'smart_search_control_setting'        => 'smart_search_control_setting_nonce_add',
-                    'smart_search_control_setting_edit'   => 'smart_search_control_setting_nonce_edit',
-                    'smart_search_control_setting_delete' => 'smart_search_control_setting_nonce_delete',
-                ];
+            if ( isset( $_POST['action'] ) ) {
+
                 $action = sanitize_text_field( wp_unslash( $_POST['action'] ) );
-                $nonce_action = isset( $nonce_action_map[ $action ] ) ? $nonce_action_map[ $action ] : '';
-                if ( $nonce_action && isset( $_POST['nonce'] ) ) {
-                    if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), $nonce_action ) ) {
-                        return false;
+
+                if ( strpos( $action, 'smart_search_control_setting' ) !== false ) {
+
+                    if ( ! current_user_can( 'manage_options' ) ) {
+                        wp_send_json_error( [ 'message' => __( 'Unauthorized access.', 'smart-search-control' ) ] );
+                        wp_die();
                     }
+
+                    $nonce_action_map = [
+                        'smart_search_control_setting'        => 'smart_search_control_setting_nonce_add',
+                        'smart_search_control_setting_edit'   => 'smart_search_control_setting_nonce_edit',
+                        'smart_search_control_setting_delete' => 'smart_search_control_setting_nonce_delete',
+                    ];
+
+                    $nonce_action = isset( $nonce_action_map[ $action ] ) ? $nonce_action_map[ $action ] : '';
+
+                    if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), $nonce_action ) ) {
+                        wp_send_json_error( [ 'message' => __( 'Nonce verification failed.', 'smart-search-control' ) ] );
+                        wp_die();
+                    }
+                    return true;
                 }
-                return true;
             }
             return false;
         }
