@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Smart Search Control
- * Plugin URI: https://github.com/LDNinjas/smart-search-control
+ * Plugin URI: https://ldninjas.com/smartsearch-control/
  * Description: A powerful WordPress search plugin that enables advanced filtering by post types and custom criteria. Easily create multiple search fields with distinct rules for different sections, offering flexible and precise search functionality.
  * Version: 1.0.0
  * Author: LDNinjas
