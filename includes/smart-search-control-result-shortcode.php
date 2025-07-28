@@ -48,7 +48,7 @@ class Smart_Search_Control_Result {
             array(), SMARSECO_VERSION, 'all'
             
         );
-        wp_register_script( 'smart-search-control-result-js', SMARSECO_ASSETS_URL . 'js/smart-search-control-ajax.js', [ 'jquery' ], SMARSECO_VERSION, true );   
+        wp_register_script( 'smart-search-control-result-js', plugin_dir_url(__DIR__) . 'assets/js/smart-search-control-ajax.js', [ 'jquery' ], SMARSECO_VERSION, true );   
     }
 
     /**
