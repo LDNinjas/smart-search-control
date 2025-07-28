@@ -71,7 +71,7 @@ class Smart_Search_Control {
             plugin_dir_url(__DIR__) . 'assets/css/smart-search-control-style.css',
             array(), SMARSECO_VERSION, 'all'
         );
-        wp_register_script( 'smart-search-control-js', SMARSECO_ASSETS_URL . 'js/smart-search-control-ajax.js', [ 'jquery' ], SMARSECO_VERSION, true );
+        wp_register_script( 'smart-search-control-js', plugin_dir_url(__DIR__) . 'assets/js/smart-search-control-ajax.js', [ 'jquery' ], SMARSECO_VERSION, true );
         wp_localize_script( 'smart-search-control-js', 'SMART_SEARCH_CONTROL', [
             'ajaxurl'    => admin_url( 'admin-ajax.php' ),
             'nonce'      => wp_create_nonce( 'smart_search_control_result_nonce' ),
