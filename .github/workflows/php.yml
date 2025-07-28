@@ -15,7 +15,7 @@ jobs:
 
       - name: Zip plugin folder
         run: |
-          zip -r smart-search-control.zip . -x ".git/*" ".github/*" "node_modules/*" "*.zip" "package.json" README.md "package-lock.json" "debug.log"
+          zip -r smart-search-control.zip . -x ".git/*" ".github/*" "node_modules/*" "*.zip" "package.json" "README.md" "package-lock.json" "debug.log"
 
       - name: Upload plugin to Cloudways via SFTP
         uses: appleboy/scp-action@v0.1.7
