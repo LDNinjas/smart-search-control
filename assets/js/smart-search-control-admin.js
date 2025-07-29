@@ -65,7 +65,7 @@
                     e.preventDefault();
 
                     let formData = {
-                        action: 'smart_search_control_setting',
+                        action: 'smarseco_smart_search_control_setting',
                         nonce: SMARSECO_SETTING.nonce_add,
                         place_holder: AdminSearchSetting.modelPlaceHolder.val(),
                         class: AdminSearchSetting.modelClass.val(),
@@ -151,7 +151,7 @@
 
                     e.preventDefault();
                     let formData = {
-                        action: "smart_search_control_setting_edit",
+                        action: "smarseco_smart_search_control_setting_edit",
                         nonce: SMARSECO_SETTING.nonce_edit,
                         id: entry.id,
                         place_holder: AdminSearchSetting.modelPlaceHolder.val(),
@@ -223,7 +223,7 @@
                         type: 'POST',
                         url: SMARSECO_SETTING.ajaxurl,
                         data: {
-                            action: 'smart_search_control_setting_delete',
+                            action: 'smarseco_smart_search_control_setting_delete',
                             nonce: SMARSECO_SETTING.nonce_delete,
                             id: id
                         },
@@ -274,7 +274,7 @@
                     url: SMARSECO_SETTING.ajaxurl,
                     type: "POST",
                     data: {
-                        action: "create_database_table",
+                        action: "smarseco_create_database_table",
                         nonce: SMARSECO_SETTING.nonce_table,
                     },
                     success: function ( response ) {

@@ -4,7 +4,7 @@
  */
 
 if ( !defined( 'ABSPATH' ) ) exit;
-class Smart_Search_Control_Admin_Submenu_Setting {
+class SMARSECO_Smart_Search_Control_Admin_Submenu_Setting {
 
     /**
      * instance
@@ -19,13 +19,13 @@ class Smart_Search_Control_Admin_Submenu_Setting {
 
     /**
      * Define instance
-     * @return  Smart_Search_Control_Admin_Submenu_Setting
+     * @return  SMARSECO_Smart_Search_Control_Admin_Submenu_Setting
      */
     public static function instance() {
 
-        if ( is_null( self::$instance ) && ! ( self::$instance instanceof  Smart_Search_Control_Admin_Submenu_Setting ) ) {
+        if ( is_null( self::$instance ) && ! ( self::$instance instanceof  SMARSECO_Smart_Search_Control_Admin_Submenu_Setting ) ) {
             self::$instance = new self();
-            self::$instance->hooks();
+            self::$instance->smarseco_hooks();
         }
         return self::$instance;
     }
@@ -33,45 +33,30 @@ class Smart_Search_Control_Admin_Submenu_Setting {
     /**
      * hooks
      */
-    private function hooks() {
+    private function smarseco_hooks() {
 
-        add_action( 'admin_menu', [ $this, 'add_admin_submenu_page' ] );
-        add_action( 'current_screen', [ $this, 'setup_screen_id' ] );
-        add_action( 'admin_enqueue_scripts', [ $this, 'smart_search_control_admin_assets' ] );
-        add_action( 'admin_post_ssc_save_action', [ $this, 'ssc_save_settings' ] );
-        add_action( 'admin_notices', [ $this , 'ssc_admin_notices' ] );
+        add_action( 'admin_menu', [ $this, 'smarseco_add_admin_submenu_page' ] );
+        add_action( 'current_screen', [ $this, 'smarseco_setup_screen_id' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'smarseco_smart_search_control_admin_assets' ] );
+        add_action( 'admin_post_ssc_save_action', [ $this, 'smarseco_save_settings' ] );
+        add_action( 'admin_notices', [ $this , 'smarseco_admin_notices' ] );
     }
 
     /**
      * Setup screen ID when the current screen is available.
      */
-    public function setup_screen_id() {
+    public function smarseco_setup_screen_id() {
 
         $screen = get_current_screen();
         if ( $screen ) {
             $this->screen_id = $screen->id;
         }
     }
-
-    /**
-     * Check if the current screen is the admin settings page.
-     */
-    public function is_admin_settings_page() {
-
-        if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-            if ( ! isset( $_POST['smart_search_control_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['smart_search_control_nonce'] ) ), 'smart_search_control_save_page' ) ) {
-                return false;
-            }
-            return isset( $_POST[ 'action' ] ) && strpos( sanitize_text_field( wp_unslash( $_POST[ 'action' ] ) ), 'smart_search_control_setting' ) !== false;
-        }
-        $screen = get_current_screen();
-        return $screen && $screen->id === $this->screen_id;
-    }
     
     /**
      * add_admin_submenu_page
      */
-    public function add_admin_submenu_page() {
+    public function smarseco_add_admin_submenu_page() {
 
         add_submenu_page(
             'smart_search_control',
@@ -79,20 +64,24 @@ class Smart_Search_Control_Admin_Submenu_Setting {
             __( 'Settings', 'smart-search-control' ),
             'manage_options',
             'smart_search_control_settings',
-            [ $this, 'render_admin_submenu_page']
+            [ $this, 'smarseco_render_admin_submenu_page']
         );
     }
 
     /**
      * render_admin_submenu_page
      */
-    public function render_admin_submenu_page() {
+    public function smarseco_render_admin_submenu_page() {
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( esc_attr( __( 'You do not have permission to access this page.' , 'smart-search-control' ) ) );
         }
+
+        if ($this->screen_id != 'smart-search-control_page_smart_search_control_settings'){
+            return;
+        }
         
-        $admin_notice = Smart_Search_Control_Admin_Menu::instance()->get_admin_notice();
+        $admin_notice = SMARSECO_Smart_Search_Control_Admin_Menu::instance()->smarseco_get_admin_notice();
 
         /**
          * all pages
@@ -110,23 +99,24 @@ class Smart_Search_Control_Admin_Submenu_Setting {
     /**
      * wp_search_admin_assets
      */
-    public function smart_search_control_admin_assets() {
+    public function smarseco_smart_search_control_admin_assets() {
 
-        if ( !$this->is_admin_settings_page() ) {
+        if ($this->screen_id != 'smart-search-control_page_smart_search_control_settings'){
             return;
         }
+
         wp_enqueue_style(
             'smart-search-control-admin-style',
-            SMARSECO_ASSETS_URL . 'css/smart-search-control-admin-style.css',
+            plugin_dir_url(dirname(__DIR__)) . 'assets/css/smart-search-control-admin-style.css',
             array(), SMARSECO_VERSION, 'all'
         );
-        wp_enqueue_script( 'smart-search-control-admin-js', SMARSECO_ASSETS_URL . 'js/smart-search-control-admin.js', [ 'jquery' ], SMARSECO_VERSION, true );
+        wp_enqueue_script( 'smart-search-control-admin-js', plugin_dir_url(dirname(__DIR__)) . 'assets/js/smart-search-control-admin.js', [ 'jquery' ], SMARSECO_VERSION, true );
     }
 
     /**
     * Save the selected Page
     */
-    public function ssc_save_settings() {
+    public function smarseco_save_settings() {
         
         if ( !isset( $_POST[ 'selected_page' ], $_POST[ 'smart_search_control_nonce' ] ) ) {
             return;
@@ -157,7 +147,7 @@ class Smart_Search_Control_Admin_Submenu_Setting {
     /**
     * Set the Admin Notic
     */
-    public function ssc_admin_notices(){
+    public function smarseco_admin_notices(){
 
         if( isset( $_GET[ 'message' ] ) && $_GET[ 'message' ] == 'ssc_updated' && isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'ssc_nonce' ) ) {?>
             <div class="notice notice-success is-dismissible">
@@ -167,4 +157,4 @@ class Smart_Search_Control_Admin_Submenu_Setting {
         }        
     }
 }
-Smart_Search_Control_Admin_Submenu_Setting::instance();
+SMARSECO_Smart_Search_Control_Admin_Submenu_Setting::instance();

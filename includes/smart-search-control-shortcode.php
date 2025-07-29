@@ -5,7 +5,7 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
-class Smart_Search_Control {
+class SMARSECO_Smart_Search_Control_Short_Code {
         
     /**
      * Summary of instance
@@ -30,10 +30,10 @@ class Smart_Search_Control {
      */
     public static function instance() {
 
-        if ( is_null( self::$instance ) && ! ( self::$instance instanceof Smart_Search_Control ) ) {
+        if ( is_null( self::$instance ) && ! ( self::$instance instanceof SMARSECO_Smart_Search_Control_Short_Code ) ) {
 
             self::$instance = new self;
-            self::$instance->hooks();
+            self::$instance->smarseco_hooks();
         }
         return self::$instance;
     }
@@ -41,30 +41,30 @@ class Smart_Search_Control {
     /**
      * All the required hooks are called here.
      */
-    private function hooks() {
+    private function smarseco_hooks() {
 
-        add_action( 'init', [ $this, 'initialize_visible_post_types' ], 100 );
-        add_action( 'wp_enqueue_scripts', [ $this, 'smart_search_control_assets' ] );
-        add_action( 'wp_ajax_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
-        add_action( 'wp_ajax_nopriv_smart_search_control_suggestion', [ $this, 'smart_search_control_suggestion' ] );
-        add_shortcode( 'smart_search_control', [ $this, 'render_search_shortcode' ] );
+        add_action( 'init', [ $this, 'smarseco_initialize_visible_post_types' ], 100 );
+        add_action( 'wp_enqueue_scripts', [ $this, 'smarseco_smart_search_control_assets' ] );
+        add_action( 'wp_ajax_smarseco_smart_search_control_suggestion', [ $this, 'smarseco_smart_search_control_suggestion' ] );
+        add_action( 'wp_ajax_nopriv_smarseco_smart_search_control_suggestion', [ $this, 'smarseco_smart_search_control_suggestion' ] );
+        add_shortcode( 'smart_search_control', [ $this, 'smarseco_render_search_shortcode' ] );
     }
 
     /**
      * Static method to initialize visible_post_types
      */
-    public static function initialize_visible_post_types() {
+    public static function smarseco_initialize_visible_post_types() {
 
         if ( empty( self::$visible_post_types ) ) {
             
-            self::$visible_post_types = Smart_Search_Control_Result::instance()->ssc_get_visible_post_types();
+            self::$visible_post_types = SMARSECO_Smart_Search_Control_Result::instance()->smarseco_get_visible_post_types();
         }
     }
 
     /**
      * Load the Assets
      */
-    public function smart_search_control_assets() {
+    public function smarseco_smart_search_control_assets() {
 
         wp_register_style(
             'smart-search-control-style',
@@ -83,10 +83,10 @@ class Smart_Search_Control {
     /**
      * Render the search shortcode
      */
-    public function render_search_shortcode( $atts ) {
+    public function smarseco_render_search_shortcode( $atts ) {
 
         global $wpdb;
-        if ( ! $this->table_exists(  ) ) {
+        if ( ! $this->smarseco_table_exists(  ) ) {
 
             ob_start();
             echo '<h3>' . esc_attr( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ). '</h3>';
@@ -180,7 +180,7 @@ class Smart_Search_Control {
     /**
      * Summary of search_suggestion
      */
-    public function smart_search_control_suggestion() {
+    public function smarseco_smart_search_control_suggestion() {
 
         global $wpdb;
         if ( ! isset( $_POST['nonce'] ) || ! check_ajax_referer( 'smart_search_control_result_nonce', 'nonce', false ) ) {
@@ -193,7 +193,7 @@ class Smart_Search_Control {
         $ssc_id = isset( $_POST['ssc_id'] ) 
             ? intval( $_POST['ssc_id'] )
             : 0;
-        if ( ! $this->table_exists(  ) ) {
+        if ( ! $this->smarseco_table_exists(  ) ) {
             ob_start();
             echo '<h3>' . esc_attr( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ) . '</h3>';
             return ob_get_clean();
@@ -266,10 +266,10 @@ class Smart_Search_Control {
     /**
      * Checks if a table exists in the database.
      */
-    public function table_exists( ) {
+    public function smarseco_table_exists( ) {
 
-        $exists = LD_Smart_Search_Control::smart_search_control_create_table();
+        $exists = SMARSECO_Smart_Search_Control::smarseco_smart_search_control_create_table();
         return $exists;
     }
 }
-Smart_Search_Control::instance();
+SMARSECO_Smart_Search_Control_Short_Code::instance();
