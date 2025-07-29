@@ -189,10 +189,6 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
-        
-        if ($this->screen_id != 'toplevel_page_smart_search_control'){
-            return;
-        }
 
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash(  $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_add' ) )  {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
@@ -244,10 +240,6 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
-        }
-        
-        if ($this->screen_id != 'toplevel_page_smart_search_control'){
-            return;
         }
 
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_edit' ) ) {
@@ -316,10 +308,6 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
-        }
-        
-        if ($this->screen_id != 'toplevel_page_smart_search_control'){
-            return;
         }
 
         if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_delete' ) ) {
