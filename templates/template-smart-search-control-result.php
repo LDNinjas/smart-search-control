@@ -28,7 +28,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
                         if ( has_post_thumbnail() ) {
                             the_post_thumbnail( 'medium' );
                         } else {
-                            $result_img =  SMARSECO_ASSETS_URL . 'default-img/no-feature-image.jpg' ;
+                            $result_img =  plugin_dir_url(__DIR__) . 'assets/default-img/no-feature-image.jpg' ;
                             // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
                             echo '<img src="' . esc_url( $result_img ). '"
                                     alt="' . esc_attr__( 'Default placeholder image', 'smart-search-control' ) . '">';

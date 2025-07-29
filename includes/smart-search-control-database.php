@@ -5,7 +5,7 @@
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
-class Smart_Search_Control_Database {
+class SMARSECO_Smart_Search_Control_Database {
 
     /**
      * Holds the class instance.
@@ -15,11 +15,11 @@ class Smart_Search_Control_Database {
 
     /**
      * Returns the singleton instance.
-     * @return Smart_Search_Control_Database
+     * @return SMARSECO_Smart_Search_Control_Database
      */
     public static function instance() {
         
-        if ( is_null( self::$instance ) && ! ( self::$instance instanceof Smart_Search_Control_Database ) ) {
+        if ( is_null( self::$instance ) && ! ( self::$instance instanceof SMARSECO_Smart_Search_Control_Database ) ) {
             self::$instance = new self();
             self::$instance->create_database_table();
         }
@@ -31,7 +31,7 @@ class Smart_Search_Control_Database {
      */
     public function create_database_table() {
 
-        LD_Smart_Search_Control::smart_search_control_create_table();
+        SMARSECO_Smart_Search_Control::smarseco_smart_search_control_create_table();
     }
 }
-Smart_Search_Control_Database::instance();
+SMARSECO_Smart_Search_Control_Database::instance();

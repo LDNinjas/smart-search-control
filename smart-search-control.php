@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Smart Search Control
- * Plugin URI: https://ldninjas.com/smartsearch-control/
+ * Plugin URI: https://ldninjas.com/smart-search-control/
  * Description: A powerful WordPress search plugin that enables advanced filtering by post types and custom criteria. Easily create multiple search fields with distinct rules for different sections, offering flexible and precise search functionality.
  * Version: 1.0.0
  * Author: LDNinjas
@@ -17,7 +17,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 /**
  * Main plugin class -  
  */
-class LD_Smart_Search_Control {
+class SMARSECO_Smart_Search_Control {
 
     /**
      * Object Variable
@@ -29,11 +29,11 @@ class LD_Smart_Search_Control {
      */
     public static function instance() {
 
-        if ( is_null( self::$instance ) && !( self::$instance instanceof LD_Smart_Search_Control ) ) {
+        if ( is_null( self::$instance ) && !( self::$instance instanceof SMARSECO_Smart_Search_Control ) ) {
             self::$instance = new self;
-            self::$instance->constants_setup(); 
-            self::$instance->includes_files();
-            self::$instance->hooks();
+            self::$instance->smarseco_constants_setup(); 
+            self::$instance->smarseco_includes_files();
+            self::$instance->smarseco_hooks();
         }
 
         return self::$instance;
@@ -42,7 +42,7 @@ class LD_Smart_Search_Control {
     /**
      * Define plugin constants 
      */
-    private function constants_setup() {
+    private function smarseco_constants_setup() {
 
         define( 'SMARSECO_DIR', plugin_dir_path( __FILE__ ) );
         define( 'SMARSECO_URL', plugin_dir_url( __FILE__ ) );
@@ -57,7 +57,7 @@ class LD_Smart_Search_Control {
     /**
      * Include necessary files
      */
-    private function includes_files() {
+    private function smarseco_includes_files() {
 
         if ( is_admin() ) {
             require_once SMARSECO_INCLUDES_DIR . 'admin/smart-search-control-admin-menu.php';
@@ -74,16 +74,16 @@ class LD_Smart_Search_Control {
     /**
      * Plugin Hooks
      */
-    public function hooks() {
+    public function smarseco_hooks() {
 
-        add_filter( 'plugin_action_links_' . SMARSECO_BASE_DIR, [ $this, 'smart_search_control_setting_links' ] );
-        register_activation_hook( __FILE__, [ $this,  'smart_search_control_plugin_activate' ] );
+        add_filter( 'plugin_action_links_' . SMARSECO_BASE_DIR, [ $this, 'smarseco_smart_search_control_setting_links' ] );
+        register_activation_hook( __FILE__, [ $this,  'smarseco_smart_search_control_plugin_activate' ] );
     }
 
     /**
      * Add Settings Link to Plugins Page
      */
-    public function smart_search_control_setting_links( $links ) {
+    public function smarseco_smart_search_control_setting_links( $links ) {
 
         $main_link = '<a href="' . admin_url( 'admin.php?page=smart_search_control' ) . '">' . __( 'Settings', 'smart-search-control' ) . '</a>';
         array_unshift( $links, $main_link );
@@ -95,7 +95,7 @@ class LD_Smart_Search_Control {
      * Runs on plugin activation
      * 
      */
-    public function smart_search_control_plugin_activate() {
+    public function smarseco_smart_search_control_plugin_activate() {
 
         require_once SMARSECO_INCLUDES_DIR . 'smart-search-control-database.php';
     }
@@ -104,7 +104,7 @@ class LD_Smart_Search_Control {
      * Main function to cretae database table
      * 
      */
-    public static function smart_search_control_create_table() {
+    public static function smarseco_smart_search_control_create_table() {
 
         global $wpdb;
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -124,4 +124,4 @@ class LD_Smart_Search_Control {
     }
 }
 
-LD_Smart_Search_Control::instance();
+SMARSECO_Smart_Search_Control::instance();
