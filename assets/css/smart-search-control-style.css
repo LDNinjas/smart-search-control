@@ -11,7 +11,7 @@
 /*
  * Default Search 
 */
-.ssc-default-search-container {
+.smarseco-default-search-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -21,14 +21,14 @@
     margin-bottom: 20px;
 }
 
-.ssc-default-search-bar-container  {
+.smarseco-default-search-bar-container  {
     display: flex;
     justify-content: center;
     width: 100%;
     height: 40px;
 }
 
-.ssc-default-search-bar {
+.smarseco-default-search-bar {
     width: 100% ;
     min-width: 250px;
     background: #fff ;
@@ -40,7 +40,7 @@
     height: 100%;
 }
 
-.ssc-default-search-btn{
+.smarseco-default-search-btn{
     color: #fff ;
     display: flex;
     justify-content: center;
@@ -51,7 +51,7 @@
     background-color: #ccc;
 }
 
-.ssc-default-search-icon {
+.smarseco-default-search-icon {
     display: flex ;
     justify-content: center;
     align-items: center;
@@ -61,11 +61,11 @@
 
 }
 
-.ssc-default-search-icon span {
+.smarseco-default-search-icon span {
     font-size: 24px;
 }
 
-.ssc-default-search-input {
+.smarseco-default-search-input {
     flex-grow: 1;
     border: none ;
     outline: none ;
@@ -288,7 +288,7 @@
 
 @media ( max-width: 992px ) {
 
-    .ssc-default-search-bar,
+    .smarseco-default-search-bar,
     .search-suggestions
     {
 
@@ -299,7 +299,7 @@
 
 @media ( max-width: 768px ) {
 
-    .ssc-default-search-bar,
+    .smarseco-default-search-bar,
     .search-suggestions  {
 
         width: 100% ;
@@ -321,7 +321,7 @@
 
 @media ( max-width: 480px ) {
 
-    .ssc-default-search-input{
+    .smarseco-default-search-input{
         width: 130px ;
     }
 

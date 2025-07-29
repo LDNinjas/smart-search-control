@@ -4,7 +4,7 @@
  * Smart_Search_Control_Result Shortcode
 */
 if ( ! defined( 'ABSPATH' ) ) exit;
-class Smart_Search_Control_Result {
+class SMARSECO_Smart_Search_Control_Result {
         
     /**
      * Summary of instance
@@ -14,13 +14,13 @@ class Smart_Search_Control_Result {
 
     /**
      * Summary of instance
-     * @return Smart_Search_Control_Result
+     * @return SMARSECO_Smart_Search_Control_Result
      */
     public static function instance() {
 
-        if ( is_null( self::$instance ) && ! ( self::$instance instanceof Smart_Search_Control_Result) ) {
+        if ( is_null( self::$instance ) && ! ( self::$instance instanceof SMARSECO_Smart_Search_Control_Result) ) {
             self::$instance = new self;
-            self::$instance->hooks();
+            self::$instance->smarseco_hooks();
         }
         return self::$instance;
     }
@@ -29,18 +29,18 @@ class Smart_Search_Control_Result {
      * hooks
      * @return void
      */
-    private function hooks() {
+    private function smarseco_hooks() {
 
-        add_action( 'wp_enqueue_scripts', [ $this, 'smart_search_control_result_assets' ] );
-        add_shortcode( 'smart_search_result', [ $this, 'render_smart_search_result_shortcode' ] );
-        add_filter( 'the_content', [ $this , 'override_selected_page_with_result_shortcode' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'smarseco_smart_search_control_result_assets' ] );
+        add_shortcode( 'smart_search_result', [ $this, 'smarseco_render_smart_search_result_shortcode' ] );
+        add_filter( 'the_content', [ $this , 'smarseco_override_selected_page_with_result_shortcode' ] );
     }
 
     /**
      * smart_search_control_result_assets
      * @return void
      */
-    public function smart_search_control_result_assets() {
+    public function smarseco_smart_search_control_result_assets() {
 
         wp_register_style(
             'smart-search-control-result-style',
@@ -55,17 +55,17 @@ class Smart_Search_Control_Result {
      * smart_search_result_shortcode
      * @return bool|string
      */
-    public function render_smart_search_result_shortcode() {
+    public function smarseco_render_smart_search_result_shortcode() {
 
         global $wpdb;
         wp_enqueue_style( 'smart-search-control-result-style' );
         wp_enqueue_script( 'smart-search-control-result-js' );
-        if ( ! $this->table_exists( ) ) {
+        if ( ! $this->smarseco_table_exists( ) ) {
             ob_start();
             echo '<h3>' . esc_html__( 'Table for Smart Search Control does not exist', 'smart-search-control' ) . '</h3>';
             return ob_get_clean();
         }
-        $all_public_post_types = self::ssc_get_visible_post_types();
+        $all_public_post_types = self::smarseco_get_visible_post_types();
         $posts_types = $all_public_post_types;
         if ( isset( $_GET['query'] ) && ! empty( $_GET['query'] ) && isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'ssc_search_nonce' ) ) {
 
@@ -136,7 +136,7 @@ class Smart_Search_Control_Result {
     /**
      * override selected page with result shortcode
      */
-    public function override_selected_page_with_result_shortcode( $content ) {
+    public function smarseco_override_selected_page_with_result_shortcode( $content ) {
 
         $selected_page_id = get_option( 'smart_search_control_result_page' );
         if ( is_page() && get_the_ID() == $selected_page_id ) {
@@ -149,16 +149,16 @@ class Smart_Search_Control_Result {
     /**
      * Checks if a table exists in the database.
      */
-    public function table_exists(  ) {
+    public function smarseco_table_exists(  ) {
 
-        $result = LD_Smart_Search_Control::smart_search_control_create_table();
+        $result = SMARSECO_Smart_Search_Control::smarseco_smart_search_control_create_table();
         return $result;
     }
 
     /**
      * Get all visible post types
      */
-    public function ssc_get_visible_post_types() {
+    public function smarseco_get_visible_post_types() {
 
         $args = [
             'public' => true,
@@ -172,4 +172,4 @@ class Smart_Search_Control_Result {
         return apply_filters( 'visible_post_types', $all_public_post_types );
     } 
 }
-Smart_Search_Control_Result::instance();
+SMARSECO_Smart_Search_Control_Result::instance();

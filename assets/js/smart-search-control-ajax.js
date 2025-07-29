@@ -114,7 +114,7 @@
                     url: SMART_SEARCH_CONTROL.ajaxurl,
                     type: 'POST',
                     data: {
-                        action: 'smart_search_control_suggestion',
+                        action: 'smarseco_smart_search_control_suggestion',
                         nonce: SMART_SEARCH_CONTROL.nonce,
                         search_query: searchQuery,
                         ssc_id: ssc_id,
@@ -174,7 +174,7 @@
              */
             handleSuggestionNavigation: function () {
 
-                $( document ).on( 'keydown', '.ssc-default-search-input', function ( e ) {
+                $( document ).on( 'keydown', '.smarseco-default-search-input', function ( e ) {
                     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
 
                         let searchSuggestions = $( this ).closest( '.parent-container' ).find( '.search-suggestions' );
@@ -195,7 +195,7 @@
 
                         items.removeClass( 'highlighted' );
                         items.eq( SearchForm.selectedIndex ).addClass( 'highlighted' ).change();
-                        $( '.ssc-default-search-input' ).val( items.eq( SearchForm.selectedIndex ).text() ).change();
+                        $( '.smarseco-default-search-input' ).val( items.eq( SearchForm.selectedIndex ).text() ).change();
                     }
                 });
 
@@ -212,7 +212,7 @@
 
                     let parentContainer = $( this ).closest( '.parent-container' );
 
-                    parentContainer.find( '.ssc-search-form' ).submit();
+                    parentContainer.find( '.smarseco-search-form' ).submit();
 
                 });
             }
