@@ -5,7 +5,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<div id="<?php echo esc_html( ( $css_id ) ) ?>" class="smarseco-default-search-container parent-container <?php echo esc_html( ( $class ) )?>">
+<div id="<?php echo esc_attr( ( $css_id ) ); ?>" class="smarseco-default-search-container parent-container <?php echo esc_attr( ( $class ) );?>">
 
     <div  class="smarseco-default-search-bar-container">
         <form  action="<?php echo esc_url( $url ); ?>" method="GET" class="smarseco-default-search-bar ssc-search-form" id="smarseco-search-form">

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Smart_Search_Control_Result Shortcode
 */

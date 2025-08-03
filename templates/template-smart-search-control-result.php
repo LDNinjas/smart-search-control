@@ -29,7 +29,6 @@ if ( !defined( 'ABSPATH' ) ) exit;
                             the_post_thumbnail( 'medium' );
                         } else {
                             $result_img =  plugin_dir_url(__DIR__) . 'assets/default-img/no-feature-image.jpg' ;
-                            // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
                             echo '<img src="' . esc_url( $result_img ). '"
                                     alt="' . esc_attr__( 'Default placeholder image', 'smart-search-control' ) . '">';
                             
@@ -71,7 +70,7 @@ if ( $query->max_num_pages > 1 ) {
 
     <div class="pagination">
         <?php
-        echo esc_html( paginate_links( [
+        echo wp_kses_post( paginate_links( [
             'total' => $query->max_num_pages,
             'prev_text' => '&laquo; Previous',
             'next_text' => 'Next &raquo;',

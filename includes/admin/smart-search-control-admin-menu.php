@@ -107,15 +107,16 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
      */
     public function smarseco_render_admin_page() {
 
+        global $wpdb;
+
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_attr( __( 'You do not have permission to access this page.' , 'smart-search-control' ) ) );
+            wp_die( esc_html( __( 'You do not have permission to access this page.' , 'smart-search-control' ) ) );
         }
 
         if ($this->screen_id != 'toplevel_page_smart_search_control'){
             return;
         }
 
-        global $wpdb;
         $table_name     = $wpdb->prefix . 'smart_search_control_parameters';
         $admin_notice   = SMARSECO_Smart_Search_Control_Admin_Menu::instance()->smarseco_get_admin_notice();
         $items_per_page = 10;

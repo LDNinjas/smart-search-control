@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Smart_Search_Control Shortcode
  */
@@ -89,7 +88,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
         if ( ! $this->smarseco_table_exists(  ) ) {
 
             ob_start();
-            echo '<h3>' . esc_attr( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ). '</h3>';
+            echo '<h3>' . esc_html( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ). '</h3>';
             return ob_get_clean();
         }
         wp_enqueue_style( 'dashicons' );
@@ -110,7 +109,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
         $ssc_id =  $sanitized_atts['id'] ;
         if ( filter_var( $ssc_id, FILTER_VALIDATE_INT ) === false || intval( $ssc_id ) < 0 ) {
 
-            return '<p>' . __( 'Invalid ID provided.', 'smart-search-control' ) . '</p>';
+            return '<p>' . esc_html(__( 'Invalid ID provided.', 'smart-search-control' ) ) . '</p>';
         }
         $all_public_post_types = self::$visible_post_types;
         $posts_types = $all_public_post_types;
@@ -149,7 +148,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
             if ( $ssc_id === '0' ) {
                 $posts_types = $all_public_post_types;
             } else {
-                return '<p>' . __( 'Invalid ID provided.', 'smart-search-control' ) . '</p>';
+                return '<p>' . esc_html( __( 'Invalid ID provided.', 'smart-search-control' ) ) . '</p>';
             }
         }
 
@@ -160,7 +159,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
         $url = '';
         $fallback_page_id = get_option( 'smart_search_control_result_page' );
         if ( !$fallback_page_id ) {
-            echo '<p>' . esc_attr( __( 'Please set a result page in the Smart Search Control settings.', 'smart-search-control' ) ) . '</p>';
+            echo '<p>' . esc_html( __( 'Please set a result page in the Smart Search Control settings.', 'smart-search-control' ) ) . '</p>';
             return; 
         }
         $url = get_permalink( $fallback_page_id );
@@ -195,7 +194,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
             : 0;
         if ( ! $this->smarseco_table_exists(  ) ) {
             ob_start();
-            echo '<h3>' . esc_attr( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ) . '</h3>';
+            echo '<h3>' . esc_html( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ) . '</h3>';
             return ob_get_clean();
         }
 
