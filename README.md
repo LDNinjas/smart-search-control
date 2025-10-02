@@ -2,11 +2,11 @@
 #  Smart Search Control
 
 Contributors: LDNinjas, farooqabdullah
-Tags: smart search, post search, search control, search filter, custom search, advanced search, advanced wp search, search management, wp serch, post types, custom post types, filter post types, disable search, search performance, disable search in post types, improve WordPress search, admin search settings
+Tags: search control, analytics, woocommerce variation search, wordpress advanced search, post based search
 Requires at least: 5.0
 Tested up to: 6.8
 Stable tag: 1.0.1
-Requires PHP: 7.0, 7.1, 7.2, 7.3, 7.4, 8.0
+Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,11 +79,11 @@ In this example, 123 should be replaced with the ID of an existing smart search 
 
 ## Troubleshooting
 
-- If you encounter any issues, please refer to the (plugin documentation)[https://ldninjas.com/docs/smartsearch-control/] or (contact our support team)[https://ldninjas.com/contact-us/].
+- If you encounter any issues, please refer to the [plugin documentation](https://ldninjas.com/docs/smartsearch-control/) or [contact our support team](https://ldninjas.com/contact-us/).
 
 ## Support
 
-For support, please visit our support forums or contact us through (our website)[https://ldninjas.com].
+For support, please visit our support forums or contact us through [our website](https://ldninjas.com).
 
 ## Changelog
 
