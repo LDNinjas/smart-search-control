@@ -1,20 +1,21 @@
-
 #  Smart Search Control
 
 Contributors: LDNinjas, farooqabdullah
-Tags: search, smart-search, filter
+Tags: smart search, post search, search control, search filter, custom search, advanced search, advanced wp search, search management, wp serch, post types, custom post types, filter post types, disable search, search performance, disable search in post types, improve WordPress search, admin search settings
 Requires at least: 5.0
-Tested up to: 6.8.2
-Stable tag: 1.0.0
-Requires PHP: 7.4
+Tested up to: 6.8
+Stable tag: 1.0.1
+Requires PHP: 7.0, 7.1, 7.2, 7.3, 7.4, 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A powerful plugin to enhance search functionality with smart controls and customization.
+A powerful plugin to enhance search functionality of your WordPress and WooCommerce sites with smart controls and customization.
 
 ## Description
 
-Enhance the search functionality of your WordPress site with the **Smart Search Control** Plugin. This plugin adds a powerful and intelligent search engine to your site without replacing the default WordPress search. It allows you to display customizable search forms anywhere using shortcodes, offering users more accurate and relevant results where needed.
+Enhance the search functionality of your WordPress and WooCommerce site with the **Smart Search Control** Plugin. This plugin adds a powerful and intelligent search engine to your site without replacing the default WordPress search. It allows you to display customizable search forms anywhere using shortcodes, offering users more accurate and relevant results where needed.
+
+[youtube https://www.youtube.com/watch?v=8nKal2-a-4g]
 
 ## Key Features
 
@@ -77,13 +78,21 @@ In this example, 123 should be replaced with the ID of an existing smart search 
 
 ## Troubleshooting
 
-- If you encounter any issues, please refer to the plugin documentation or contact our support team.
+- If you encounter any issues, please refer to the (plugin documentation)[https://ldninjas.com/docs/smartsearch-control/] or (contact our support team)[https://ldninjas.com/contact-us/].
 
 ## Support
 
-For support, please visit our support forums or contact us through our website.
+For support, please visit our support forums or contact us through (our website)[https://ldninjas.com].
 
 ## Changelog
 
+- **1.0.1**  
+    - Remove php 5.4 support for stability
+    - Added filter to update per page result counts.
+    - Added filter to update count on search suggestions.
+    - Added action hook to add new column to the admin table that displays all the created shortcodes.
+    - Added action hook to add new fields to the search form.
+    - Added action hook to add custom content to the settings page.
+ 
 - **1.0.0**  
     - Initial release  

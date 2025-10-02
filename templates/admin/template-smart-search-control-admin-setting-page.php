@@ -9,6 +9,8 @@ if ( !defined( 'ABSPATH' ) ) {
     <?php echo wp_kses_post( $admin_notice ); ?>
     <h2 class="short-code-result_page-title"><?php echo esc_html( __( 'Result Page Settings', 'smart-search-control' ) ); ?></h2>
 
+    <?php do_action( 'smarseco_settings_before_content' ); ?>
+
     <div class="short-code-result-row">
         <h3 class="shortcode-label"><?php echo esc_html( __( 'Default ShortCode', 'smart-search-control' ) ); ?></h3>
 
@@ -27,6 +29,8 @@ if ( !defined( 'ABSPATH' ) ) {
         </div>
     </div>
 
+    <?php do_action( 'smarseco_settings_before_form_content' ); ?>
+
     <form method="post" action="<?php echo esc_attr( admin_url( 'admin-post.php' ) ); ?>">
         <div class="short-code-result-row">
                 <h3 class="shortcode-label"><?php echo esc_html( __( 'Result page', 'smart-search-control' ) ); ?></h3>
@@ -44,6 +48,9 @@ if ( !defined( 'ABSPATH' ) ) {
                 <?php echo esc_html( __( 'Page where search results will be displayed', 'smart-search-control' ) ); ?></p>
             </div>
         </div>
+
+        <?php do_action( 'smarseco_settings_form_content' ); ?>
+
         <input type="hidden" name="action" value="ssc_save_action">
         
         <?php wp_nonce_field( 'smart_search_control_save_page', 'smart_search_control_nonce' ); ?>

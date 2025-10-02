@@ -230,10 +230,12 @@ class SMARSECO_Smart_Search_Control_Short_Code {
             $posts_types[] = 'product_variation';
         }
 
+        $post_per_page = apply_filters( 'smarseco_search_suggestion_per_page', 10 );
+
         $args = [
             's'             => $search_query,
             'post_type'     => $posts_types,
-            'posts_per_page'=> 10,
+            'posts_per_page'=> $post_per_page,
             'post_status'   => 'publish',
         ];
         $query = new WP_Query( $args );
@@ -252,6 +254,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
         if ( empty( $posts ) ) {
             wp_send_json_error( [ 'message' => __( 'No results found.', 'smart-search-control' ) ] );
         }
+        
         foreach ( $posts as &$post ) {
             $decoded_title = html_entity_decode( $post['title'], ENT_QUOTES | ENT_HTML5 );
             $parts = preg_split( '/\s*[-–—]\s*/u', $decoded_title );

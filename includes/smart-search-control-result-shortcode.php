@@ -107,21 +107,26 @@ class SMARSECO_Smart_Search_Control_Result {
             $posts_types = $all_public_post_types;
             $shortcode_content = '[smart_search_control id="0"]';
         }
-                if ( is_object( $posts_types ) && isset( $posts_types->name ) ) {
+                
+        if ( is_object( $posts_types ) && isset( $posts_types->name ) ) {
             $posts_types = $posts_types->name;
         }
+
         if ( is_array( $posts_types ) ) {
             $posts_types = array_map( function( $post_type_object ) {
                 return is_object( $post_type_object ) && isset( $post_type_object->name ) ? $post_type_object->name : $post_type_object;
             }, $posts_types );
         }
+
+        $post_per_page = apply_filters( 'smarseco_search_result_per_page', 10 );
         $args = [
             's' => $search_query,
             'post_type' => $posts_types,
-            'posts_per_page' => 10,
+            'posts_per_page' => $post_per_page,
             'post_status'    => 'publish',
             'paged' => get_query_var( 'paged', 1 ),
         ];
+
         $query = new WP_Query( $args );
 
         ob_start();

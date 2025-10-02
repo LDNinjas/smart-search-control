@@ -24,6 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <th><?php echo esc_html__( 'Place Holder' , 'smart-search-control' ); ?></th>
                 <th><?php echo esc_html__( 'CSS ID' , 'smart-search-control' ); ?></th>
                 <th><?php echo esc_html__( 'CSS Class' , 'smart-search-control' ); ?></th>
+                <?php do_action( 'smarseco_column_header_before_action_column' ); ?>
                 <th><?php echo esc_html__( 'Action' , 'smart-search-control' ); ?></th>
             </tr>
         </thead>
@@ -40,6 +41,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <td><?php echo esc_html( $data->place_holder ); ?></td>
                         <td><?php echo esc_html( $data->css_id ); ?></td>
                         <td><?php echo esc_html( implode( ', ', explode( ' ', $data->class ) ) ); ?></td>
+                        <?php do_action( 'smarseco_column_content_before_action_column', $data ); ?>
                         <td>
                             <a href="#" data-entry='<?php echo esc_attr(htmlentities( wp_json_encode( $entry ?: new stdClass() ), ENT_QUOTES, 'UTF-8' ) ); ?>' class="button edit-setting"><?php echo esc_html__( 'Edit', 'smart-search-control' ); ?></a>
                             <button class="delete-setting " data-id="<?php echo esc_html(  $entry->id ); ?>">
@@ -65,6 +67,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <th><?php echo esc_html__( 'Place Holder' , 'smart-search-control' ); ?></th>
                 <th><?php echo esc_html__( 'CSS ID' , 'smart-search-control' ); ?></th>
                 <th><?php echo esc_html__( 'CSS Class' , 'smart-search-control' ); ?></th>
+                <?php do_action( 'smarseco_column_footer_before_action_column' ); ?>
                 <th><?php echo esc_html__( 'Action' , 'smart-search-control' ); ?></th>
             </tr>
         </tfoot>
@@ -153,7 +156,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <span class="inputs-desc"><?php echo esc_html__( 'Optional: Enter custom CSS classes (separated by spaces).' , 'smart-search-control' ); ?></span>
                     </div>
                 </div>
-
+                <?php do_action( 'smarseco_add_fields_to_search_form' ); ?>
                 <div class="form-group">
                     <div class="label-container">
                         <label class="post-type-label"><?php echo esc_html__( 'Post Types' , 'smart-search-control' ); ?></label>
