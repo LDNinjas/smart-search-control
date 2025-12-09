@@ -58,9 +58,6 @@
 .ssc-search-result-item img {
     width: 100%;
 }
-.ssc-search-result-item .ssc-post-featured-wrapper {
-    width: 30%;
-}
 .ssc-search-result-item.ssc-list-view .ssc-post-content-wrapper {
     width: 65%;
     margin-left: 5%;
@@ -257,7 +254,7 @@
 .ssc-full-width {
     width: 100%;
 }
-.ssc-responsove-width {
+.ssc-responsive-width {
     width: 30%;
 }
 /* 

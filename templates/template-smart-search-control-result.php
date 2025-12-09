@@ -24,7 +24,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
             ?>
             <div class="ssc-search-result-item ssc-list-view">
 
-                <div class="ssc-post-featured-wrapper">
+                <div class="ssc-post-featured-wrapper ssc-responsive-width">
                     <a href="<?php the_permalink(); ?>">
                         <?php
                         if ( has_post_thumbnail() ) {
