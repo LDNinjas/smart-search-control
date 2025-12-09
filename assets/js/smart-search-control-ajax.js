@@ -17,6 +17,44 @@
                 this.handleSearchFormSubmit();
                 this.handleSuggestionNavigation();
                 this.handleSeeMore();
+                this.handleViewOption();
+            },
+
+            /**
+             * handle list and grid view option
+             */
+            handleViewOption: function() {
+
+                $( document ).on( 'click', '.ssc-button', function() {
+
+                    let self = $(this);
+                    $( '.ssc-button' ).removeClass( 'ssc-btn-background' );
+                    self.addClass( 'ssc-btn-background' );
+                } );
+
+                /**
+                 * when someone clicks on grid button
+                 */
+                $( document ).on( 'click', '.ssc-grid-btn', function() {
+
+                    $( '.ssc-search-result-item' ).removeClass( 'ssc-list-view' );
+                    $( '.ssc-search-result-item' ).addClass( 'ssc-grid-view' );
+                    $( '.ssc-custom-search-results' ).addClass( 'ssc-flex' );
+                    $( '.ssc-search-result-item .ssc-post-featured-wrapper' ).removeClass( 'ssc-responsive-width' );
+                    $( '.ssc-search-result-item .ssc-post-featured-wrapper' ).addClass( 'ssc-full-width' );
+                } );
+
+                /**
+                 * when someone clicks on list view button
+                 */
+                $( document ).on( 'click', '.ssc-list-btn', function() {
+
+                    $( '.ssc-search-result-item' ).addClass( 'ssc-list-view' );
+                    $( '.ssc-search-result-item' ).removeClass( 'ssc-grid-view' );
+                    $( '.ssc-custom-search-results' ).removeClass( 'ssc-flex' );
+                    $( '.ssc-search-result-item .ssc-post-featured-wrapper' ).removeClass( 'ssc-full-width' );
+                    $( '.ssc-search-result-item .ssc-post-featured-wrapper' ).addClass( 'ssc-responsive-width' );
+                } );
             },
 
             /**

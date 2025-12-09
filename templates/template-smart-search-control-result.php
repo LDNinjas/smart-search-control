@@ -4,15 +4,17 @@ if ( !defined( 'ABSPATH' ) ) exit;
 ?>
 
 <div class="smart-search-control-result-header">
-    <?php if( $search_query != null ){ ?>
-        <h2 class="result-header"><?php echo esc_attr( __( 'Search Results for:', 'smart-search-control' ) ) . ' ' . esc_html( $search_query ); ?></h2>
-    <?php }?>
-    <div class="result-header">
-        <?php echo do_shortcode( $shortcode_content ); ?>
+    <div class="ssc-header-inner-wrapper">
+        <?php if( $search_query != null ){ ?>
+            <h2 class="result-header"><?php echo esc_attr( __( 'Search Results for:', 'smart-search-control' ) ) . ' ' . esc_html( $search_query ); ?></h2>
+        <?php }?>
+        <div class="result-header">
+            <?php echo do_shortcode( $shortcode_content ); ?>
+        </div>
     </div>
 </div>
 
-    <div class="custom-search-results">
+    <div class="ssc-custom-search-results">
 
     <?php
     if ( $query->have_posts() && $search_query != null ) {
@@ -20,13 +22,13 @@ if ( !defined( 'ABSPATH' ) ) exit;
         while ( $query->have_posts() ) {
             $query->the_post();
             ?>
-            <div class="search-result-item">
-                <div class="search-featured-image">
+            <div class="ssc-search-result-item ssc-list-view">
 
+                <div class="ssc-post-featured-wrapper">
                     <a href="<?php the_permalink(); ?>">
                         <?php
                         if ( has_post_thumbnail() ) {
-                            the_post_thumbnail( 'medium' );
+                            the_post_thumbnail( 'thumbnail' );
                         } else {
                             $result_img =  plugin_dir_url(__DIR__) . 'assets/default-img/no-feature-image.jpg' ;
                             echo '<img src="' . esc_url( $result_img ). '"
@@ -35,17 +37,17 @@ if ( !defined( 'ABSPATH' ) ) exit;
                         }
                         ?>
                     </a>
-
                 </div>
+                <div class="ssc-post-content-wrapper">
+                    <h2 class="search-title">
+                        <a href="<?php the_permalink(); ?>">
+                            <?php the_title(); ?>
+                        </a>
+                    </h2>
 
-                <h2 class="search-title">
-                    <a href="<?php the_permalink(); ?>">
-                        <?php the_title(); ?>
-                    </a>
-                </h2>
-
-                <div class="search-excerpt">
-                    <?php echo esc_html( wp_trim_words( get_the_excerpt(), 25, '...' ) ); ?>
+                    <div class="search-excerpt">
+                        <?php echo esc_html( wp_trim_words( get_the_excerpt(), 25, '...' ) ); ?>
+                    </div>
                 </div>
             </div>
             <?php

@@ -11,23 +11,18 @@
 /*
  * Default Search 
 */
-.smarseco-default-search-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100% ;
-    max-width: 600px;
-    margin-bottom: 20px;
+.ssc-custom-search-results,
+.smart-search-control-result-header {
+    max-width: 100%;
 }
-
+.ssc-header-inner-wrapper {
+    width: 93%;
+    margin: auto;
+}
 .smarseco-default-search-bar-container  {
-    display: flex;
-    justify-content: center;
-    width: 100%;
+    width: 350px;
     height: 40px;
 }
-
 .smarseco-default-search-bar {
     width: 100% ;
     min-width: 250px;
@@ -39,7 +34,37 @@
     padding: auto ;
     height: 100%;
 }
-
+.ssc-flex {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 20px;
+    margin-top: 60px;
+}
+.ssc-search-result-item {
+    background: #e4e4e440;
+    padding: 20px;
+    border-radius: 12px;
+}
+.ssc-search-result-item.ssc-list-view {
+    display: flex;
+    width: 90%;
+    margin: 0 auto 30px auto;
+}
+.ssc-search-result-item.ssc-grid-view {
+    display: grid;
+    width: 30%;
+}
+.ssc-search-result-item img {
+    width: 100%;
+}
+.ssc-search-result-item .ssc-post-featured-wrapper {
+    width: 30%;
+}
+.ssc-search-result-item.ssc-list-view .ssc-post-content-wrapper {
+    width: 65%;
+    margin-left: 5%;
+}
 .smarseco-default-search-btn{
     color: #fff ;
     display: flex;
@@ -162,54 +187,6 @@
     color: inherit;
     text-decoration: none;
 }
-/* 
- * Search result item
-*/
-.search-result-item {
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin-bottom: 20px;
-}
-
-.search-result-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-}
-
-.search-title {
-    font-size: 1.2em;
-    font-weight: 600;
-    color: #333;
-    margin: 10px 0;
-    padding-left: 20px;
-}
-.search-title a {
-    text-decoration: none;
-    color: inherit;
-}
-.search-title a:hover {
-    text-decoration: underline;
-}
-
-.search-featured-image img {
-    width: 100%;
-    height: 280px;
-    object-fit: cover;
-}
-
-.search-excerpt {
-    font-size: 16px;
-    color: #666;
-    padding: 0 20px;
-    margin: 0;
-    margin-bottom:10px;
-    line-height: 1.5;
-}
-
 .smart-search-control-no-result{
     margin-top: 0;
     display: flex;
@@ -257,18 +234,35 @@
     background-color: #eaeaea;
     color: #ccc;
 }
-
-
+.ssc-view-option-wrapper {
+    float: right;
+    margin: 20px 0;
+}
+.ssc-view-option-wrapper .ssc-button {
+    padding: 9px 20px;
+    font-size: 17px;
+    border-radius: 12px;
+    border: unset;
+    cursor: pointer;
+    transition: background-color 1s ease;
+}
+.ssc-view-option-wrapper .ssc-btn-background {
+    background: #0D4B6F;
+    color: white;
+    border: 1px solid #0D4B6F;
+}
+.ssc-view-option-wrapper .ssc-button span {
+    vertical-align: middle;
+}
+.ssc-full-width {
+    width: 100%;
+}
+.ssc-responsove-width {
+    width: 30%;
+}
 /* 
  *Responsive  
 */
-@media ( max-width: 1024px ) {
-
-    .custom-search-results {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
 @media ( max-width: 992px ) {
 
     .smarseco-default-search-bar,
@@ -279,7 +273,11 @@
     }
 
 }
-
+@media ( max-width: 1050px ) {
+    .ssc-search-result-item.ssc-grid-view {
+        width: 50%;
+    }
+}
 @media ( max-width: 768px ) {
 
     .smarseco-default-search-bar,
@@ -295,26 +293,31 @@
     .search-excerpt {
         font-size: 0.95em;
     }
-
-    .custom-search-results {
-        grid-template-columns:  1fr;
-    }
-
 }
+@media ( max-width: 600px ) {
 
+    .ssc-search-result-item.ssc-list-view,
+    .ssc-custom-search-results.ssc-flex {
+        display: block;
+    }
+    .ssc-custom-search-results .ssc-post-featured-wrapper,
+    .ssc-search-result-item.ssc-list-view {
+        width: 95%;
+    }
+    .ssc-view-option-wrapper {
+        display: none;
+    }
+    .ssc-search-result-item.ssc-grid-view {
+        width: 90%;
+    }
+    .ssc-search-result-item {
+        margin-bottom: 20px;
+    }
+}
 @media ( max-width: 480px ) {
 
     .smarseco-default-search-input{
         width: 130px ;
-    }
-
-    .custom-search-results {
-        padding: 10px;
-        gap: 15px;
-    }
-
-    .search-result-item {
-        padding: 12px;
     }
 
     .search-title {
