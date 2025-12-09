@@ -56,7 +56,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     else {
         ?>
             <div class="smart-search-control-no-result">
-                <h2><?php echo esc_attr( __( 'No Result Found ', 'smart-search-control' ) ); ?></h2>
+                <p><?php echo esc_attr( __( 'No Result Found ', 'smart-search-control' ) ); ?></p>
             </div>
         
     <?php }
