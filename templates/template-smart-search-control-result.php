@@ -13,12 +13,8 @@ if ( !defined( 'ABSPATH' ) ) exit;
         </div>
     </div>
 </div>
-
-    <div class="ssc-custom-search-results">
-
-    <?php
+    <?php 
     if ( $query->have_posts() && $search_query != null ) {
-
         ?>
         <div class="ssc-view-option-wrapper">
             <button class="ssc-button ssc-list-btn ssc-btn-background">
@@ -31,6 +27,13 @@ if ( !defined( 'ABSPATH' ) ) exit;
             </button>
         </div>
         <?php
+    }
+    ?>
+
+    <div class="ssc-custom-search-results">
+
+    <?php
+    if ( $query->have_posts() && $search_query != null ) {
 
         while ( $query->have_posts() ) {
             $query->the_post();
