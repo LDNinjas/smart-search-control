@@ -138,7 +138,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         if ( empty( $admin_notice ) ) {
             $total_items    = $this->smarseco_get_total_items( $table_name );
             $total_pages    = ceil( $total_items / $items_per_page );
-            $search_entries = $this->smarseco_get_search_entries( $table_name, $items_per_page, $offset );
+            $smarseco_search_entries = $this->smarseco_get_search_entries( $table_name, $items_per_page, $offset );
             $args = [
                 'public'             => true,
                 'publicly_queryable' => true,
@@ -147,7 +147,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
             if ( ! array_key_exists( 'page', $visible_post_types ) ) {
                 $visible_post_types['page'] = get_post_type_object( 'page' );
             }
-            $post_types = apply_filters( 'visible_post_types', $visible_post_types );
+            $post_types = apply_filters( 'smarseco_visible_post_types', $visible_post_types );
         }
         $template_path = SMARSECO_TEMPLATES_DIR . 'admin/template-smart-search-control-admin-page.php';
         include $template_path;

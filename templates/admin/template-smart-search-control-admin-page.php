@@ -29,22 +29,22 @@ if ( ! defined( 'ABSPATH' ) ) {
             </tr>
         </thead>
         <tbody>
-        <?php if ( isset( $search_entries ) && is_array( $search_entries ) && $search_entries ) { ?>
-                <?php foreach ( $search_entries as $entry ){
+        <?php if ( isset( $smarseco_search_entries ) && is_array( $smarseco_search_entries ) && $smarseco_search_entries ) { ?>
+                <?php foreach ( $smarseco_search_entries as $smarseco_entry ){
                 
-                    $data = json_decode( $entry->data ); ?>
+                    $smarseco_data = json_decode( $smarseco_entry->data ); ?>
                     
                     <tr class="search-table-data">
                         <strong>
-                            <td>[smart_search_control id="<?php echo esc_html( $entry->id ); ?>"]</td>
+                            <td>[smart_search_control id="<?php echo esc_html( $smarseco_entry->id ); ?>"]</td>
                         </strong>
-                        <td><?php echo esc_html( $data->place_holder ); ?></td>
-                        <td><?php echo esc_html( $data->css_id ); ?></td>
-                        <td><?php echo esc_html( implode( ', ', explode( ' ', $data->class ) ) ); ?></td>
-                        <?php do_action( 'smarseco_column_content_before_action_column', $data ); ?>
+                        <td><?php echo esc_html( $smarseco_data->place_holder ); ?></td>
+                        <td><?php echo esc_html( $smarseco_data->css_id ); ?></td>
+                        <td><?php echo esc_html( implode( ', ', explode( ' ', $smarseco_data->class ) ) ); ?></td>
+                        <?php do_action( 'smarseco_column_content_before_action_column', $smarseco_data ); ?>
                         <td>
-                            <a href="#" data-entry='<?php echo esc_attr(htmlentities( wp_json_encode( $entry ?: new stdClass() ), ENT_QUOTES, 'UTF-8' ) ); ?>' class="button edit-setting"><?php echo esc_html__( 'Edit', 'smart-search-control' ); ?></a>
-                            <button class="delete-setting " data-id="<?php echo esc_html(  $entry->id ); ?>">
+                            <a href="#" data-entry='<?php echo esc_attr(htmlentities( wp_json_encode( $smarseco_entry ?: new stdClass() ), ENT_QUOTES, 'UTF-8' ) ); ?>' class="button edit-setting"><?php echo esc_html__( 'Edit', 'smart-search-control' ); ?></a>
+                            <button class="delete-setting " data-id="<?php echo esc_html(  $smarseco_entry->id ); ?>">
                                 <span  id="delete-row"><?php echo esc_html__( 'Delete' , 'smart-search-control'); ?>
                                 </span>
                                 <span id="delete-loader" class="loading" style="display: none;"></span>
@@ -80,29 +80,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 
             <?php if ( $total_pages > 1 ) {
 
-                $prev_page = max( 1, $page - 1 );
-                $next_page = min( $total_pages, $page + 1 );
+                $smarseco_prev_page = max( 1, $page - 1 );
+                $smarseco_next_page = min( $total_pages, $page + 1 );
 
-                $nonce = wp_create_nonce( "ssc_admin_pagination" );
+                $smarseco_nonce = wp_create_nonce( "ssc_admin_pagination" );
                 ?>
 
                 <!-- Previous Button -->
                 <?php if ( $page > 1 ) { ?>
-                    <a class="prev page-numbers" href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $prev_page .'$nonce=' .$nonce  ) ); ?>"><?php echo esc_html__( '« Prev' , 'smart-search-control' ); ?></a>
+                    <a class="prev page-numbers" href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $smarseco_prev_page .'$nonce=' .$smarseco_nonce  ) ); ?>"><?php echo esc_html__( '« Prev' , 'smart-search-control' ); ?></a>
                 <?php } ?>
 
                 <!-- Numbered Pagination -->
-                <?php for ( $i = 1; $i <= $total_pages; $i++ ) { ?>
+                <?php for ( $smarseco_i = 1; $smarseco_i <= $total_pages; $smarseco_i++ ) { ?>
 
-                    <a class="page-numbers <?php echo ( $i == $page ) ? 'current' : ''; ?>" 
-                    href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $i .'$nonce=' .$nonce ) ); ?>">
-                    <?php echo esc_html( $i ); ?>
+                    <a class="page-numbers <?php echo ( $smarseco_i == $page ) ? 'current' : ''; ?>" 
+                    href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $smarseco_i .'$nonce=' .$smarseco_nonce ) ); ?>">
+                    <?php echo esc_html( $smarseco_i ); ?>
                     </a>
                 <?php } ?>
 
                 <!-- Next Button -->
                 <?php if ( $page < $total_pages ) { ?>
-                    <a class="next page-numbers" href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $next_page .'$nonce=' .$nonce ) ); ?>"><?php echo esc_html__( 'Next »' , 'smart-search-control' ); ?></a>
+                    <a class="next page-numbers" href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $smarseco_next_page .'$nonce=' .$smarseco_nonce ) ); ?>"><?php echo esc_html__( 'Next »' , 'smart-search-control' ); ?></a>
                 <?php } ?>
             <?php } ?>
         </div>
@@ -167,10 +167,10 @@ if ( ! defined( 'ABSPATH' ) ) {
                     </div>
                     <?php if ( !empty( $post_types ) ){ ?>
                     <div class="post-type-options">
-                        <?php foreach ( $post_types as $key => $post_type ): ?>
+                        <?php foreach ( $post_types as $smarseco_key => $post_type ): ?>
 
                             <label class="checkbox-label">
-                                <input type="checkbox" name="post_type[]" value="<?php echo esc_attr( $key ); ?>" class="custom-checkbox">
+                                <input type="checkbox" name="post_type[]" value="<?php echo esc_attr( $smarseco_key ); ?>" class="custom-checkbox">
                                 <?php echo esc_html( $post_type->label ); ?>
                             </label>
 

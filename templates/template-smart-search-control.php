@@ -25,16 +25,6 @@ if ( !defined( 'ABSPATH' ) ) {
                 </button>
             </form>
     </div>
-    <div class="ssc-view-option-wrapper">
-        <button class="ssc-button ssc-list-btn ssc-btn-background">
-            <span class="dashicons dashicons-menu"></span>
-            <?php echo __( 'list', 'smart-search-control' ); ?>
-        </button>
-        <button class="ssc-button ssc-grid-btn">
-            <span class="dashicons dashicons-grid-view"></span>
-            <?php echo __( 'grid', 'smart-search-control' ); ?>
-        </button>
-    </div>
     <!-- Search Suggestions Dropdown -->
     <div class="search-suggestions"></div>
 </div>

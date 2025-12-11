@@ -19,6 +19,19 @@ if ( !defined( 'ABSPATH' ) ) exit;
     <?php
     if ( $query->have_posts() && $search_query != null ) {
 
+        ?>
+        <div class="ssc-view-option-wrapper">
+            <button class="ssc-button ssc-list-btn ssc-btn-background">
+                <span class="dashicons dashicons-menu"></span>
+                <?php echo esc_html__( 'list', 'smart-search-control' ); ?>
+            </button>
+            <button class="ssc-button ssc-grid-btn">
+                <span class="dashicons dashicons-grid-view"></span>
+                <?php echo esc_html__( 'Grid', 'smart-search-control' ); ?>
+            </button>
+        </div>
+        <?php
+
         while ( $query->have_posts() ) {
             $query->the_post();
             ?>
@@ -30,8 +43,8 @@ if ( !defined( 'ABSPATH' ) ) exit;
                         if ( has_post_thumbnail() ) {
                             the_post_thumbnail( 'thumbnail' );
                         } else {
-                            $result_img =  plugin_dir_url(__DIR__) . 'assets/default-img/no-feature-image.jpg' ;
-                            echo '<img src="' . esc_url( $result_img ). '"
+                            $smarseco_result_img =  plugin_dir_url(__DIR__) . 'assets/default-img/no-feature-image.jpg' ;
+                            echo '<img src="' . esc_url( $smarseco_result_img ). '"
                                     alt="' . esc_attr__( 'Default placeholder image', 'smart-search-control' ) . '">';
                             
                         }

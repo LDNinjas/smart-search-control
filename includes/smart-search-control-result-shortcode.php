@@ -173,7 +173,7 @@ class SMARSECO_Smart_Search_Control_Result {
             $visible_post_types[ 'page' ] = get_post_type_object( 'page' );
         }
         $all_public_post_types = array_keys( $visible_post_types );
-        return apply_filters( 'visible_post_types', $all_public_post_types );
+        return apply_filters( 'smarseco_visible_post_types', $all_public_post_types );
     } 
 }
 SMARSECO_Smart_Search_Control_Result::instance();
