@@ -83,7 +83,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 <!-- Pagination -->
 <?php
 
-if ( $query->max_num_pages > 1 ) {
+if ( $query->max_num_pages > 1 && $query->have_posts() && $search_query != null ) {
     ?>
 
     <div class="pagination">
