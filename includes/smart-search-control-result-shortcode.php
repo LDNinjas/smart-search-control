@@ -143,6 +143,7 @@ class SMARSECO_Smart_Search_Control_Result {
     public function smarseco_override_selected_page_with_result_shortcode( $content ) {
 
         $selected_page_id = get_option( 'smart_search_control_result_page' );
+
         if ( is_page() && get_the_ID() == $selected_page_id ) {
 
             return do_shortcode( '[smart_search_result]' );

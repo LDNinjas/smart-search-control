@@ -185,10 +185,7 @@
     text-decoration: none;
 }
 .smart-search-control-no-result{
-    margin-top: 0;
-    display: flex;
-    justify-content: center;
-
+    text-align: center;
 }
 
 .smart-search-control-no-result h2{

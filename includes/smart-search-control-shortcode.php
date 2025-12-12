@@ -85,7 +85,16 @@ class SMARSECO_Smart_Search_Control_Short_Code {
     public function smarseco_render_search_shortcode( $atts ) {
 
         global $wpdb;
-        if ( ! $this->smarseco_table_exists(  ) ) {
+
+        static $shortcode_ran = false;
+
+        if ( $shortcode_ran ) {
+            return '';
+        }
+
+        $shortcode_ran = true;
+
+        if ( ! $this->smarseco_table_exists() ) {
 
             ob_start();
             echo '<h3>' . esc_html( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ). '</h3>';
@@ -107,10 +116,12 @@ class SMARSECO_Smart_Search_Control_Short_Code {
             'smart_search_control'
         );
         $ssc_id =  $sanitized_atts['id'] ;
+
         if ( filter_var( $ssc_id, FILTER_VALIDATE_INT ) === false || intval( $ssc_id ) < 0 ) {
 
             return '<p>' . esc_html(__( 'Invalid ID provided.', 'smart-search-control' ) ) . '</p>';
         }
+
         $all_public_post_types = self::$visible_post_types;
         $posts_types = $all_public_post_types;
 
@@ -127,7 +138,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
         $css_id      = $sanitized_atts[ 'css_id' ];
         $placeholder = $sanitized_atts[ 'place_holder' ];
     
-        if ( ! empty( $result ) && isset( $result->data ) ) {
+        if( ! empty( $result ) && isset( $result->data ) ) {
 
             $data        = json_decode( $result->data );
             $class       = isset( $data->class ) ? $data->class : $class;
@@ -144,7 +155,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
             } else {
                 $posts_types = $all_public_post_types;
             }
-        }else {
+        } else {
             if ( $ssc_id === '0' ) {
                 $posts_types = $all_public_post_types;
             } else {
