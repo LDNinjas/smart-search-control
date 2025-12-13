@@ -3,8 +3,8 @@
 Contributors: LDNinjas, farooqabdullah
 Tags: search control, analytics, woocommerce variation search, wordpress advanced search, post based search
 Requires at least: 5.0
-Tested up to: 6.8
-Stable tag: 1.0.1
+Tested up to: 6.9
+Stable tag: 1.0.2
 Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -86,13 +86,21 @@ For support, please visit our support forums or contact us through [our website]
 
 ## Changelog
 
+- **1.0.2**  
+    - New: Added option to display search results in list or grid view.
+    - New: Implemented semantic UI for the results.
+    - Fix: Fix pagination issues when no records are found.
+    - Fix: Made the plugin compatible with WordPress 6.9
+    - Fix: Made the plugin compatible with PHP 8.0
+
+
 - **1.0.1**  
-    - Remove php 5.4 support for stability
-    - Added filter to update per page result counts.
-    - Added filter to update count on search suggestions.
-    - Added action hook to add new column to the admin table that displays all the created shortcodes.
-    - Added action hook to add new fields to the search form.
-    - Added action hook to add custom content to the settings page.
+    - New: Remove php 5.4 support for stability
+    - New: Added filter to update per page result counts.
+    - New: Added filter to update count on search suggestions.
+    - New: Added action hook to add new column to the admin table that displays all the created shortcodes.
+    - New: Added action hook to add new fields to the search form.
+    - New: Added action hook to add custom content to the settings page.
  
 - **1.0.0**  
     - Initial release  

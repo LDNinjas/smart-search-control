@@ -3,7 +3,7 @@
  * Plugin Name: Smart Search Control
  * Plugin URI: https://ldninjas.com/smart-search-control/
  * Description: Enhance the search functionality of your WordPress and WooCommerce site with the **Smart Search Control** Plugin. This plugin adds a powerful and intelligent search engine to your site without replacing the default WordPress search. It allows you to display customizable search forms anywhere using shortcodes, offering users more accurate and relevant results where needed.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: LDNinjas
  * Author URI: https://ldninjas.com
  * Text Domain: smart-search-control
