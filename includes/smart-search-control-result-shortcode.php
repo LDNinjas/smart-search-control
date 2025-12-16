@@ -146,7 +146,7 @@ class SMARSECO_Smart_Search_Control_Result {
 
         if ( is_page() && get_the_ID() == $selected_page_id ) {
 
-            return do_shortcode( '[smart_search_result]' );
+            $content = do_shortcode( '[smart_search_result]' ).$content ; 
         }
         return $content;
     } 
