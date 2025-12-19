@@ -41,7 +41,27 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         add_action( 'wp_ajax_smarseco_smart_search_control_setting', [ $this, 'smarseco_smart_search_control_setting_add' ] );
         add_action( 'wp_ajax_smarseco_smart_search_control_setting_delete', [ $this, 'smarseco_smart_search_control_setting_delete' ] );
         add_action( 'wp_ajax_smarseco_smart_search_control_setting_edit', [ $this, 'smarseco_smart_search_control_setting_edit' ] );
-        add_action( 'wp_ajax_smarseco_create_database_table', [ $this, 'smarseco_create_database_table' ] ); 
+        add_action( 'wp_ajax_smarseco_create_database_table', [ $this, 'smarseco_create_database_table' ] );
+        add_action( 'admin_notices', [ $this, 'smarseco_display_admin_notice' ] ); 
+    }
+
+    /**
+     * display admin notice if no page is selected
+     */
+    public function smarseco_display_admin_notice() {
+
+        $fallback_page_id = get_option( 'smart_search_control_result_page' );
+
+        if ( empty( $fallback_page_id ) ) {
+            ?>
+            <div class="notice notice-warning is-dismissible">
+                <p>
+                    <strong><?php echo __( 'Smart Search Control:', 'smart-search-control' ); ?></strong>
+                    <?php echo __( 'Please select a result page in the plugin settings.', 'smart-search-control' ); ?>
+                </p>
+            </div>
+            <?php
+        }
     }
 
     /**
