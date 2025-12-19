@@ -12,7 +12,8 @@
  * Default Search 
 */
 .ssc-custom-search-results,
-.smart-search-control-result-header {
+.smart-search-control-result-header,
+.smarseco-default-search-container {
     max-width: 100%;
 }
 .ssc-header-inner-wrapper {

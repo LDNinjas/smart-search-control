@@ -2,15 +2,22 @@
 
 if ( !defined( 'ABSPATH' ) ) exit;
 ?>
-<h3>ihifhaihi</h3>
 <div class="smart-search-control-result-header">
     <div class="ssc-header-inner-wrapper">
         <?php if( $search_query != null ){ ?>
             <h2 class="result-header"><?php echo esc_attr( __( 'Search Results for:', 'smart-search-control' ) ) . ' ' . esc_html( $search_query ); ?></h2>
-        <?php }?>
-        <div class="result-header">
-            <?php echo do_shortcode( $shortcode_content ); ?>
-        </div>
+        <?php
+        }
+
+        $selected_page_id = get_option( 'smart_search_control_result_page' );
+        if( $selected_page_id ) {
+            ?>
+            <div class="result-header">
+                <?php echo do_shortcode( $shortcode_content ); ?>
+            </div>
+            <?php
+        }
+        ?>
     </div>
 </div>
     <?php 

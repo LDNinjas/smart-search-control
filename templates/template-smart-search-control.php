@@ -25,6 +25,13 @@ if ( !defined( 'ABSPATH' ) ) {
                 </button>
             </form>
     </div>
+    <div class="smarseco-search-result-wrapper">
+        <?php
+        if( $search_query ) {
+            echo do_shortcode( '[smart_search_result]' );
+        }
+        ?>
+    </div>
     <!-- Search Suggestions Dropdown -->
     <div class="search-suggestions"></div>
 </div>

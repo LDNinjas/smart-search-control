@@ -144,10 +144,10 @@ class SMARSECO_Smart_Search_Control_Result {
 
         $selected_page_id = get_option( 'smart_search_control_result_page' );
 
-        // if ( is_page() && get_the_ID() == $selected_page_id ) {
+        if ( is_page() && get_the_ID() == $selected_page_id ) {
 
             $content = do_shortcode( '[smart_search_result]' ).$content ; 
-        // }
+        }
         return $content;
     } 
     
