@@ -86,14 +86,6 @@ class SMARSECO_Smart_Search_Control_Short_Code {
 
         global $wpdb;
 
-        static $shortcode_ran = false;
-
-        if ( $shortcode_ran ) {
-            return '';
-        }
-
-        $shortcode_ran = true;
-
         if ( ! $this->smarseco_table_exists() ) {
 
             ob_start();
@@ -115,7 +107,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
             $atts,
             'smart_search_control'
         );
-        $ssc_id =  $sanitized_atts['id'] ;
+        $ssc_id =  isset( $sanitized_atts['id'] ) ? $sanitized_atts['id'] : 0;
 
         if ( filter_var( $ssc_id, FILTER_VALIDATE_INT ) === false || intval( $ssc_id ) < 0 ) {
 

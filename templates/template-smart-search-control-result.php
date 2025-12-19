@@ -2,7 +2,7 @@
 
 if ( !defined( 'ABSPATH' ) ) exit;
 ?>
-
+<h3>ihifhaihi</h3>
 <div class="smart-search-control-result-header">
     <div class="ssc-header-inner-wrapper">
         <?php if( $search_query != null ){ ?>

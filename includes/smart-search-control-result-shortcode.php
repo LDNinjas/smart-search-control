@@ -66,11 +66,11 @@ class SMARSECO_Smart_Search_Control_Result {
         }
         $all_public_post_types = self::smarseco_get_visible_post_types();
         $posts_types = $all_public_post_types;
+
         if ( isset( $_GET['query'] ) && ! empty( $_GET['query'] ) && isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'ssc_search_nonce' ) ) {
 
             $search_query = sanitize_text_field( wp_unslash( $_GET['query'] ) );
             $ssc_id = isset( $_GET['smartsearch'] ) ? absint( $_GET['smartsearch'] ) : 0;
-
             $cache_key = 'ssc_data_' . md5( $ssc_id );
             $cache_group = 'smart_search_control';
 
@@ -107,7 +107,7 @@ class SMARSECO_Smart_Search_Control_Result {
             $posts_types = $all_public_post_types;
             $shortcode_content = '[smart_search_control id="0"]';
         }
-                
+
         if ( is_object( $posts_types ) && isset( $posts_types->name ) ) {
             $posts_types = $posts_types->name;
         }
@@ -132,7 +132,7 @@ class SMARSECO_Smart_Search_Control_Result {
         ob_start();
         $template_path = SMARSECO_TEMPLATES_DIR . 'template-smart-search-control-result.php';
         if ( file_exists( $template_path ) ) {
-            include $template_path;
+            include_once $template_path;
         }
         return ob_get_clean();
     }
@@ -144,10 +144,10 @@ class SMARSECO_Smart_Search_Control_Result {
 
         $selected_page_id = get_option( 'smart_search_control_result_page' );
 
-        if ( is_page() && get_the_ID() == $selected_page_id ) {
+        // if ( is_page() && get_the_ID() == $selected_page_id ) {
 
             $content = do_shortcode( '[smart_search_result]' ).$content ; 
-        }
+        // }
         return $content;
     } 
     

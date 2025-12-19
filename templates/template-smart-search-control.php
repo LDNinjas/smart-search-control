@@ -7,9 +7,9 @@ if ( !defined( 'ABSPATH' ) ) {
 
 <div id="<?php echo esc_attr( ( $css_id ) ); ?>" class="smarseco-default-search-container parent-container <?php echo esc_attr( ( $class ) );?>">
 
-    <div  class="smarseco-default-search-bar-container">
+    <div class="smarseco-default-search-bar-container">
             <form  action="<?php echo esc_url( $url ); ?>" method="GET" class="smarseco-default-search-bar ssc-search-form" id="smarseco-search-form">
-
+                
                 <input type="text" name="query" class="smarseco-default-search-input search-query"
                 value="<?php echo !empty( $search_query ) ? esc_attr( $search_query ) :  '' ?>"
                 placeholder="<?php echo !empty( $placeholder ) ? esc_attr( $placeholder ) : esc_attr( __( 'Search...', 'smart-search-control' ) ); ?>" aria-label="Search">
