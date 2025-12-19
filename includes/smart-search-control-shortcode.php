@@ -169,10 +169,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
         
         $url = '';
         $fallback_page_id = get_option( 'smart_search_control_result_page' );
-        if ( !$fallback_page_id ) {
-            echo '<p>' . esc_html( __( 'Please set a result page in the Smart Search Control settings.', 'smart-search-control' ) ) . '</p>';
-            return; 
-        }
+
         $url = get_permalink( $fallback_page_id );
 
         if ( isset( $_GET[ 'query' ] ) && isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET[ 'nonce' ] ) ) , 'ssc_search_nonce') )  {
