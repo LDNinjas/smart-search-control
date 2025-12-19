@@ -36,6 +36,7 @@
 }
 .ssc-flex {
     display: flex;
+    flex-wrap: wrap;
     width: 100%;
     justify-content: flex-start;
     gap: 20px;
@@ -53,7 +54,7 @@
 }
 .ssc-search-result-item.ssc-grid-view {
     display: grid;
-    width: 30%;
+    width: 28%;
 }
 .ssc-search-result-item img {
     width: 100%;
@@ -269,7 +270,7 @@
 }
 @media ( max-width: 1050px ) {
     .ssc-search-result-item.ssc-grid-view {
-        width: 50%;
+        width: 43%;
     }
 }
 @media ( max-width: 768px ) {
