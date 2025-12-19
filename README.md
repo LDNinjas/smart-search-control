@@ -5,7 +5,7 @@ Contributors: LDNinjas, farooqabdullah
 Tags: search control, analytics, woocommerce variation search, wordpress advanced search, post based search
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -86,6 +86,11 @@ In this example, 123 should be replaced with the ID of an existing smart search 
 For support, please visit our support forums or contact us through [our website](https://ldninjas.com).
 
 ## Changelog
+
+- **1.0.3** 
+    - New: Added admin notification if search result page is not selected. 
+    - Fix: Fixed content override issue with search shortcode.
+    - Fix: CSS Tweaks
 
 - **1.0.2**  
     - New: Added option to display search results in list or grid view.
