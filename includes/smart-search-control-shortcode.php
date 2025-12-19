@@ -108,7 +108,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
             'smart_search_control'
         );
         $ssc_id =  isset( $sanitized_atts['id'] ) ? $sanitized_atts['id'] : 0;
-
+        $search_query = '';
         if ( filter_var( $ssc_id, FILTER_VALIDATE_INT ) === false || intval( $ssc_id ) < 0 ) {
 
             return '<p>' . esc_html(__( 'Invalid ID provided.', 'smart-search-control' ) ) . '</p>';
