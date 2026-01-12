@@ -14,23 +14,25 @@ if ( !defined( 'ABSPATH' ) ) {
                 value="<?php echo !empty( $search_query ) ? esc_attr( $search_query ) :  '' ?>"
                 placeholder="<?php echo !empty( $placeholder ) ? esc_attr( $placeholder ) : esc_attr( __( 'Search...', 'smart-search-control' ) ); ?>" aria-label="Search">
 
-                <!-- Hidden Post Type Input -->
-                <input type="hidden" name="smartsearch" value="<?php echo esc_attr( $ssc_id); ?>">
-                <input type="hidden" name="nonce" value="<?php echo esc_attr( wp_create_nonce( 'ssc_search_nonce' ) ); ?>">
-                <!-- Search Button -->
-                <button type="submit" class="smarseco-default-search-btn search-btn "> 
-                    <span class="smarseco-default-search-icon">
-                        <span class="dashicons dashicons-search"></span>
-                    </span>
-                </button>
-            </form>
-    </div>
-    <div class="smarseco-search-result-wrapper">
-        <?php
-        if( $search_query ) {
-            echo do_shortcode( '[smart_search_result]' );
-        }
-        ?>
+            <!-- Hidden Post Type Input -->
+            <input type="hidden" name="smartsearch" value="<?php echo esc_attr( $ssc_id); ?>">
+            <input type="hidden" name="nonce" value="<?php echo esc_attr( wp_create_nonce( 'ssc_search_nonce' ) ); ?>">
+
+            <!-- Pass selected post types for Gutenberg block -->
+            <?php 
+            if( !empty( $posts_types ) && is_array( $posts_types ) ) {
+                ?><input type="hidden" name="block_post_types" value="<?php echo esc_attr( implode( ',', $posts_types ) ); ?>"><?php
+            }
+            ?>
+
+            <!-- Search Button -->
+            <button type="submit" class="smarseco-default-search-btn search-btn "> 
+                <span class="smarseco-default-search-icon">
+                    <span class="dashicons dashicons-search"></span>
+                </span>
+            </button>
+        </form>
+
     </div>
     <!-- Search Suggestions Dropdown -->
     <div class="search-suggestions"></div>

@@ -56,7 +56,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
 
         if ( empty( self::$visible_post_types ) ) {
             
-            self::$visible_post_types = SMARSECO_Smart_Search_Control_Result::instance()->smarseco_get_visible_post_types();
+            self::$visible_post_types = smarseco_get_visible_post_types();
         }
     }
 
@@ -192,40 +192,51 @@ class SMARSECO_Smart_Search_Control_Short_Code {
         $ssc_id = isset( $_POST['ssc_id'] ) 
             ? intval( $_POST['ssc_id'] )
             : 0;
-        if ( ! $this->smarseco_table_exists(  ) ) {
-            ob_start();
-            echo '<h3>' . esc_html( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ) . '</h3>';
-            return ob_get_clean();
-        }
 
-        $cache_key = 'ssc_data_' . $ssc_id;
-        $cache_group = 'smart_search_control';
-        $result = wp_cache_get( $cache_key, $cache_group );
-        if ( false === $result ) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $result = $wpdb->get_row( $wpdb->prepare( "SELECT data FROM `{$wpdb->prefix}smart_search_control_parameters` WHERE id = %d",  $ssc_id  ) );
-            wp_cache_set( $cache_key, $result, $cache_group, 12 * HOUR_IN_SECONDS );
-        }
+        // Check if this is a Gutenberg block search with post types
+        if ( isset( $_POST['block_post_types'] ) && ! empty( $_POST['block_post_types'] ) ) {
 
-        $all_public_post_types = self::$visible_post_types;
-        $posts_types = $all_public_post_types;
+            $block_post_types = sanitize_text_field( wp_unslash( $_POST['block_post_types'] ) );
+            $posts_types = array_map( 'trim', explode( ',', $block_post_types ) );
+            
+        } else {
+            // Original logic for shortcode-based searches
+            if ( ! $this->smarseco_table_exists(  ) ) {
+                ob_start();
+                echo '<h3>' . esc_html( __( 'Table for Smart Search Control does not exist', 'smart-search-control' ) ) . '</h3>';
+                return ob_get_clean();
+            }
 
-        if ( ! empty( $result ) && isset( $result->data ) ) {
-            $data = json_decode( $result->data );
-            if ( isset( $data->post_type ) && ! empty( $data->post_type ) ) {
-                if ( is_array( $data->post_type ) ) {
-                    $posts_types = $data->post_type;
-                } elseif ( is_string( $data->post_type ) ) {
-                    $posts_types = array_map( 'trim', explode( ',', $data->post_type ) );
+            $cache_key = 'ssc_data_' . $ssc_id;
+            $cache_group = 'smart_search_control';
+            $result = wp_cache_get( $cache_key, $cache_group );
+            if ( false === $result ) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                $result = $wpdb->get_row( $wpdb->prepare( "SELECT data FROM `{$wpdb->prefix}smart_search_control_parameters` WHERE id = %d",  $ssc_id  ) );
+                wp_cache_set( $cache_key, $result, $cache_group, 12 * HOUR_IN_SECONDS );
+            }
+
+            $all_public_post_types = self::$visible_post_types;
+            $posts_types = $all_public_post_types;
+
+            if ( ! empty( $result ) && isset( $result->data ) ) {
+                $data = json_decode( $result->data );
+                if ( isset( $data->post_type ) && ! empty( $data->post_type ) ) {
+                    if ( is_array( $data->post_type ) ) {
+                        $posts_types = $data->post_type;
+                    } elseif ( is_string( $data->post_type ) ) {
+                        $posts_types = array_map( 'trim', explode( ',', $data->post_type ) );
+                    } else {
+                        $posts_types = $all_public_post_types;
+                    }
                 } else {
                     $posts_types = $all_public_post_types;
                 }
             } else {
                 $posts_types = $all_public_post_types;
             }
-        } else {
-            $posts_types = $all_public_post_types;
-        }
+        } // End of else block for shortcode-based searches
+        
         if ( in_array( 'product', $posts_types, true ) && ! in_array( 'product_variation', $posts_types, true ) ) {
             $posts_types[] = 'product_variation';
         }
