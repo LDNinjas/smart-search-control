@@ -1,0 +1,56 @@
+name: Deploy WP Plugin to Cloudways
+
+on:
+  push:
+    branches:
+      - production
+
+env:
+  PLUGIN_NAME: ${{ secrets.PLUGIN_NAME != '' && secrets.PLUGIN_NAME || github.event.repository.name }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create zip file
+        run: |
+          zip -r ${{ env.PLUGIN_NAME }}.zip . -x ".git/*" ".github/*" "node_modules/*" "*.zip" "package.json" "package-lock.json" "debug.log"
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.CLOUDWAYS_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          chmod 700 ~/.ssh
+
+      - name: Prepare remote directory
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -p ${{ secrets.CLOUDWAYS_PORT }} ${{ secrets.CLOUDWAYS_USER }}@${{ secrets.SFTP_HOST }} "
+            set -e
+            cd ~/public_html/wp-content/plugins
+            rm -rf ${{ env.PLUGIN_NAME }}
+            rm -f ${{ env.PLUGIN_NAME }}.zip
+            echo 'Directory prepared'
+          "
+
+      - name: Upload zip via SCP
+        run: |
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -P ${{ secrets.CLOUDWAYS_PORT }} ${{ env.PLUGIN_NAME }}.zip ${{ secrets.CLOUDWAYS_USER }}@${{ secrets.SFTP_HOST }}:public_html/wp-content/plugins/
+
+      - name: Unzip and cleanup on server
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -p ${{ secrets.CLOUDWAYS_PORT }} ${{ secrets.CLOUDWAYS_USER }}@${{ secrets.SFTP_HOST }} "
+            cd ~/public_html/wp-content/plugins
+            unzip -o ${{ env.PLUGIN_NAME }}.zip -d ${{ env.PLUGIN_NAME }}
+            rm -f ${{ env.PLUGIN_NAME }}.zip
+            echo 'Deployed to: ${{ env.PLUGIN_NAME }}'
+          "
+
+      - name: Cleanup
+        run: |
+          rm -f ${{ env.PLUGIN_NAME }}.zip
+          rm -f ~/.ssh/deploy_key

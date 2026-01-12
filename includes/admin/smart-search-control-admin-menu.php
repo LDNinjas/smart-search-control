@@ -41,7 +41,27 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         add_action( 'wp_ajax_smarseco_smart_search_control_setting', [ $this, 'smarseco_smart_search_control_setting_add' ] );
         add_action( 'wp_ajax_smarseco_smart_search_control_setting_delete', [ $this, 'smarseco_smart_search_control_setting_delete' ] );
         add_action( 'wp_ajax_smarseco_smart_search_control_setting_edit', [ $this, 'smarseco_smart_search_control_setting_edit' ] );
-        add_action( 'wp_ajax_smarseco_create_database_table', [ $this, 'smarseco_create_database_table' ] ); 
+        add_action( 'wp_ajax_smarseco_create_database_table', [ $this, 'smarseco_create_database_table' ] );
+        add_action( 'admin_notices', [ $this, 'smarseco_display_admin_notice' ] ); 
+    }
+
+    /**
+     * display admin notice if no page is selected
+     */
+    public function smarseco_display_admin_notice() {
+
+        $fallback_page_id = get_option( 'smart_search_control_result_page' );
+
+        if ( empty( $fallback_page_id ) ) {
+            ?>
+            <div class="notice notice-warning is-dismissible">
+                <p>
+                    <strong><?php echo __( 'Smart Search Control:', 'smart-search-control' ); ?></strong>
+                    <?php echo __( 'Please select a result page in the plugin settings.', 'smart-search-control' ); ?>
+                </p>
+            </div>
+            <?php
+        }
     }
 
     /**
@@ -107,15 +127,16 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
      */
     public function smarseco_render_admin_page() {
 
+        global $wpdb;
+
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_attr( __( 'You do not have permission to access this page.' , 'smart-search-control' ) ) );
+            wp_die( esc_html( __( 'You do not have permission to access this page.' , 'smart-search-control' ) ) );
         }
 
         if ($this->screen_id != 'toplevel_page_smart_search_control'){
             return;
         }
 
-        global $wpdb;
         $table_name     = $wpdb->prefix . 'smart_search_control_parameters';
         $admin_notice   = SMARSECO_Smart_Search_Control_Admin_Menu::instance()->smarseco_get_admin_notice();
         $items_per_page = 10;
@@ -137,7 +158,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         if ( empty( $admin_notice ) ) {
             $total_items    = $this->smarseco_get_total_items( $table_name );
             $total_pages    = ceil( $total_items / $items_per_page );
-            $search_entries = $this->smarseco_get_search_entries( $table_name, $items_per_page, $offset );
+            $smarseco_search_entries = $this->smarseco_get_search_entries( $table_name, $items_per_page, $offset );
             $args = [
                 'public'             => true,
                 'publicly_queryable' => true,
@@ -146,7 +167,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
             if ( ! array_key_exists( 'page', $visible_post_types ) ) {
                 $visible_post_types['page'] = get_post_type_object( 'page' );
             }
-            $post_types = apply_filters( 'visible_post_types', $visible_post_types );
+            $post_types = apply_filters( 'smarseco_visible_post_types', $visible_post_types );
         }
         $template_path = SMARSECO_TEMPLATES_DIR . 'admin/template-smart-search-control-admin-page.php';
         include $template_path;

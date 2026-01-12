@@ -77,7 +77,7 @@ class SMARSECO_Smart_Search_Control_Admin_Submenu_Setting {
             wp_die( esc_attr( __( 'You do not have permission to access this page.' , 'smart-search-control' ) ) );
         }
 
-        if ($this->screen_id != 'smart-search-control_page_smart_search_control_settings'){
+        if ($this->screen_id != 'smart-search-control_page_smart_search_control_settings') {
             return;
         }
         
@@ -107,10 +107,10 @@ class SMARSECO_Smart_Search_Control_Admin_Submenu_Setting {
 
         wp_enqueue_style(
             'smart-search-control-admin-style',
-            plugin_dir_url(dirname(__DIR__)) . 'assets/css/smart-search-control-admin-style.css',
+            plugin_dir_url( dirname(__DIR__) ) . 'assets/css/smart-search-control-admin-style.css',
             array(), SMARSECO_VERSION, 'all'
         );
-        wp_enqueue_script( 'smart-search-control-admin-js', plugin_dir_url(dirname(__DIR__)) . 'assets/js/smart-search-control-admin.js', [ 'jquery' ], SMARSECO_VERSION, true );
+        wp_enqueue_script( 'smart-search-control-admin-js', plugin_dir_url( dirname(__DIR__) ) . 'assets/js/smart-search-control-admin.js', [ 'jquery' ], SMARSECO_VERSION, true );
     }
 
     /**
@@ -126,7 +126,8 @@ class SMARSECO_Smart_Search_Control_Admin_Submenu_Setting {
         }
         if ( !current_user_can( 'manage_options' ) ) {
             return;
-        }        
+        }   
+
         $selected_page_id = absint( $_POST[ 'selected_page' ] );
         update_option( 'smart_search_control_result_page', $selected_page_id );
             
@@ -151,7 +152,7 @@ class SMARSECO_Smart_Search_Control_Admin_Submenu_Setting {
 
         if( isset( $_GET[ 'message' ] ) && $_GET[ 'message' ] == 'ssc_updated' && isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'ssc_nonce' ) ) {?>
             <div class="notice notice-success is-dismissible">
-            <p><?php echo esc_attr( __( 'Result page saved successfully!', 'smart-search-control' ) ); ?></p>
+            <p><?php echo esc_html( __( 'Result page saved successfully!', 'smart-search-control' ) ); ?></p>
             </div>
             <?php
         }        

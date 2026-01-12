@@ -1,4 +1,3 @@
-
 #  Smart Search Control
 
 Contributors: LDNinjas, farooqabdullah
@@ -99,6 +98,7 @@ For support, please visit our support forums or contact us through [our website]
     - Fix: Made the plugin compatible with WordPress 6.9
     - Fix: Made the plugin compatible with PHP 8.0
 
+
 - **1.0.1**  
     - New: Remove php 5.4 support for stability
     - New: Added filter to update per page result counts.
@@ -109,20 +109,3 @@ For support, please visit our support forums or contact us through [our website]
  
 - **1.0.0**  
     - Initial release  
-
-## Screenshots
-
-### Admin settings page  
-![](assets/screenshot/ssc_1.png)  
-![](assets/screenshot/ssc_2.png)  
-![](assets/screenshot/ssc_3.png)  
-![](assets/screenshot/ssc_4.png)  
-![](assets/screenshot/ssc_7.png)  
-![](assets/screenshot/ssc_8.png)  
-![](assets/screenshot/ssc_6.png)
-
-### Search page  
-![](assets/screenshot/ssc_5.png)
-
-### Results page  
-![](assets/screenshot/ssc_9.png)
