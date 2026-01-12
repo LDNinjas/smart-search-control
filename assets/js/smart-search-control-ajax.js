@@ -103,6 +103,7 @@
                 if ( !searchQuery ) return;
 
                 let ssc_id = parentContainer.find(  'input[ name="smartsearch" ]' ).val();
+                let block_post_types = parentContainer.find( 'input[ name="block_post_types" ]' ).val();
 
                 if ( SearchForm.ajaxRequest ) {
 
@@ -118,6 +119,7 @@
                         nonce: SMART_SEARCH_CONTROL.nonce,
                         search_query: searchQuery,
                         ssc_id: ssc_id,
+                        block_post_types: block_post_types,
                     },
 
                     beforeSend: function () {

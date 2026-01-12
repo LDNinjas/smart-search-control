@@ -69,6 +69,9 @@ class SMARSECO_Smart_Search_Control {
             require_once SMARSECO_INCLUDES_DIR . 'smart-search-control-result-shortcode.php';
         }
 
+        // Include Gutenberg block registration
+        require_once SMARSECO_DIR . 'blocks/smarseco-block.php';
+        require_once SMARSECO_INCLUDES_DIR . 'smarseco-functions.php';
     }
 
     /**
