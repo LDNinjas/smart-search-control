@@ -103,6 +103,7 @@ class SMARSECO_Gutenberg_Block {
         $css_id = isset( $attributes['cssId'] ) ? $attributes['cssId'] : '';
         $css_class = isset( $attributes['cssClass'] ) ? $attributes['cssClass'] : '';
         $post_types = isset( $attributes['postTypes'] ) ? $attributes['postTypes'] : array();
+        $is_gutenberg = true;
         
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_style( 'smart-search-control-style' );

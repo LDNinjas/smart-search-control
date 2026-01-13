@@ -18,9 +18,9 @@ if ( !defined( 'ABSPATH' ) ) {
             <input type="hidden" name="smartsearch" value="<?php echo esc_attr( $ssc_id); ?>">
             <input type="hidden" name="nonce" value="<?php echo esc_attr( wp_create_nonce( 'ssc_search_nonce' ) ); ?>">
 
-            <!-- Pass selected post types for Gutenberg block -->
-            <?php 
-            if( !empty( $posts_types ) && is_array( $posts_types ) ) {
+            <?php
+            /* Pass selected post types for Gutenberg block */
+            if( isset( $is_gutenberg ) && $is_gutenberg === true && !empty( $posts_types ) && is_array( $posts_types ) ) {
                 ?><input type="hidden" name="block_post_types" value="<?php echo esc_attr( implode( ',', $posts_types ) ); ?>"><?php
             }
             ?>
