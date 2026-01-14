@@ -134,7 +134,7 @@ class SMARSECO_Smart_Search_Control_Result {
         $args = [
             's' => $search_query,
             'post_type' => $posts_types,
-            'posts_per_page' => $post_per_page,
+            'posts_per_page' => 6,
             'post_status'    => 'publish',
             'paged' => get_query_var( 'paged', 1 ),
         ];

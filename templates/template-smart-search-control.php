@@ -18,11 +18,27 @@ if ( !defined( 'ABSPATH' ) ) {
             <input type="hidden" name="smartsearch" value="<?php echo esc_attr( $ssc_id); ?>">
             <input type="hidden" name="nonce" value="<?php echo esc_attr( wp_create_nonce( 'ssc_search_nonce' ) ); ?>">
 
-            <!-- Pass selected post types for Gutenberg block -->
-            <?php 
-            if( !empty( $posts_types ) && is_array( $posts_types ) ) {
-                ?><input type="hidden" name="block_post_types" value="<?php echo esc_attr( implode( ',', $posts_types ) ); ?>"><?php
+            <?php
+
+            /* Pass gutenberg selected post type */
+            $block_post_types_value = '';
+            if ( isset( $block_posts_types ) && is_array( $block_posts_types ) && ! empty( $block_posts_types ) ) {
+                $block_post_types_value = implode(
+                    ',',
+                    array_map( 'sanitize_text_field', $block_posts_types )
+                );
+            }  elseif ( isset( $_GET['block_post_types'] ) && ! empty( $_GET['block_post_types'] ) ) {
+                $block_post_types_value = sanitize_text_field(
+                    wp_unslash( $_GET['block_post_types'] )
+                );
             }
+
+            if( !empty( $block_post_types_value ) ){
+                ?>
+                <input type="hidden" name="block_post_types" value="<?php echo esc_attr( $block_post_types_value ); ?>">
+                <?php
+            }
+
             ?>
 
             <!-- Search Button -->

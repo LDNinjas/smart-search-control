@@ -126,7 +126,7 @@ class SMARSECO_Gutenberg_Block {
         
         $ssc_id = 'block_' . uniqid();
         $class = $css_class;
-        $posts_types = $post_types;
+        $block_posts_types = $post_types;
         
         ob_start();
         $template_path = SMARSECO_TEMPLATES_DIR . 'template-smart-search-control.php';
