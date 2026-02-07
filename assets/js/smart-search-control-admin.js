@@ -510,8 +510,6 @@
              * When check Select all then select all option
              */
             selectAllPost: function() {
-                
-                // $( ".custom-checkbox" ).prop( "checked", $( this.selectAll ).prop( "checked" ) );
 
                 $(".custom-checkbox").prop("checked", $(this.selectAll).is(":checked")).trigger("change");
             },
