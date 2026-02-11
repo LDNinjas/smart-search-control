@@ -74,7 +74,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                     if( isset( $smarseco_data->post_type ) && is_array($smarseco_data->post_type) ) {
                         foreach( $smarseco_data->post_type as $selected_post_type ) {
 
-                            $terms           = SMARSECO_Smart_Search_Control_Admin_Menu::instance()->eff_get_categories_and_tags( $selected_post_type );
+                            $terms           = eff_get_categories_and_tags( $selected_post_type );
                             $categories_html .= SMARSECO_Smart_Search_Control_Admin_Menu::instance()->eff_generate_taxonomy_options_html( $terms['categories'], $selected_post_type );
                             $tags_html       .= SMARSECO_Smart_Search_Control_Admin_Menu::instance()->eff_generate_taxonomy_options_html( $terms['tags'], $selected_post_type );
                         }

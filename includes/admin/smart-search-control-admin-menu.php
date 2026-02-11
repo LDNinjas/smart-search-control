@@ -66,7 +66,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
             wp_send_json_error( [ 'message' => 'No post type provided' ] );
         }
 
-        $terms = $this->eff_get_categories_and_tags( $post_type );
+        $terms = eff_get_categories_and_tags( $post_type );
         $categories_html = $this->eff_generate_taxonomy_options_html( $terms['categories'], $post_type );
         $tags_html       = $this->eff_generate_taxonomy_options_html( $terms['tags'], $post_type );
 
@@ -74,48 +74,6 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
             'categories_html' => $categories_html,
             'tags_html'       => $tags_html,
         ] );
-    }
-
-    /**
-     * Get categories and tags terms for a given post type.
-     *
-     * @param string $post_type Post type slug.
-     * @return array
-     */
-    public function eff_get_categories_and_tags( $post_type ) {
-        $categories = [];
-        $tags       = [];
-
-        $taxonomies = get_object_taxonomies( $post_type, 'objects' );
-
-        foreach ( $taxonomies as $taxonomy ) {
-            // Skip non-public or hidden taxonomies
-            if ( ! $taxonomy->public || ! $taxonomy->show_ui ) {
-                continue;
-            }
-
-            $terms = get_terms( [
-                'taxonomy'   => $taxonomy->name,
-                'hide_empty' => false,
-            ] );
-
-            if ( is_wp_error( $terms ) || empty( $terms ) ) {
-                continue;
-            }
-
-            foreach ( $terms as $term ) {
-                if ( $taxonomy->hierarchical ) {
-                    $categories[ $taxonomy->name ][ $term->term_id ] = $term;
-                } else {
-                    $tags[ $taxonomy->name ][ $term->term_id ] = $term;
-                }
-            }
-        }
-
-        return [
-            'categories' => $categories,
-            'tags'       => $tags,
-        ];
     }
 
     /**
