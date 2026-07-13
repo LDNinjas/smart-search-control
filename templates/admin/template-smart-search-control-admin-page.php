@@ -1,6 +1,6 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
+if( !defined( 'ABSPATH' ) ) {
     exit;
 }
 ?>
@@ -31,84 +31,82 @@ if ( ! defined( 'ABSPATH' ) ) {
             </tr>
         </thead>
         <tbody>
-        <?php if ( isset( $smarseco_search_entries ) && is_array( $smarseco_search_entries ) && $smarseco_search_entries ) { ?>
-                <?php foreach ( $smarseco_search_entries as $smarseco_entry ){
+        <?php if( isset( $smarseco_search_entries ) && is_array( $smarseco_search_entries ) && $smarseco_search_entries ) { ?>
+                <?php foreach( $smarseco_search_entries as $smarseco_entry ){
                 
                     $smarseco_data = json_decode( $smarseco_entry->data );
 
-                    $categories_display = [];
-                    $tags_display       = [];
+                    $smarseco_categories_display = [];
+                    $smarseco_tags_display       = [];
 
                     // --- Categories display ---
-                    if ( isset($smarseco_data->categories) ) {
-                        foreach ( $smarseco_data->categories as $taxonomy => $term_ids ) {
+                    if( isset($smarseco_data->categories) ) {
+                        foreach( $smarseco_data->categories as $smarseco_taxonomy => $smarseco_term_ids ) {
 
-                            foreach ( $term_ids as $term_id ) {
-                                $term = get_term( $term_id, $taxonomy );
-                                if ( $term && ! is_wp_error( $term ) ) {
-                                    $categories_display[] = $term->name;
+                            foreach( $smarseco_term_ids as $smarseco_term_id ) {
+                                $smarseco_term = get_term( $smarseco_term_id, $smarseco_taxonomy );
+                                if( $smarseco_term && !is_wp_error( $smarseco_term ) ) {
+                                    $smarseco_categories_display[] = $smarseco_term->name;
                                 }
                             }
                         }
                     }
 
                     // --- Tags display ---
-                    if ( isset($smarseco_data->tags) ) {
-                        foreach ( $smarseco_data->tags as $taxonomy => $term_ids ) {
+                    if( isset($smarseco_data->tags) ) {
+                        foreach( $smarseco_data->tags as $smarseco_taxonomy => $smarseco_term_ids ) {
 
-                            foreach ( $term_ids as $term_id ) {
-                                $term = get_term( $term_id, $taxonomy );
-                                if ( $term && ! is_wp_error( $term ) ) {
-                                    $tags_display[] = $term->name;
+                            foreach( $smarseco_term_ids as $smarseco_term_id ) {
+                                $smarseco_term = get_term( $smarseco_term_id, $smarseco_taxonomy );
+                                if( $smarseco_term && !is_wp_error( $smarseco_term ) ) {
+                                    $smarseco_tags_display[] = $smarseco_term->name;
                                 }
                             }
                         }
                     }
 
-                    $show_tags = !empty($tags_display) ? esc_html( implode(', ', array_unique($tags_display)) ) : '-';
-                    $show_categories = !empty($categories_display) ? esc_html( implode(', ', array_unique($categories_display)) ) : '-';
+                    $smarseco_show_tags = !empty( $smarseco_tags_display ) ? implode( ', ', array_unique( $smarseco_tags_display ) ) : '-';
+                    $smarseco_show_categories = !empty( $smarseco_categories_display ) ? implode( ', ', array_unique( $smarseco_categories_display ) ) : '-';
 
-                    $categories_html = '';
-                    $tags_html       = '';
+                    $smarseco_categories_html = '';
+                    $smarseco_tags_html       = '';
 
-                    if( isset( $smarseco_data->post_type ) && is_array($smarseco_data->post_type) ) {
-                        foreach( $smarseco_data->post_type as $selected_post_type ) {
+                    if( isset( $smarseco_data->post_type ) && is_array( $smarseco_data->post_type ) ) {
+                        foreach( $smarseco_data->post_type as $smarseco_selected_post_type ) {
 
-                            $terms           = eff_get_categories_and_tags( $selected_post_type );
-                            $categories_html .= SMARSECO_Smart_Search_Control_Admin_Menu::instance()->eff_generate_taxonomy_options_html( $terms['categories'], $selected_post_type );
-                            $tags_html       .= SMARSECO_Smart_Search_Control_Admin_Menu::instance()->eff_generate_taxonomy_options_html( $terms['tags'], $selected_post_type );
+                            $smarseco_terms           = smarseco_get_categories_and_tags( $smarseco_selected_post_type );
+                            $smarseco_categories_html .= SMARSECO_Smart_Search_Control_Admin_Menu::instance()->smarseco_generate_taxonomy_options_html( $smarseco_terms['categories'], $smarseco_selected_post_type );
+                            $smarseco_tags_html       .= SMARSECO_Smart_Search_Control_Admin_Menu::instance()->smarseco_generate_taxonomy_options_html( $smarseco_terms['tags'], $smarseco_selected_post_type );
                         }
                     }
 
-                    $data = [
-                        'categories' => $categories_html,
-                        'tags'       => $tags_html,
+                    $smarseco_taxonomy_data = [
+                        'categories' => $smarseco_categories_html,
+                        'tags'       => $smarseco_tags_html,
                     ];
 
-                    $data_attr = base64_encode( wp_json_encode( $data ) );
+                    $smarseco_data_attr = base64_encode( wp_json_encode( $smarseco_taxonomy_data ) );
 
                     ?>
                     <tr class="search-table-data">
-                        <strong>
-                            <td>[smart_search_control id="<?php echo esc_html( $smarseco_entry->id ); ?>"]</td>
-                        </strong>
+                        <td>[smart_search_control id="<?php echo esc_html( $smarseco_entry->id ); ?>"]</td>
                         <td><?php echo esc_html( $smarseco_data->place_holder ); ?></td>
                         <td><?php echo esc_html( $smarseco_data->css_id ); ?></td>
                         <td><?php echo esc_html( implode( ', ', explode( ' ', $smarseco_data->class ) ) ); ?></td>
 
                         <!-- Display only selected categories & tags -->
-                        <td class="smarseco-categories-td" title="<?php echo esc_attr( $show_categories ); ?>">
-                            <?php echo $show_categories; ?>
+                        <td class="smarseco-categories-td" title="<?php echo esc_attr( $smarseco_show_categories ); ?>">
+                            <?php echo esc_html( $smarseco_show_categories ); ?>
                         </td>
 
-                        <td class="smarseco-tags-td" title="<?php echo esc_attr( $show_tags ); ?>">
-                            <?php echo $show_tags; ?>
+                        <td class="smarseco-tags-td" title="<?php echo esc_attr( $smarseco_show_tags ); ?>">
+                            <?php echo esc_html( $smarseco_show_tags ); ?>
                         </td>
 
                         <?php do_action( 'smarseco_column_content_before_action_column', $smarseco_data ); ?>
 
                         <td>
-                            <a href="#" data-taxonomies="<?php echo esc_attr($data_attr); ?>" data-entry='<?php echo esc_attr(htmlentities( wp_json_encode( $smarseco_entry ?: new stdClass() ), ENT_QUOTES, 'UTF-8' ) ); ?>' class="button edit-setting"><?php echo esc_html__( 'Edit', 'smart-search-control' ); ?></a>
+                            <a href="#" data-taxonomies="<?php echo esc_attr( $smarseco_data_attr ); ?>" data-entry='<?php echo esc_attr( htmlentities( wp_json_encode( $smarseco_entry ?: new stdClass() ), ENT_QUOTES, 'UTF-8' ) ); ?>' class="button edit-setting"><?php echo esc_html__( 'Edit', 'smart-search-control' ); ?></a>
                             <button class="delete-setting " data-id="<?php echo esc_html(  $smarseco_entry->id ); ?>">
                                 <span  id="delete-row"><?php echo esc_html__( 'Delete' , 'smart-search-control'); ?>
                                 </span>
@@ -145,7 +143,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         <div class="tablenav-pages pagination">
 
-            <?php if ( $total_pages > 1 ) {
+            <?php if( $total_pages > 1 ) {
 
                 $smarseco_prev_page = max( 1, $page - 1 );
                 $smarseco_next_page = min( $total_pages, $page + 1 );
@@ -154,12 +152,12 @@ if ( ! defined( 'ABSPATH' ) ) {
                 ?>
 
                 <!-- Previous Button -->
-                <?php if ( $page > 1 ) { ?>
+                <?php if( $page > 1 ) { ?>
                     <a class="prev page-numbers" href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $smarseco_prev_page .'$nonce=' .$smarseco_nonce  ) ); ?>"><?php echo esc_html__( '« Prev' , 'smart-search-control' ); ?></a>
                 <?php } ?>
 
                 <!-- Numbered Pagination -->
-                <?php for ( $smarseco_i = 1; $smarseco_i <= $total_pages; $smarseco_i++ ) { ?>
+                <?php for( $smarseco_i = 1; $smarseco_i <= $total_pages; $smarseco_i++ ) { ?>
 
                     <a class="page-numbers <?php echo ( $smarseco_i == $page ) ? 'current' : ''; ?>" 
                     href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $smarseco_i .'$nonce=' .$smarseco_nonce ) ); ?>">
@@ -168,7 +166,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <?php } ?>
 
                 <!-- Next Button -->
-                <?php if ( $page < $total_pages ) { ?>
+                <?php if( $page < $total_pages ) { ?>
                     <a class="next page-numbers" href="<?php echo esc_html( admin_url( 'admin.php?page=smart_search_control&paged=' . $smarseco_next_page .'$nonce=' .$smarseco_nonce ) ); ?>"><?php echo esc_html__( 'Next »' , 'smart-search-control' ); ?></a>
                 <?php } ?>
             <?php } ?>
@@ -232,21 +230,20 @@ if ( ! defined( 'ABSPATH' ) ) {
                             <span><?php echo esc_html__( 'Select All' , 'smart-search-control' ); ?></span>
                         </label>
                     </div>
-                    <?php if ( !empty( $post_types ) ){ ?>
+                    <?php if( !empty( $post_types ) ) { ?>
                     <div class="post-type-options">
-                        <?php foreach ( $post_types as $smarseco_key => $post_type ): ?>
+                        <?php foreach( $post_types as $smarseco_key => $smarseco_post_type ): ?>
 
                             <label class="checkbox-label">
                                 <input type="checkbox" name="post_type[]" value="<?php echo esc_attr( $smarseco_key ); ?>" class="custom-checkbox">
-                                <?php echo esc_html( $post_type->label ); ?>
+                                <?php echo esc_html( $smarseco_post_type->label ); ?>
                             </label>
 
                         <?php endforeach; ?>
                     </div>
-                    <?php }
-                    else {?>
-                        <p><?php echo esc_html__( 'No post types available.' , 'smart-search-control' );
-                    }?>
+                    <?php } else { ?>
+                        <p><?php echo esc_html__( 'No post types available.', 'smart-search-control' ); ?></p>
+                    <?php } ?>
                 </div>
 
                 <hr>

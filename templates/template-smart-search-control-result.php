@@ -1,16 +1,18 @@
 <?php
 
-if ( !defined( 'ABSPATH' ) ) exit;
+if( !defined( 'ABSPATH' ) ) {
+    exit;
+}
 ?>
 <div class="smart-search-control-result-header">
     <div class="ssc-header-inner-wrapper">
-        <?php if( $search_query != null ){ ?>
+        <?php if( null !== $search_query ) { ?>
             <h2 class="result-header"><?php echo esc_attr( __( 'Search Results for:', 'smart-search-control' ) ) . ' ' . esc_html( $search_query ); ?></h2>
         <?php
         }
 
-        $selected_page_id = get_option( 'smart_search_control_result_page' );
-        if( $selected_page_id ) {
+        $smarseco_selected_page_id = get_option( 'smart_search_control_result_page' );
+        if( $smarseco_selected_page_id ) {
             ?>
             <div class="result-header">
                 <?php echo do_shortcode( $shortcode_content ); ?>
@@ -21,7 +23,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     </div>
 </div>
     <?php 
-    if ( $query->have_posts() && $search_query != null ) {
+    if( $query->have_posts() && $search_query != null ) {
         ?>
         <div class="ssc-view-option-wrapper">
             <button class="ssc-button ssc-list-btn ssc-btn-background">
@@ -40,9 +42,9 @@ if ( !defined( 'ABSPATH' ) ) exit;
     <div class="ssc-custom-search-results">
 
     <?php
-    if ( $query->have_posts() && $search_query != null ) {
+    if( $query->have_posts() && $search_query != null ) {
 
-        while ( $query->have_posts() ) {
+        while( $query->have_posts() ) {
             $query->the_post();
             ?>
             <div class="ssc-search-result-item ssc-list-view">
@@ -50,11 +52,11 @@ if ( !defined( 'ABSPATH' ) ) exit;
                 <div class="ssc-post-featured-wrapper ssc-responsive-width">
                     <a href="<?php the_permalink(); ?>">
                         <?php
-                        if ( has_post_thumbnail() ) {
+                        if( has_post_thumbnail() ) {
                             the_post_thumbnail( 'thumbnail' );
                         } else {
-                            $smarseco_result_img =  plugin_dir_url(__DIR__) . 'assets/default-img/no-feature-image.jpg' ;
-                            echo '<img src="' . esc_url( $smarseco_result_img ). '"
+                            $smarseco_result_img = SMARSECO_ASSETS_URL . 'default-img/no-feature-image.jpg';
+                            echo '<img src="' . esc_url( $smarseco_result_img ) . '"
                                     alt="' . esc_attr__( 'Default placeholder image', 'smart-search-control' ) . '">';
                             
                         }
@@ -90,7 +92,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 <!-- Pagination -->
 <?php
 
-if ( $query->max_num_pages > 1 && $query->have_posts() && $search_query != null ) {
+if( $query->max_num_pages > 1 && $query->have_posts() && null !== $search_query ) {
     ?>
 
     <div class="pagination">

@@ -1,6 +1,6 @@
 <?php
 
-if ( !defined( 'ABSPATH' ) ) {
+if( !defined( 'ABSPATH' ) ) {
     exit;
 }
 ?>
@@ -20,54 +20,56 @@ if ( !defined( 'ABSPATH' ) ) {
 
             <?php
 
+            $smarseco_ssc_nonce_valid = isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'ssc_search_nonce' );
+
             /* Pass gutenberg selected post type */
-            $block_post_types_value = '';
-            if ( isset( $block_posts_types ) && is_array( $block_posts_types ) && ! empty( $block_posts_types ) ) {
-                $block_post_types_value = implode(
+            $smarseco_block_post_types_value = '';
+            if( isset( $block_posts_types ) && is_array( $block_posts_types ) && !empty( $block_posts_types ) ) {
+                $smarseco_block_post_types_value = implode(
                     ',',
                     array_map( 'sanitize_text_field', $block_posts_types )
                 );
-            }  elseif ( isset( $_GET['block_post_types'] ) && ! empty( $_GET['block_post_types'] ) ) {
-                $block_post_types_value = sanitize_text_field(
+            } elseif( $smarseco_ssc_nonce_valid && !empty( $_GET['block_post_types'] ) ) {
+                $smarseco_block_post_types_value = sanitize_text_field(
                     wp_unslash( $_GET['block_post_types'] )
                 );
             }
 
-            if( !empty( $block_post_types_value ) ){
+            if( !empty( $smarseco_block_post_types_value ) ){
                 ?>
-                <input type="hidden" name="block_post_types" value="<?php echo esc_attr( $block_post_types_value ); ?>">
+                <input type="hidden" name="block_post_types" value="<?php echo esc_attr( $smarseco_block_post_types_value ); ?>">
                 <?php
             }
 
             /* Pass gutenberg selected categories */
-            $block_categories_value = '';
-            if ( isset( $block_categories ) && is_array( $block_categories ) && ! empty( $block_categories ) ) {
-                $block_categories_value = wp_json_encode( $block_categories );
-            } elseif ( isset( $_GET['block_categories'] ) && ! empty( $_GET['block_categories'] ) ) {
-                $block_categories_value = sanitize_text_field(
+            $smarseco_block_categories_value = '';
+            if( isset( $block_categories ) && is_array( $block_categories ) && !empty( $block_categories ) ) {
+                $smarseco_block_categories_value = wp_json_encode( $block_categories );
+            } elseif( $smarseco_ssc_nonce_valid && !empty( $_GET['block_categories'] ) ) {
+                $smarseco_block_categories_value = sanitize_text_field(
                     wp_unslash( $_GET['block_categories'] )
                 );
             }
 
-            if( !empty( $block_categories_value ) ){
+            if( !empty( $smarseco_block_categories_value ) ){
                 ?>
-                <input type="hidden" name="block_categories" value="<?php echo esc_attr( $block_categories_value ); ?>">
+                <input type="hidden" name="block_categories" value="<?php echo esc_attr( $smarseco_block_categories_value ); ?>">
                 <?php
             }
 
             /* Pass gutenberg selected tags */
-            $block_tags_value = '';
-            if ( isset( $block_tags ) && is_array( $block_tags ) && ! empty( $block_tags ) ) {
-                $block_tags_value = wp_json_encode( $block_tags );
-            } elseif ( isset( $_GET['block_tags'] ) && ! empty( $_GET['block_tags'] ) ) {
-                $block_tags_value = sanitize_text_field(
+            $smarseco_block_tags_value = '';
+            if( isset( $block_tags ) && is_array( $block_tags ) && !empty( $block_tags ) ) {
+                $smarseco_block_tags_value = wp_json_encode( $block_tags );
+            } elseif( $smarseco_ssc_nonce_valid && !empty( $_GET['block_tags'] ) ) {
+                $smarseco_block_tags_value = sanitize_text_field(
                     wp_unslash( $_GET['block_tags'] )
                 );
             }
 
-            if( !empty( $block_tags_value ) ){
+            if( !empty( $smarseco_block_tags_value ) ){
                 ?>
-                <input type="hidden" name="block_tags" value="<?php echo esc_attr( $block_tags_value ); ?>">
+                <input type="hidden" name="block_tags" value="<?php echo esc_attr( $smarseco_block_tags_value ); ?>">
                 <?php
             }
 

@@ -3,7 +3,7 @@
  * Admin Setting Menu
  */
 
-if ( !defined( 'ABSPATH' ) ) exit;
+if( !defined( 'ABSPATH' ) ) exit;
 class SMARSECO_Smart_Search_Control_Admin_Menu {
 
     /**
@@ -23,7 +23,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
      */
     public static function instance() {
 
-        if ( is_null( self::$instance ) && ! ( self::$instance instanceof SMARSECO_Smart_Search_Control_Admin_Menu ) ) {
+        if( is_null( self::$instance ) && ! ( self::$instance instanceof SMARSECO_Smart_Search_Control_Admin_Menu ) ) {
             self::$instance = new self();
             self::$instance->smarseco_hooks();
         }
@@ -43,9 +43,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         add_action( 'wp_ajax_smarseco_smart_search_control_setting_edit', [ $this, 'smarseco_smart_search_control_setting_edit' ] );
         add_action( 'wp_ajax_smarseco_create_database_table', [ $this, 'smarseco_create_database_table' ] );
         add_action( 'admin_notices', [ $this, 'smarseco_display_admin_notice' ] );
-
         add_action( 'wp_ajax_smarseco_get_taxonomies_by_post_type', [ $this, 'smarseco_get_taxonomies_by_post_type' ] );
-        add_action( 'wp_ajax_nopriv_smarseco_get_taxonomies_by_post_type', [ $this, 'smarseco_get_taxonomies_by_post_type' ] );
     }
 
     /**
@@ -55,20 +53,24 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
      */
     public function smarseco_get_taxonomies_by_post_type() {
 
+        if( !current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Unauthorized request', 'smart-search-control' ) ] );
+        }
+
         // Security check
-        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'get_taxonomies_by_post_type_nonce' ) ) {
-            wp_send_json_error( [ 'message' => 'Invalid nonce' ] );
+        if( !isset( $_POST['nonce'] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'get_taxonomies_by_post_type_nonce' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Invalid nonce', 'smart-search-control' ) ] );
         }
 
-        $post_type = isset( $_POST['post_type'] ) ? $_POST['post_type'] : '';
+        $post_type = isset( $_POST['post_type'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type'] ) ) : '';
 
-        if ( empty( $post_type ) ) {
-            wp_send_json_error( [ 'message' => 'No post type provided' ] );
+        if( empty( $post_type ) ) {
+            wp_send_json_error( [ 'message' => __( 'No post type provided', 'smart-search-control' ) ] );
         }
 
-        $terms = eff_get_categories_and_tags( $post_type );
-        $categories_html = $this->eff_generate_taxonomy_options_html( $terms['categories'], $post_type );
-        $tags_html       = $this->eff_generate_taxonomy_options_html( $terms['tags'], $post_type );
+        $terms = smarseco_get_categories_and_tags( $post_type );
+        $categories_html = $this->smarseco_generate_taxonomy_options_html( $terms['categories'], $post_type );
+        $tags_html       = $this->smarseco_generate_taxonomy_options_html( $terms['tags'], $post_type );
 
         wp_send_json_success( [
             'categories_html' => $categories_html,
@@ -83,16 +85,16 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
      * @param string $post_type   Post type to include in data attribute.
      * @return string HTML output
      */
-    public function eff_generate_taxonomy_options_html( $taxonomies, $post_type ) {
-        if ( empty( $taxonomies ) ) {
+    public function smarseco_generate_taxonomy_options_html( $taxonomies, $post_type ) {
+        if( empty( $taxonomies ) ) {
             return '';
         }
 
         ob_start();
 
-        foreach ( $taxonomies as $taxonomy => $terms ) {
+        foreach( $taxonomies as $taxonomy => $terms ) {
             $tax_obj = get_taxonomy( $taxonomy );
-            if ( ! $tax_obj || empty( $terms ) ) {
+            if( !$tax_obj || empty( $terms ) ) {
                 continue;
             }
             ?>
@@ -101,7 +103,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
                 data-taxonomy="<?php echo esc_attr( $taxonomy ); ?>"
                 data-post-type="<?php echo esc_attr( $post_type ); ?>"
             >
-                <?php foreach ( $terms as $term ) { ?>
+                <?php foreach( $terms as $term ) { ?>
                     <option value="<?php echo esc_attr( $term->term_id ); ?>">
                         <?php echo esc_html( $term->name ); ?>
                     </option>
@@ -120,12 +122,12 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
 
         $fallback_page_id = get_option( 'smart_search_control_result_page' );
 
-        if ( empty( $fallback_page_id ) ) {
+        if( empty( $fallback_page_id ) ) {
             ?>
             <div class="notice notice-warning is-dismissible">
                 <p>
-                    <strong><?php echo __( 'Smart Search Control:', 'smart-search-control' ); ?></strong>
-                    <?php echo __( 'Please select a result page in the plugin settings.', 'smart-search-control' ); ?>
+                    <strong><?php echo esc_html__( 'Smart Search Control:', 'smart-search-control' ); ?></strong>
+                    <?php echo esc_html__( 'Please select a result page in the plugin settings.', 'smart-search-control' ); ?>
                 </p>
             </div>
             <?php
@@ -138,7 +140,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
     public function smarseco_setup_screen_id() {
 
         $screen = get_current_screen();
-        if ( $screen ) {
+        if( $screen ) {
             $this->screen_id = $screen->id;
         }
     }
@@ -148,13 +150,13 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
      */
     public function smarseco_get_admin_notice() {
 
-        if ($this->screen_id != 'toplevel_page_smart_search_control'){
+        if( 'toplevel_page_smart_search_control' !== $this->screen_id ) {
             return;
         }
         
-        $table_exists = SMARSECO_Smart_Search_Control::smarseco_smart_search_control_create_table() ;
+        $table_exists = SMARSECO_Smart_Search_Control::smarseco_smart_search_control_create_table();
 
-        if ( !$table_exists ) {
+        if( !$table_exists ) {
 
             ob_start(); 
             ?>
@@ -197,11 +199,11 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
 
         global $wpdb;
 
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if( !current_user_can( 'manage_options' ) ) {
             wp_die( esc_html( __( 'You do not have permission to access this page.' , 'smart-search-control' ) ) );
         }
 
-        if ($this->screen_id != 'toplevel_page_smart_search_control'){
+        if( 'toplevel_page_smart_search_control' !== $this->screen_id ) {
             return;
         }
 
@@ -209,9 +211,9 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         $admin_notice   = SMARSECO_Smart_Search_Control_Admin_Menu::instance()->smarseco_get_admin_notice();
         $items_per_page = 10;
 
-        if ( isset( $_GET['paged'] ) && isset( $_GET['nonce'] ) ) {
+        if( isset( $_GET['paged'] ) && isset( $_GET['nonce'] ) ) {
             $ssc_pagination_nonce = sanitize_text_field( wp_unslash( $_GET['nonce'] ) );
-            if ( wp_verify_nonce( $ssc_pagination_nonce, 'ssc_admin_pagination' ) ) {
+            if( wp_verify_nonce( $ssc_pagination_nonce, 'ssc_admin_pagination' ) ) {
                 $page = absint( $_GET['paged'] );
             } else {
                 $page = 1;
@@ -223,7 +225,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         $search_entries = [];
         $total_pages    = 1;
 
-        if ( empty( $admin_notice ) ) {
+        if( empty( $admin_notice ) ) {
             $total_items    = $this->smarseco_get_total_items( $table_name );
             $total_pages    = ceil( $total_items / $items_per_page );
             $smarseco_search_entries = $this->smarseco_get_search_entries( $table_name, $items_per_page, $offset );
@@ -232,7 +234,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
                 'publicly_queryable' => true,
             ];
             $visible_post_types = get_post_types( $args, 'objects' );
-            if ( ! array_key_exists( 'page', $visible_post_types ) ) {
+            if( !array_key_exists( 'page', $visible_post_types ) ) {
                 $visible_post_types['page'] = get_post_type_object( 'page' );
             }
             $post_types = apply_filters( 'smarseco_visible_post_types', $visible_post_types );
@@ -247,20 +249,20 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
      */
     public function smarseco_smart_search_control_admin_assets() {
 
-        if ($this->screen_id != 'toplevel_page_smart_search_control'){
+        if( 'toplevel_page_smart_search_control' !== $this->screen_id ) {
             return;
         }
 
-        wp_enqueue_style( 'smart-search-control-select-min-css', plugin_dir_url(dirname(__DIR__)) .'assets/css/smarseco-select2.min.css' );
+        wp_enqueue_style( 'smart-search-control-select-min-css', SMARSECO_ASSETS_URL . 'css/smarseco-select2.min.css', array(), SMARSECO_VERSION, 'all' );
 
         wp_enqueue_style(
             'smart-search-control-admin-style',
-            plugin_dir_url(dirname(__DIR__)) . 'assets/css/smart-search-control-admin-style.css',
+            SMARSECO_ASSETS_URL . 'css/smart-search-control-admin-style.css',
             array(), SMARSECO_VERSION, 'all'
         );
 
-        wp_enqueue_script( 'smart-search-control-select2-min-js', plugin_dir_url(dirname(__DIR__)). 'assets/js/smarseco-select2.min.js', ['jquery'], SMARSECO_VERSION, true );
-        wp_enqueue_script( 'smart-search-control-admin-js', plugin_dir_url(dirname(__DIR__)) . 'assets/js/smart-search-control-admin.js', [ 'jquery', 'smart-search-control-select2-min-js' ], SMARSECO_VERSION, true );
+        wp_enqueue_script( 'smart-search-control-select2-min-js', SMARSECO_ASSETS_URL . 'js/smarseco-select2.min.js', ['jquery'], SMARSECO_VERSION, true );
+        wp_enqueue_script( 'smart-search-control-admin-js', SMARSECO_ASSETS_URL . 'js/smart-search-control-admin.js', [ 'jquery', 'smart-search-control-select2-min-js' ], SMARSECO_VERSION, true );
         wp_localize_script( 'smart-search-control-admin-js', 'SMARSECO_SETTING', [
 
             'ajaxurl'      => admin_url( 'admin-ajax.php' ),
@@ -281,11 +283,11 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
 
         global $wpdb;
 
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if( !current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
 
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash(  $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_add' ) )  {
+        if( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash(  $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_add' ) )  {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
 
@@ -296,7 +298,9 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         $post_types   = isset( $_POST[ 'post_type' ] ) && !empty(  $_POST[ 'post_type' ] ) 
             ? array_map( 'sanitize_text_field', wp_unslash( $_POST[ 'post_type' ] ) ) 
             : get_post_types( [ 'public' => true ], 'names' );
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized recursively in smarseco_sanitize_tax_terms().
         $categories = isset( $_POST['categories'] ) ? $this->smarseco_sanitize_tax_terms( wp_unslash( $_POST['categories'] ) ) : [];
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized recursively in smarseco_sanitize_tax_terms().
         $tags = isset( $_POST['tags'] ) ? $this->smarseco_sanitize_tax_terms( wp_unslash( $_POST['tags'] ) ) : [];
         
         $data = json_encode([
@@ -310,13 +314,13 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $result = $wpdb->insert( $table_name,[ 'data' => $data ], [ '%s' ] );
-        if ( !empty( $result ) ) {
+        if( !empty( $result ) ) {
             wp_cache_delete( 'ssc_table_exists_' . md5( $table_name ), 'smart_search_control' );
             wp_cache_delete( 'ssc_total_items_count', 'smart_search_control' );
             wp_cache_delete( "ssc_entries_page_1", 'smart_search_control' );
             wp_cache_delete( 'ssc_all_settings', 'smart_search_control' );
         }
-        if ( empty( $result ) ) {
+        if( empty( $result ) ) {
 
             $notice = [
                 'message' => __( 'Failed to save search settings. Please try again.' , 'smart-search-control' ),
@@ -338,11 +342,11 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
 
         global $wpdb;
 
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if( !current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
 
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_edit' ) ) {
+        if( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_edit' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
 
@@ -350,7 +354,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         
         $id = isset( $_POST[ 'id' ] ) ? intval( $_POST[ 'id' ] ) : 0;
 
-        if ( $id === 0 ) {
+        if( $id === 0 ) {
             wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'smart-search-control' ) ] );
         }
 
@@ -361,7 +365,9 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
             ? array_map( 'sanitize_text_field', wp_unslash( $_POST[ 'post_type' ] ) ) 
             : get_post_types( [ 'public' => true ], 'names' );
 
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized recursively in smarseco_sanitize_tax_terms().
         $categories = isset( $_POST['categories'] ) ? $this->smarseco_sanitize_tax_terms( wp_unslash( $_POST['categories'] ) ) : [];
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized recursively in smarseco_sanitize_tax_terms().
         $tags = isset( $_POST['tags'] ) ? $this->smarseco_sanitize_tax_terms( wp_unslash( $_POST['tags'] ) ) : [];
 
         $data = json_encode([
@@ -383,14 +389,14 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
             
         );
 
-        if ( !empty( $result) ) {
+        if( !empty( $result) ) {
             wp_cache_delete( 'ssc_table_exists_' . md5( $table_name ), 'smart_search_control' );
             wp_cache_delete( 'ssc_total_items_count', 'smart_search_control' );
             wp_cache_delete( "ssc_entries_page_1", 'smart_search_control' );
             wp_cache_delete( 'ssc_all_settings', 'smart_search_control' );
         }
 
-        if ( $result === false ) {
+        if( $result === false ) {
             wp_send_json_success( [
                 'message' => __( 'Failed to update data. Please try again.', 'smart-search-control' ),
                 'type'    => 'error'
@@ -411,15 +417,15 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
 
         $output = [];
 
-        if ( ! is_array( $input ) ) {
+        if( !is_array( $input ) ) {
             return $output;
         }
 
-        foreach ( $input as $taxonomy => $term_ids ) {
+        foreach( $input as $taxonomy => $term_ids ) {
 
             $taxonomy = sanitize_text_field( $taxonomy );
 
-            if ( ! taxonomy_exists( $taxonomy ) || ! is_array( $term_ids ) ) {
+            if( !taxonomy_exists( $taxonomy ) || !is_array( $term_ids ) ) {
                 continue;
             }
 
@@ -440,11 +446,11 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         
         global $wpdb;
 
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if( !current_user_can( 'manage_options' ) ) {
             wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
         }
 
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_delete' ) ) {
+        if( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'smart_search_control_setting_nonce_delete' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
 
@@ -452,20 +458,20 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         
         $id = isset( $_POST[ 'id' ] ) ? intval( $_POST[ 'id' ] ) : 0;
 
-        if ( $id === 0 ) {
+        if( $id === 0 ) {
             wp_send_json_error( [ 'message' => __( 'Invalid ID' , 'smart-search-control' ) ] );
         }
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $result =  $wpdb->delete( $table_name, [ 'id' => $id ], [ '%d' ] ) ;
-        if ( !empty( $result) ) {
+        if( !empty( $result ) ) {
             wp_cache_delete( 'ssc_table_exists_' . md5( $table_name ), 'smart_search_control' );
             wp_cache_delete( 'ssc_total_items_count', 'smart_search_control' );
             wp_cache_delete( "ssc_entries_page_1", 'smart_search_control' );
             wp_cache_delete( 'ssc_all_settings', 'smart_search_control' );
         }
 
-        if ( ! $result ) {
+        if( !$result ) {
             wp_send_json_error( [
                 'message' => __( 'Failed to delete search setting. Please try again.', 'smart-search-control' ),
                 'type'    => 'error'
@@ -485,21 +491,21 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
     public function smarseco_get_search_entries( $table_name, $items_per_page, $offset ) {
 
         global $wpdb;
-        // Allow only this specific table for safety
+        
         $allowed_table = $wpdb->prefix . 'smart_search_control_parameters';
-        if ( $table_name !== $allowed_table ) {
+        if( $table_name !== $allowed_table ) {
             return [];
         }
 
         $cache_key = 'ssc_data_' . md5( $table_name . '_' . $items_per_page . '_' . $offset );
-        $entries = wp_cache_get( $cache_key );
+        $entries = wp_cache_get( $cache_key, 'smart_search_control' );
 
-        if ( false === $entries ) {
+        if( false === $entries ) {
 
             $table_name = $wpdb->prefix . 'smart_search_control_parameters';
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $entries = $wpdb->get_results( $wpdb->prepare ( "SELECT id, data FROM `{$wpdb->prefix}smart_search_control_parameters` LIMIT %d OFFSET %d",  [ $items_per_page, $offset ] ) );
-            wp_cache_set( $cache_key, $entries, '', 300 );
+            $entries = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM `{$wpdb->prefix}smart_search_control_parameters` LIMIT %d OFFSET %d",  [ $items_per_page, $offset ] ) );
+            wp_cache_set( $cache_key, $entries, 'smart_search_control', 300 );
         }
         return $entries;
     }
@@ -511,17 +517,17 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
 
         global $wpdb;
         $allowed_table = $wpdb->prefix . 'smart_search_control_parameters';
-        if ( $table_name !== $allowed_table ) {
+        if( $table_name !== $allowed_table ) {
             return 0;
         }
 
         $cache_key = 'ssc_total_count_' . md5( $table_name );
-        $total_items = wp_cache_get( $cache_key );
+        $total_items = wp_cache_get( $cache_key, 'smart_search_control' );
 
-        if ( false === $total_items ) {
+        if( false === $total_items ) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $total_items = (int) ($wpdb->get_var("SELECT COUNT(id) FROM {$wpdb->prefix}smart_search_control_parameters") ?? 0);
-            wp_cache_set( $cache_key, $total_items, '', 300 );
+            wp_cache_set( $cache_key, $total_items, 'smart_search_control', 300 );
         }
         return $total_items;
     }
@@ -531,7 +537,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
      */
     public function smarseco_create_database_table() {
         
-        if ( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'create_database_table_nonce' ) ) {
+        if( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'create_database_table_nonce' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
         SMARSECO_Smart_Search_Control::smarseco_smart_search_control_create_table();

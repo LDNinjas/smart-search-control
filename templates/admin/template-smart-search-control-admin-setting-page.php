@@ -1,5 +1,5 @@
 <?php
-if ( !defined( 'ABSPATH' ) ) {
+if( !defined( 'ABSPATH' ) ) {
     exit;
 }
 ?>
@@ -38,7 +38,7 @@ if ( !defined( 'ABSPATH' ) ) {
                 <select name="selected_page" id="selected_page">
                     <option value=""><?php echo esc_attr( __( 'Select result page', 'smart-search-control' ) ); ?></option>
                     <?php
-                        foreach ( $pages as $page ) {
+                        foreach( $pages as $page ) {
                             $smarseco_selected = ( $selected_page == $page->ID ) ? 'selected' : '';
                             echo '<option value="' . esc_attr( $page->ID ) . '" ' . esc_html( $smarseco_selected ). '>' . esc_html( $page->post_title ) . '(ID: ' . esc_html( $page->ID ) . ')' . '</option>';
                         }

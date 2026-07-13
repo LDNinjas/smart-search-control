@@ -5,7 +5,7 @@ Contributors: LDNinjas, farooqabdullah
 Tags: search, woocommerce search, custom post types, product search, advanced search
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -68,7 +68,13 @@ A: Yes, the plugin automatically detects all public Custom Post Types registered
 
 ## Changelog
 
-- **1.0.4** 
+- **1.0.5**
+    - Improve: Hardened admin AJAX and settings handling with capability checks and nonce validation.
+    - Improve: Aligned plugin naming and coding style with the project prefix conventions.
+    - Improve: Added safer fallback handling for result-page and block rendering paths.
+    - Improve: Polished templates and output escaping for better WordPress compatibility.
+
+- **1.0.4**
     - New: Added Gutenberg block to add search anywhere.
 
 - **1.0.3** 

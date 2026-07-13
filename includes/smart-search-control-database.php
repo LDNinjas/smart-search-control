@@ -3,7 +3,7 @@
  * Create the Database
 */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if( !defined( 'ABSPATH' ) ) exit;
 class SMARSECO_Smart_Search_Control_Database {
 
     /**
@@ -18,7 +18,7 @@ class SMARSECO_Smart_Search_Control_Database {
      */
     public static function instance() {
         
-        if ( is_null( self::$instance ) && ! ( self::$instance instanceof SMARSECO_Smart_Search_Control_Database ) ) {
+        if( is_null( self::$instance ) && ! ( self::$instance instanceof SMARSECO_Smart_Search_Control_Database ) ) {
             self::$instance = new self();
             self::$instance->create_database_table();
         }
