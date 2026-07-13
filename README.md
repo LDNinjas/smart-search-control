@@ -1,5 +1,5 @@
 
-# Smart Search Control – Advanced Search for WooCommerce, Custom Post Types & Gutenberg
+# Smart Search Control – Advanced Search for WooCommerce, Custom Post Types
 
 Contributors: LDNinjas, farooqabdullah
 Tags: search, woocommerce search, custom post types, product search, category search
