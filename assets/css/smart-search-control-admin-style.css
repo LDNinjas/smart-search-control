@@ -303,6 +303,14 @@
     gap: 8px;
 }
 
+.checkbox-label-inline {
+    width: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
 #select-all:checked,.custom-checkbox:checked {
     border-color: #2271b1;
 }

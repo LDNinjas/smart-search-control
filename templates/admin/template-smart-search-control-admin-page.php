@@ -204,6 +204,14 @@ if( !defined( 'ABSPATH' ) ) {
                     <span class="inputs-desc"><?php echo esc_html__( 'This text will appear inside the search field as a hint before the user types.' , 'smart-search-control' ); ?></span>
                 </div>
 
+                <div class="form-group">
+                    <label class="checkbox-label-inline">
+                        <input type="checkbox" id="disable_ajax" name="disable_ajax" value="1">
+                        <?php echo esc_html__( 'Disable AJAX search suggestions for this search' , 'smart-search-control' ); ?>
+                    </label>
+                    <span class="inputs-desc"><?php echo esc_html__( 'Overrides the global AJAX setting for this search only.' , 'smart-search-control' ); ?></span>
+                </div>
+
                 <div class="advance-container" id="advance-toggle">
                     <p><?php echo esc_html__( 'Advanced Settings' , 'smart-search-control' ); ?></p>
                     <span class="dashicons dashicons-arrow-right-alt2"></span>

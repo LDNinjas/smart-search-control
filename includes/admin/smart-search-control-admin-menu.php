@@ -302,16 +302,18 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         $categories = isset( $_POST['categories'] ) ? $this->smarseco_sanitize_tax_terms( wp_unslash( $_POST['categories'] ) ) : [];
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized recursively in smarseco_sanitize_tax_terms().
         $tags = isset( $_POST['tags'] ) ? $this->smarseco_sanitize_tax_terms( wp_unslash( $_POST['tags'] ) ) : [];
-        
+        $disable_ajax = !empty( $_POST[ 'disable_ajax' ] ) ? 1 : 0;
+
         $data = json_encode([
             'place_holder' => $place_holder,
             'css_id'       => $css_id,
             'class'        => $class,
             'post_type'    => $post_types,
             'categories'   => $categories,
-            'tags'         => $tags
+            'tags'         => $tags,
+            'disable_ajax' => $disable_ajax
         ]);
-        
+
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $result = $wpdb->insert( $table_name,[ 'data' => $data ], [ '%s' ] );
         if( !empty( $result ) ) {
@@ -369,6 +371,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         $categories = isset( $_POST['categories'] ) ? $this->smarseco_sanitize_tax_terms( wp_unslash( $_POST['categories'] ) ) : [];
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized recursively in smarseco_sanitize_tax_terms().
         $tags = isset( $_POST['tags'] ) ? $this->smarseco_sanitize_tax_terms( wp_unslash( $_POST['tags'] ) ) : [];
+        $disable_ajax = !empty( $_POST[ 'disable_ajax' ] ) ? 1 : 0;
 
         $data = json_encode([
             'place_holder' => $place_holder,
@@ -376,7 +379,8 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
             'class'        => $class,
             'post_type'    => $post_types,
             'categories'   => $categories,
-            'tags'         => $tags
+            'tags'         => $tags,
+            'disable_ajax' => $disable_ajax
         ]);
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery

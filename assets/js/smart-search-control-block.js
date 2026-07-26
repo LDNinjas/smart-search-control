@@ -101,13 +101,14 @@
             cssClass: { type: 'string', default: '' },
             postTypes: { type: 'array', default: [] },
             categories: { type: 'object', default: {} },
-            tags: { type: 'object', default: {} }
+            tags: { type: 'object', default: {} },
+            disableAjax: { type: 'boolean', default: false }
         },
 
         edit: function (props) {
 
             const { attributes, setAttributes } = props;
-            const { placeholder, cssId, cssClass, postTypes, categories, tags } = attributes;
+            const { placeholder, cssId, cssClass, postTypes, categories, tags, disableAjax } = attributes;
 
             const safeCategories = categories || {};
             const safeTags = tags || {};
@@ -257,6 +258,11 @@
                             label:'Placeholder Text',
                             value:placeholder,
                             onChange:v=>setAttributes({placeholder:v})
+                        }),
+                        el(CheckboxControl,{
+                            label:'Disable AJAX search suggestions for this search',
+                            checked:disableAjax,
+                            onChange:v=>setAttributes({disableAjax:v})
                         })
                     ),
 

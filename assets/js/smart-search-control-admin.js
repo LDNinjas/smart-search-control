@@ -113,6 +113,7 @@
                 this.modelClass       = $( "#class" );
                 this.modelID          = $( "#id" );
                 this.modelPostType    = $( "input[name='post_type[]']" );
+                this.modelDisableAjax = $( "#disable_ajax" );
                 this.modelBtn         = $( ".model-btn" );
                 this.modalForm        = $( "#searchForm" );
                 this.categoriesSelect = $( "#smarseco-categories" );
@@ -165,13 +166,14 @@
                             return $( this ).val();
                         } ).get(),
                         categories: categories,
-                        tags: tags
+                        tags: tags,
+                        disable_ajax: AdminSearchSetting.modelDisableAjax.is( ':checked' ) ? 1 : 0
                     };
 
                     let $submitBtn = $( '#submit-btn' );
                     let $loader = $( '#edit-loader' );
                     let $btnText = $submitBtn.find( '.btn-text' );
-                
+
                     $btnText.hide();
                     $loader.show();
                     $submitBtn.prop("disabled", true);
@@ -181,7 +183,7 @@
                         url: SMARSECO_SETTING.ajaxurl,
                         data: formData,
                         dataType: 'json',
-                        
+
                         success: function ( response ) {
                             $loader.hide().change();
                             $btnText.show().change();
@@ -229,7 +231,8 @@
                 this.modelPlaceHolder.val( parsedData.place_holder );
                 this.modelClass.val( parsedData.class );
                 this.modelID.val( parsedData.css_id );
-                
+                this.modelDisableAjax.prop( "checked", !!parsedData.disable_ajax );
+
                 this.shortcode.css( "display", "inline-block" ).change();
                 
                 this.modelPostType.prop( "checked", false );
@@ -292,13 +295,14 @@
                             return $( this ).val();
                         } ).get(),
                         categories: categories,
-                        tags: tags
+                        tags: tags,
+                        disable_ajax: AdminSearchSetting.modelDisableAjax.is( ':checked' ) ? 1 : 0
                     };
 
                     let $submitBtn = $( '#submit-btn' );
                     let $loader = $( '#edit-loader' );
                     let $btnText = $submitBtn.find( '.btn-text' );
-                
+
                     $btnText.hide().change();
                     $loader.show().change();
                     $submitBtn.prop("disabled", true);

@@ -175,7 +175,8 @@ class SMARSECO_Gutenberg_Block {
                 'cssClass' => array( 'type' => 'string', 'default' => '' ),
                 'postTypes' => array( 'type' => 'array', 'default' => array() ),
                 'categories' => array( 'type' => 'object', 'default' => array() ),
-                'tags' => array( 'type' => 'object', 'default' => array() )
+                'tags' => array( 'type' => 'object', 'default' => array() ),
+                'disableAjax' => array( 'type' => 'boolean', 'default' => false )
             )
         ) );
     }
@@ -211,7 +212,8 @@ class SMARSECO_Gutenberg_Block {
         $post_types = isset( $attributes['postTypes'] ) ? array_map( 'sanitize_text_field', wp_unslash( $attributes['postTypes'] ) ) : array();
         $categories = isset( $attributes['categories'] ) ? $attributes['categories'] : array();
         $tags = isset( $attributes['tags'] ) ? $attributes['tags'] : array();
-        
+        $disable_ajax = !empty( $attributes['disableAjax'] );
+
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_style( 'smart-search-control-style' );
         wp_enqueue_script( 'smart-search-control-js' );
@@ -245,7 +247,12 @@ class SMARSECO_Gutenberg_Block {
         $block_posts_types = $post_types;
         $block_categories = $categories;
         $block_tags = $tags;
-        
+        $ajax_enabled = (bool) get_option( 'smart_search_control_enable_ajax_all', 1 );
+
+        if( $disable_ajax ) {
+            $ajax_enabled = false;
+        }
+
         ob_start();
         $template_path = SMARSECO_TEMPLATES_DIR . 'template-smart-search-control.php';
         if( file_exists( $template_path ) ) {

@@ -66,6 +66,11 @@
 
                     let self = $( this );
                     let parentContainer = self.closest( '.parent-container' );
+
+                    if ( parentContainer.attr( 'data-ajax-disabled' ) === '1' ) {
+                        return;
+                    }
+
                     let searchSuggestion = parentContainer.find( '.search-suggestions' );
                     let searchQuery = self.val().trim();
 

@@ -92,6 +92,11 @@ class SMARSECO_Smart_Search_Control_Admin_Submenu_Setting {
          * Get selected result page ID from options
          */
         $selected_page = get_option( 'smart_search_control_result_page', '' );
+
+        /**
+         * Global AJAX suggestion toggle
+         */
+        $enable_ajax_all = get_option( 'smart_search_control_enable_ajax_all', 1 );
         $template_path = SMARSECO_TEMPLATES_DIR . 'admin/template-smart-search-control-admin-setting-page.php';
         include $template_path;
     }
@@ -130,7 +135,10 @@ class SMARSECO_Smart_Search_Control_Admin_Submenu_Setting {
 
         $selected_page_id = absint( $_POST[ 'selected_page' ] );
         update_option( 'smart_search_control_result_page', $selected_page_id );
-            
+
+        $enable_ajax_all = isset( $_POST[ 'enable_ajax_all' ] ) ? 1 : 0;
+        update_option( 'smart_search_control_enable_ajax_all', $enable_ajax_all );
+
         if( isset( $_POST['_wp_http_referer'] ) ) {
 
             $nonce = wp_create_nonce( 'ssc_nonce' );

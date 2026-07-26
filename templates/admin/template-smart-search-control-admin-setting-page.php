@@ -49,6 +49,18 @@ if( !defined( 'ABSPATH' ) ) {
             </div>
         </div>
 
+        <div class="short-code-result-row">
+            <h3 class="shortcode-label"><?php echo esc_html( __( 'AJAX Search Suggestions', 'smart-search-control' ) ); ?></h3>
+            <div class="select-page-container">
+                <label class="checkbox-label-inline">
+                    <input type="checkbox" name="enable_ajax_all" id="enable_ajax_all" value="1" <?php checked( $enable_ajax_all, 1 ); ?>>
+                    <?php echo esc_html( __( 'Enable AJAX search suggestions for all searches', 'smart-search-control' ) ); ?>
+                </label>
+                <p class="short-code-result-desc">
+                <?php echo esc_html( __( 'When disabled, none of the searches on this site will show live AJAX suggestions. This can be overridden per search from its own settings.', 'smart-search-control' ) ); ?></p>
+            </div>
+        </div>
+
         <?php do_action( 'smarseco_settings_form_content' ); ?>
 
         <input type="hidden" name="action" value="ssc_save_action">
