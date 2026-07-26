@@ -183,24 +183,22 @@
 
                         if ( response.success && response.data.search_results ) {
 
-                            
                             let searchResults = response.data.search_results;
-                            
-                            let suggestionsHTML = searchResults
-                                .slice( 0, 10 )
-                                .map(( item ) => 
+                            let $suggestionsList = $( '<ul class="suggestions-list"></ul>' );
 
-                                    `<li class="suggestion-item"><a href="${ item.permalink }">${ item.title }</a></li>`
-                                )
-                                .join( '' );
+                            searchResults.slice( 0, 10 ).forEach( function ( item ) {
 
-                                if ( searchResults.length > 9 ) {
+                                let $link = $( '<a></a>' ).attr( 'href', item.permalink ).text( item.title );
+                                $suggestionsList.append( $( '<li class="suggestion-item"></li>' ).append( $link ) );
+                            });
 
-                                    suggestionsHTML += `<a  href="javascript:void( 0 );" class="see-more" >${ SMART_SEARCH_CONTROL.more_msg }</a>`;
+                            if ( searchResults.length > 9 ) {
 
-                                }
+                                let $seeMore = $( '<a href="javascript:void( 0 );" class="see-more"></a>' ).text( SMART_SEARCH_CONTROL.more_msg );
+                                $suggestionsList.append( $seeMore );
+                            }
 
-                            searchSuggestionContainer.html( `<ul class="suggestions-list">${ suggestionsHTML }</ul>` ).show().change();
+                            searchSuggestionContainer.empty().append( $suggestionsList ).show().change();
 
                         } else {
 

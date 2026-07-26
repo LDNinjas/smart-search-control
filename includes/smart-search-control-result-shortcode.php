@@ -82,7 +82,12 @@ class SMARSECO_Smart_Search_Control_Result {
             if( isset( $_GET['block_post_types'] ) && !empty( $_GET['block_post_types'] ) ) {
 
                 $block_post_types = sanitize_text_field( wp_unslash( $_GET['block_post_types'] ) );
-                $posts_types = array_map( 'trim', explode( ',', $block_post_types ) );
+                $requested_post_types = array_map( 'trim', explode( ',', $block_post_types ) );
+                $posts_types = array_values( array_intersect( $requested_post_types, $all_public_post_types ) );
+
+                if( empty( $posts_types ) ) {
+                    $posts_types = $all_public_post_types;
+                }
 
                 // Handle block categories
                 $categories = (object) array();

@@ -214,8 +214,13 @@ class SMARSECO_Smart_Search_Control_Short_Code {
         if( isset( $_POST['block_post_types'] ) && !empty( $_POST['block_post_types'] ) ) {
 
             $block_post_types = sanitize_text_field( wp_unslash( $_POST['block_post_types'] ) );
-            $posts_types = array_map( 'trim', explode( ',', $block_post_types ) );
-            
+            $requested_post_types = array_map( 'trim', explode( ',', $block_post_types ) );
+            $posts_types = array_values( array_intersect( $requested_post_types, self::$visible_post_types ) );
+
+            if( empty( $posts_types ) ) {
+                $posts_types = self::$visible_post_types;
+            }
+
             // Handle block categories
             if( isset( $_POST['block_categories'] ) && !empty( $_POST['block_categories'] ) ) {
                 $block_categories_json = sanitize_text_field( wp_unslash( $_POST['block_categories'] ) );
@@ -304,7 +309,7 @@ class SMARSECO_Smart_Search_Control_Short_Code {
         foreach( $posts as &$post ) {
             $decoded_title = html_entity_decode( $post['title'], ENT_QUOTES | ENT_HTML5 );
             $parts = preg_split( '/\s*[-–—]\s*/u', $decoded_title );
-            $post['title'] = implode( ' ', $parts );
+            $post['title'] = wp_strip_all_tags( implode( ' ', $parts ) );
         }
         unset( $post );
         wp_send_json_success( [ 'search_results' => $posts ] );

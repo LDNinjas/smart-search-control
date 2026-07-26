@@ -540,7 +540,11 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
      * create_database_table on click
      */
     public function smarseco_create_database_table() {
-        
+
+        if( !current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Unauthorized request' , 'smart-search-control' ) ] );
+        }
+
         if( !isset( $_POST[ 'nonce' ] ) || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ 'nonce' ] ) ), 'create_database_table_nonce' ) ) {
             wp_send_json_error( [ 'message' => __( 'Invalid nonce' , 'smart-search-control' ) ] );
         }
