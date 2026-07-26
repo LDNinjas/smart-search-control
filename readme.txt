@@ -4,7 +4,7 @@ Contributors: LDNinjas, farooqabdullah
 Tags: search, woocommerce search, custom post types, product search, category search
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -79,6 +79,13 @@ A: Yes! Each search form (shortcode or Gutenberg block) can be scoped to specifi
 A: No. If you don't select a dedicated Search Results Page in the settings, results display instantly on the same page, directly below the search bar.
 
 ## Changelog
+
+- **1.0.6**
+    - New: Added a global setting to enable or disable AJAX live search suggestions across all searches.
+    - New: Added a per-search "Disable AJAX search suggestions" option, available on both the search settings form and the Gutenberg block, which overrides the global setting for that search only.
+    - Security: Restricted Gutenberg block searches to public, publicly queryable post types, preventing non-public content from being exposed through search and suggestion requests.
+    - Security: Hardened AJAX search-suggestion rendering so post titles are always output as plain text, not parsed as HTML.
+    - Security: Added a missing capability check to the database table creation AJAX handler.
 
 - **1.0.5**
     - New: Added category and tag filtering support for search forms and the Gutenberg block, so results can be scoped to specific taxonomies per post type.
