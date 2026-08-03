@@ -79,6 +79,12 @@ if( !defined( 'ABSPATH' ) ) {
                         }
                         ?>
                     </div>
+
+                    <?php if( null !== $search_query ) { ?>
+                    <div class="search-keyword-display">
+                        <?php echo esc_html( __( 'Searched for:', 'smart-search-control' ) ) . ' "' . esc_html( $search_query ) . '"'; ?>
+                    </div>
+                    <?php } ?>
                 </div>
             </div>
             <?php
