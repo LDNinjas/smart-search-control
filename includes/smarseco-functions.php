@@ -133,8 +133,10 @@ function smarseco_render_inline_search_results( $search_query, $posts_types, $ca
 
     $tax_query = smarseco_build_tax_query( $categories, $tags );
 
+    $modified_search_query = smarseco_modify_search_query( $search_query );
+
     $args = [
-        's'              => $search_query,
+        's'              => $modified_search_query,
         'post_type'      => $posts_types,
         'posts_per_page' => 20,
         'post_status'    => 'publish',
@@ -216,4 +218,37 @@ function smarseco_get_search_keyword_display( $search_query, $post_id ) {
     $output .= implode( ' ', $word_html_parts );
 
     return $output;
+}
+
+/**
+ * Modify search query based on selected search method.
+ *
+ * @param string $search_query The original search query.
+ * @return string Modified search query based on search method setting.
+ */
+function smarseco_modify_search_query( $search_query ) {
+
+    if( empty( $search_query ) ) {
+        return $search_query;
+    }
+
+    $search_method = get_option( 'smart_search_control_search_method', 'any' );
+
+    switch( $search_method ) {
+        case 'exact':
+            // Exact phrase match - wrap in quotes
+            return '"' . $search_query . '"';
+
+        case 'all':
+            // All words must match - WordPress handles this with + prefix
+            $words = array_filter( explode( ' ', $search_query ) );
+            return implode( ' +', array_map( function( $word ) {
+                return '+' . $word;
+            }, $words ) );
+
+        case 'any':
+        default:
+            // Any word match - default WordPress behavior
+            return $search_query;
+    }
 }

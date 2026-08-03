@@ -165,8 +165,10 @@ class SMARSECO_Smart_Search_Control_Result {
 
         $tax_query = smarseco_build_tax_query( $categories, $tags );
 
+        $modified_search_query = smarseco_modify_search_query( $search_query );
+
         $args = [
-            's' => $search_query,
+            's' => $modified_search_query,
             'post_type' => $posts_types,
             'posts_per_page' => 20,
             'post_status'    => 'publish',

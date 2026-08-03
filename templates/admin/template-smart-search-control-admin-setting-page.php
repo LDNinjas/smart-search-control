@@ -61,6 +61,25 @@ if( !defined( 'ABSPATH' ) ) {
             </div>
         </div>
 
+        <div class="short-code-result-row">
+            <h3 class="shortcode-label"><?php echo esc_html( __( 'Search Method', 'smart-search-control' ) ); ?></h3>
+            <div class="select-page-container">
+                <select name="search_method" id="search_method">
+                    <option value="any" <?php selected( $search_method, 'any' ); ?>>
+                        <?php echo esc_html( __( 'Any Word (OR)', 'smart-search-control' ) ); ?>
+                    </option>
+                    <option value="all" <?php selected( $search_method, 'all' ); ?>>
+                        <?php echo esc_html( __( 'All Words (AND)', 'smart-search-control' ) ); ?>
+                    </option>
+                    <option value="exact" <?php selected( $search_method, 'exact' ); ?>>
+                        <?php echo esc_html( __( 'Exact Phrase', 'smart-search-control' ) ); ?>
+                    </option>
+                </select>
+                <p class="short-code-result-desc">
+                <?php echo esc_html( __( 'Choose how to match search keywords: Any Word finds posts with any keyword, All Words requires all keywords, Exact Phrase requires the exact keyword combination.', 'smart-search-control' ) ); ?></p>
+            </div>
+        </div>
+
         <?php do_action( 'smarseco_settings_form_content' ); ?>
 
         <input type="hidden" name="action" value="ssc_save_action">
