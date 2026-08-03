@@ -248,7 +248,56 @@ function smarseco_modify_search_query( $search_query ) {
 
         case 'any':
         default:
-            // Any word match - default WordPress behavior
+            // Any word match - use OR logic with filter
+            // Store the search method in a transient so we can use it in the filter
+            set_transient( 'smarseco_current_search_method', 'any', 3600 );
+            add_filter( 'posts_search', 'smarseco_filter_posts_search_or', 10, 2 );
             return $search_query;
     }
+}
+
+/**
+ * Filter to implement OR logic for "Any Word" search method.
+ * Modifies WordPress's SQL search query to use OR instead of AND.
+ *
+ * @param string $search The default search SQL fragment.
+ * @param WP_Query $query The WP_Query object.
+ * @return string Modified search SQL fragment.
+ */
+function smarseco_filter_posts_search_or( $search, $query ) {
+
+    if( empty( $search ) || !isset( $query->query_vars['s'] ) || empty( $query->query_vars['s'] ) ) {
+        return $search;
+    }
+
+    $search_method = get_transient( 'smarseco_current_search_method' );
+
+    if( 'any' !== $search_method ) {
+        return $search;
+    }
+
+    global $wpdb;
+
+    // Extract the search term
+    $search_term = $query->query_vars['s'];
+    $search_words = array_filter( explode( ' ', $search_term ) );
+
+    if( empty( $search_words ) ) {
+        return $search;
+    }
+
+    // Build OR query for title and content
+    $like_conditions = [];
+    foreach( $search_words as $word ) {
+        $like_word = '%' . $wpdb->esc_like( $word ) . '%';
+        $like_conditions[] = $wpdb->prepare( "({$wpdb->posts}.post_title LIKE %s OR {$wpdb->posts}.post_content LIKE %s OR {$wpdb->posts}.post_excerpt LIKE %s)", $like_word, $like_word, $like_word );
+    }
+
+    if( empty( $like_conditions ) ) {
+        return $search;
+    }
+
+    $search = ' AND (' . implode( ' OR ', $like_conditions ) . ') ';
+
+    return $search;
 }
