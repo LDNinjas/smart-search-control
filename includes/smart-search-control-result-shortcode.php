@@ -112,7 +112,7 @@ class SMARSECO_Smart_Search_Control_Result {
             } else {
 
                 // Original logic for shortcode-based searches
-                $cache_key = 'ssc_data_' . md5( $ssc_id );
+                $cache_key = 'ssc_data_' . $ssc_id;
                 $cache_group = 'smart_search_control';
 
                 $data_cached = wp_cache_get( $cache_key, $cache_group );
@@ -122,7 +122,7 @@ class SMARSECO_Smart_Search_Control_Result {
                     $result = $wpdb->get_row( $wpdb->prepare( "SELECT data FROM `{$wpdb->prefix}smart_search_control_parameters` WHERE id = %d", $ssc_id ) );
 
                     if( !empty( $result ) && isset( $result->data ) ) {
-                        wp_cache_set( $cache_key, $result->data, $cache_group, HOUR_IN_SECONDS );
+                        wp_cache_set( $cache_key, $result->data, $cache_group, 12 * HOUR_IN_SECONDS );
                         $data_cached = $result->data;
                     }
                 }

@@ -508,7 +508,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
 
             $table_name = $wpdb->prefix . 'smart_search_control_parameters';
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $entries = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM `{$wpdb->prefix}smart_search_control_parameters` LIMIT %d OFFSET %d",  [ $items_per_page, $offset ] ) );
+            $entries = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM `{$wpdb->prefix}smart_search_control_parameters` LIMIT %d OFFSET %d", $items_per_page, $offset ) );
             wp_cache_set( $cache_key, $entries, 'smart_search_control', 300 );
         }
         return $entries;
@@ -530,7 +530,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
 
         if( false === $total_items ) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $total_items = (int) ($wpdb->get_var("SELECT COUNT(id) FROM {$wpdb->prefix}smart_search_control_parameters") ?? 0);
+            $total_items = (int) ($wpdb->get_var( "SELECT COUNT(id) FROM {$wpdb->prefix}smart_search_control_parameters LIMIT 1" ) ?? 0);
             wp_cache_set( $cache_key, $total_items, 'smart_search_control', 300 );
         }
         return $total_items;

@@ -149,8 +149,7 @@ function smarseco_render_inline_search_results( $search_query, $posts_types, $ca
     $query = new WP_Query( $args );
 
     ob_start();
-    $shortcode_content = '';
-    $template_path     = SMARSECO_TEMPLATES_DIR . 'template-smart-search-control-result.php';
+    $template_path = SMARSECO_TEMPLATES_DIR . 'template-smart-search-control-result.php';
     if( file_exists( $template_path ) ) {
         include $template_path;
     }
@@ -158,6 +157,27 @@ function smarseco_render_inline_search_results( $search_query, $posts_types, $ca
     wp_reset_postdata();
 
     return $content;
+}
+
+/**
+ * Build regex pattern from search words for highlighting keywords.
+ *
+ * @param string $search_query The search query containing keywords.
+ * @return string Compiled regex pattern for case-insensitive keyword matching.
+ */
+function smarseco_build_highlight_pattern( $search_query ) {
+
+    $search_words = array_filter( explode( ' ', $search_query ) );
+    if( empty( $search_words ) ) {
+        return '';
+    }
+
+    $patterns = [];
+    foreach( $search_words as $word ) {
+        $patterns[] = preg_quote( $word, '/' );
+    }
+
+    return '/(' . implode( '|', $patterns ) . ')/i';
 }
 
 /**
@@ -174,29 +194,14 @@ function smarseco_highlight_keywords( $text, $search_query ) {
         return esc_html( $text );
     }
 
-    $search_words = array_filter( explode( ' ', $search_query ) );
-    if( empty( $search_words ) ) {
-        return esc_html( $text );
-    }
-
     $text_escaped = esc_html( $text );
+    $pattern = smarseco_build_highlight_pattern( $search_query );
 
-    // Build regex pattern to match all keywords at once (case-insensitive)
-    $patterns = [];
-    foreach( $search_words as $word ) {
-        $patterns[] = preg_quote( $word, '/' );
+    if( empty( $pattern ) ) {
+        return $text_escaped;
     }
 
-    $pattern = '/(' . implode( '|', $patterns ) . ')/i';
-
-    // Highlight ALL instances of all keywords in a single regex operation
-    $text_highlighted = preg_replace(
-        $pattern,
-        '<strong>$1</strong>',
-        $text_escaped
-    );
-
-    return $text_highlighted;
+    return preg_replace( $pattern, '<strong>$1</strong>', $text_escaped );
 }
 
 /**
@@ -246,22 +251,12 @@ function smarseco_get_smart_excerpt( $search_query, $post_id ) {
         $trimmed_excerpt = wp_trim_words( $excerpt_text, 25, '...' );
         $trimmed_escaped = esc_html( $trimmed_excerpt );
 
-        // Build regex pattern to match ALL keywords (case-insensitive)
-        $patterns = [];
-        foreach( $search_words as $word ) {
-            $patterns[] = preg_quote( $word, '/' );
+        $pattern = smarseco_build_highlight_pattern( $search_query );
+        if( empty( $pattern ) ) {
+            return $trimmed_escaped;
         }
 
-        $pattern = '/(' . implode( '|', $patterns ) . ')/i';
-
-        // Highlight ALL instances of keywords
-        $highlighted = preg_replace(
-            $pattern,
-            '<strong>$1</strong>',
-            $trimmed_escaped
-        );
-
-        return $highlighted;
+        return preg_replace( $pattern, '<strong>$1</strong>', $trimmed_escaped );
     }
 
     // Search for keyword in excerpt/content and extract context
@@ -289,22 +284,12 @@ function smarseco_get_smart_excerpt( $search_query, $post_id ) {
         $trimmed_excerpt = wp_trim_words( $excerpt_text, 25, '...' );
         $trimmed_escaped = esc_html( $trimmed_excerpt );
 
-        // Build regex pattern to match ALL keywords (case-insensitive)
-        $patterns = [];
-        foreach( $search_words as $word ) {
-            $patterns[] = preg_quote( $word, '/' );
+        $pattern = smarseco_build_highlight_pattern( $search_query );
+        if( empty( $pattern ) ) {
+            return $trimmed_escaped;
         }
 
-        $pattern = '/(' . implode( '|', $patterns ) . ')/i';
-
-        // Highlight ALL instances of keywords
-        $highlighted = preg_replace(
-            $pattern,
-            '<strong>$1</strong>',
-            $trimmed_escaped
-        );
-
-        return $highlighted;
+        return preg_replace( $pattern, '<strong>$1</strong>', $trimmed_escaped );
     }
 
     // Extract 25 words before + 25 words after keyword
@@ -334,20 +319,12 @@ function smarseco_get_smart_excerpt( $search_query, $post_id ) {
     $ellipsis_start = $start_word > 0 ? '... ' : '';
     $ellipsis_end = $end_word < count( $words_array ) - 1 ? ' ...' : '';
 
-    // Build regex pattern to match ALL keywords (case-insensitive)
-    $patterns = [];
-    foreach( $search_words as $word ) {
-        $patterns[] = preg_quote( $word, '/' );
+    $pattern = smarseco_build_highlight_pattern( $search_query );
+    if( empty( $pattern ) ) {
+        return $ellipsis_start . $snippet_escaped . $ellipsis_end;
     }
 
-    $pattern = '/(' . implode( '|', $patterns ) . ')/i';
-
-    // Highlight ALL instances of all keywords in the snippet
-    $snippet_highlighted = preg_replace(
-        $pattern,
-        '<strong>$1</strong>',
-        $snippet_escaped
-    );
+    $snippet_highlighted = preg_replace( $pattern, '<strong>$1</strong>', $snippet_escaped );
 
     return $ellipsis_start . $snippet_highlighted . $ellipsis_end;
 }
