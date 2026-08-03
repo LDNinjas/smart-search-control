@@ -52,13 +52,22 @@ if( !defined( 'ABSPATH' ) ) {
                 <div class="ssc-post-featured-wrapper ssc-responsive-width">
                     <a href="<?php the_permalink(); ?>">
                         <?php
-                        if( has_post_thumbnail() ) {
+                        $default_img = SMARSECO_ASSETS_URL . 'default-img/no-feature-image.jpg';
+                        $post_id = get_the_ID();
+
+                        // Allow filters to override the featured image completely
+                        $custom_image_html = apply_filters( 'smarseco_result_featured_image', null, $post_id, $default_img );
+
+                        if( $custom_image_html ) {
+                            // If filter returns custom image, use it instead of default
+                            echo wp_kses_post( $custom_image_html );
+                        } elseif( has_post_thumbnail() ) {
+                            // Use post thumbnail if available
                             the_post_thumbnail( 'thumbnail' );
                         } else {
-                            $smarseco_result_img = SMARSECO_ASSETS_URL . 'default-img/no-feature-image.jpg';
-                            echo '<img src="' . esc_url( $smarseco_result_img ) . '"
+                            // Fallback to default placeholder
+                            echo '<img src="' . esc_url( $default_img ) . '"
                                     alt="' . esc_attr__( 'Default placeholder image', 'smart-search-control' ) . '">';
-                            
                         }
                         ?>
                     </a>
