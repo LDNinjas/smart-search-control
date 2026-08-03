@@ -71,7 +71,13 @@ if( !defined( 'ABSPATH' ) ) {
                     </h2>
 
                     <div class="search-excerpt">
-                        <?php echo esc_html( wp_trim_words( get_the_excerpt(), 25, '...' ) ); ?>
+                        <?php
+                        if( has_excerpt() ) {
+                            echo esc_html( wp_trim_words( get_the_excerpt(), 25, '...' ) );
+                        } else {
+                            echo esc_html( wp_trim_words( get_the_content(), 25, '...' ) );
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
