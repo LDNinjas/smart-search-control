@@ -208,6 +208,11 @@
     margin-top: 0.75rem;
 }
 
+.search-keyword-notfound {
+    color: #999;
+    opacity: 0.65;
+}
+
 .smart-search-control-no-result{
     text-align: center;
 }

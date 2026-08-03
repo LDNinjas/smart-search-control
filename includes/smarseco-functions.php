@@ -136,7 +136,7 @@ function smarseco_render_inline_search_results( $search_query, $posts_types, $ca
     $args = [
         's'              => $search_query,
         'post_type'      => $posts_types,
-        'posts_per_page' => 6,
+        'posts_per_page' => 20,
         'post_status'    => 'publish',
         'paged'          => get_query_var( 'paged', 1 ),
     ];
@@ -158,4 +158,62 @@ function smarseco_render_inline_search_results( $search_query, $posts_types, $ca
     wp_reset_postdata();
 
     return $content;
+}
+
+/**
+ * Generate search keyword display HTML with found/not-found status highlighting.
+ *
+ * Checks which search terms are found in the post title, excerpt, and content.
+ * Returns formatted HTML with strikethrough and color change for unfound words.
+ *
+ * @param string $search_query The original search query.
+ * @param int $post_id The post ID to check against.
+ * @return string HTML for the search keyword display.
+ */
+function smarseco_get_search_keyword_display( $search_query, $post_id ) {
+
+    if( empty( $search_query ) ) {
+        return '';
+    }
+
+    $post = get_post( $post_id );
+    if( !$post ) {
+        return '';
+    }
+
+    // Get post content data for searching
+    $post_title   = strtolower( $post->post_title );
+    $post_excerpt = strtolower( $post->post_excerpt );
+    $post_content = strtolower( $post->post_content );
+    $searchable_text = $post_title . ' ' . $post_excerpt . ' ' . $post_content;
+
+    // Split search query into individual words (space-separated)
+    $search_words = array_filter( explode( ' ', $search_query ) );
+
+    if( empty( $search_words ) ) {
+        return '';
+    }
+
+    $output = esc_html__( 'Search found:', 'smart-search-control' ) . ' ';
+    $word_html_parts = [];
+
+    foreach( $search_words as $word ) {
+        $word_lower = strtolower( $word );
+        $word_escaped = esc_html( $word );
+
+        // Check if exact word is found
+        $exact_found = stripos( $searchable_text, $word_lower ) !== false;
+
+        if( $exact_found ) {
+            // Word found - display normally
+            $word_html_parts[] = $word_escaped;
+        } else {
+            // Word not found - strikethrough + color
+            $word_html_parts[] = '<span class="search-keyword-notfound"><strike>' . $word_escaped . '</strike></span>';
+        }
+    }
+
+    $output .= implode( ' ', $word_html_parts );
+
+    return $output;
 }

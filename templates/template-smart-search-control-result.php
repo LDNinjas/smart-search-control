@@ -82,7 +82,7 @@ if( !defined( 'ABSPATH' ) ) {
 
                     <?php if( null !== $search_query ) { ?>
                     <div class="search-keyword-display">
-                        <?php echo esc_html( __( 'Searched for:', 'smart-search-control' ) ) . ' "' . esc_html( $search_query ) . '"'; ?>
+                        <?php echo wp_kses_post( smarseco_get_search_keyword_display( $search_query, get_the_ID() ) ); ?>
                     </div>
                     <?php } ?>
                 </div>
