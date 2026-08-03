@@ -133,10 +133,8 @@ function smarseco_render_inline_search_results( $search_query, $posts_types, $ca
 
     $tax_query = smarseco_build_tax_query( $categories, $tags );
 
-    $modified_search_query = smarseco_modify_search_query( $search_query );
-
     $args = [
-        's'              => $modified_search_query,
+        's'              => $search_query,
         'post_type'      => $posts_types,
         'posts_per_page' => 20,
         'post_status'    => 'publish',
@@ -163,16 +161,55 @@ function smarseco_render_inline_search_results( $search_query, $posts_types, $ca
 }
 
 /**
- * Generate search keyword display HTML with found/not-found status highlighting.
+ * Highlight search keywords in text (case-insensitive).
+ * Highlights ALL instances of all search keywords.
  *
- * Checks which search terms are found in the post title, excerpt, and content.
- * Returns formatted HTML with strikethrough and color change for unfound words.
- *
- * @param string $search_query The original search query.
- * @param int $post_id The post ID to check against.
- * @return string HTML for the search keyword display.
+ * @param string $text The text to highlight keywords in.
+ * @param string $search_query The search query containing keywords.
+ * @return string Text with keywords wrapped in <strong> tags.
  */
-function smarseco_get_search_keyword_display( $search_query, $post_id ) {
+function smarseco_highlight_keywords( $text, $search_query ) {
+
+    if( empty( $text ) || empty( $search_query ) ) {
+        return esc_html( $text );
+    }
+
+    $search_words = array_filter( explode( ' ', $search_query ) );
+    if( empty( $search_words ) ) {
+        return esc_html( $text );
+    }
+
+    $text_escaped = esc_html( $text );
+
+    // Build regex pattern to match all keywords at once (case-insensitive)
+    $patterns = [];
+    foreach( $search_words as $word ) {
+        $patterns[] = preg_quote( $word, '/' );
+    }
+
+    $pattern = '/(' . implode( '|', $patterns ) . ')/i';
+
+    // Highlight ALL instances of all keywords in a single regex operation
+    $text_highlighted = preg_replace(
+        $pattern,
+        '<strong>$1</strong>',
+        $text_escaped
+    );
+
+    return $text_highlighted;
+}
+
+/**
+ * Extract excerpt snippet around search keyword(s).
+ *
+ * If keyword is found in excerpt/content, returns 25 words before + 25 words after.
+ * If keyword is in title only, returns standard excerpt.
+ *
+ * @param string $search_query The search query containing one or more keywords.
+ * @param int $post_id The post ID to extract snippet from.
+ * @return string Excerpt snippet with highlighted keyword.
+ */
+function smarseco_get_smart_excerpt( $search_query, $post_id ) {
 
     if( empty( $search_query ) ) {
         return '';
@@ -183,121 +220,135 @@ function smarseco_get_search_keyword_display( $search_query, $post_id ) {
         return '';
     }
 
-    // Get post content data for searching
-    $post_title   = strtolower( $post->post_title );
-    $post_excerpt = strtolower( $post->post_excerpt );
-    $post_content = strtolower( $post->post_content );
-    $searchable_text = $post_title . ' ' . $post_excerpt . ' ' . $post_content;
+    // Get post content
+    $post_title = $post->post_title;
+    $post_excerpt = $post->post_excerpt;
+    $post_content = wp_strip_all_tags( $post->post_content );
 
-    // Split search query into individual words (space-separated)
+    // Split search query into words
     $search_words = array_filter( explode( ' ', $search_query ) );
-
     if( empty( $search_words ) ) {
         return '';
     }
 
-    $output = esc_html__( 'Search found:', 'smart-search-control' ) . ' ';
-    $word_html_parts = [];
-
+    // Check if keyword is in title
+    $keyword_in_title = false;
     foreach( $search_words as $word ) {
-        $word_lower = strtolower( $word );
-        $word_escaped = esc_html( $word );
-
-        // Check if exact word is found
-        $exact_found = stripos( $searchable_text, $word_lower ) !== false;
-
-        if( $exact_found ) {
-            // Word found - display normally
-            $word_html_parts[] = $word_escaped;
-        } else {
-            // Word not found - strikethrough + color
-            $word_html_parts[] = '<span class="search-keyword-notfound"><strike>' . $word_escaped . '</strike></span>';
+        if( stripos( $post_title, $word ) !== false ) {
+            $keyword_in_title = true;
+            break;
         }
     }
 
-    $output .= implode( ' ', $word_html_parts );
+    // If keyword is only in title, return standard excerpt with highlighted keywords
+    if( $keyword_in_title ) {
+        $excerpt_text = !empty( $post_excerpt ) ? $post_excerpt : $post_content;
+        $trimmed_excerpt = wp_trim_words( $excerpt_text, 25, '...' );
+        $trimmed_escaped = esc_html( $trimmed_excerpt );
 
-    return $output;
-}
+        // Build regex pattern to match ALL keywords (case-insensitive)
+        $patterns = [];
+        foreach( $search_words as $word ) {
+            $patterns[] = preg_quote( $word, '/' );
+        }
 
-/**
- * Modify search query based on selected search method.
- *
- * @param string $search_query The original search query.
- * @return string Modified search query based on search method setting.
- */
-function smarseco_modify_search_query( $search_query ) {
+        $pattern = '/(' . implode( '|', $patterns ) . ')/i';
 
-    if( empty( $search_query ) ) {
-        return $search_query;
+        // Highlight ALL instances of keywords
+        $highlighted = preg_replace(
+            $pattern,
+            '<strong>$1</strong>',
+            $trimmed_escaped
+        );
+
+        return $highlighted;
     }
 
-    $search_method = get_option( 'smart_search_control_search_method', 'any' );
+    // Search for keyword in excerpt/content and extract context
+    $searchable_text = $post_excerpt . ' ' . $post_content;
+    $searchable_text_lower = strtolower( $searchable_text );
 
-    switch( $search_method ) {
-        case 'exact':
-            // Exact phrase match - wrap in quotes
-            return '"' . $search_query . '"';
+    // Find first keyword in content
+    $keyword_position = false;
+    $found_keyword = '';
 
-        case 'all':
-            // All words must match - WordPress handles this with + prefix
-            $words = array_filter( explode( ' ', $search_query ) );
-            return implode( ' +', array_map( function( $word ) {
-                return '+' . $word;
-            }, $words ) );
-
-        case 'any':
-        default:
-            // Any word match - use OR logic with filter
-            // Store the search method in a transient so we can use it in the filter
-            set_transient( 'smarseco_current_search_method', 'any', 3600 );
-            add_filter( 'posts_search', 'smarseco_filter_posts_search_or', 10, 2 );
-            return $search_query;
-    }
-}
-
-/**
- * Filter to implement OR logic for "Any Word" search method.
- * Modifies WordPress's SQL search query to use OR instead of AND.
- *
- * @param string $search The default search SQL fragment.
- * @param WP_Query $query The WP_Query object.
- * @return string Modified search SQL fragment.
- */
-function smarseco_filter_posts_search_or( $search, $query ) {
-
-    if( empty( $search ) || !isset( $query->query_vars['s'] ) || empty( $query->query_vars['s'] ) ) {
-        return $search;
-    }
-
-    $search_method = get_transient( 'smarseco_current_search_method' );
-
-    if( 'any' !== $search_method ) {
-        return $search;
-    }
-
-    global $wpdb;
-
-    // Extract the search term
-    $search_term = $query->query_vars['s'];
-    $search_words = array_filter( explode( ' ', $search_term ) );
-
-    if( empty( $search_words ) ) {
-        return $search;
-    }
-
-    // Build OR query for title and content
-    $like_conditions = [];
     foreach( $search_words as $word ) {
-        $like_word = '%' . $wpdb->esc_like( $word ) . '%';
-        $like_conditions[] = $wpdb->prepare( "({$wpdb->posts}.post_title LIKE %s OR {$wpdb->posts}.post_content LIKE %s OR {$wpdb->posts}.post_excerpt LIKE %s)", $like_word, $like_word, $like_word );
+        $word_lower = strtolower( $word );
+        $pos = stripos( $searchable_text_lower, $word_lower );
+
+        if( $pos !== false ) {
+            $keyword_position = $pos;
+            $found_keyword = substr( $searchable_text, $pos, strlen( $word ) );
+            break;
+        }
     }
 
-    if( empty( $like_conditions ) ) {
-        return $search;
+    // If keyword not found in excerpt/content, return standard excerpt with highlighted keywords
+    if( $keyword_position === false ) {
+        $excerpt_text = !empty( $post_excerpt ) ? $post_excerpt : $post_content;
+        $trimmed_excerpt = wp_trim_words( $excerpt_text, 25, '...' );
+        $trimmed_escaped = esc_html( $trimmed_excerpt );
+
+        // Build regex pattern to match ALL keywords (case-insensitive)
+        $patterns = [];
+        foreach( $search_words as $word ) {
+            $patterns[] = preg_quote( $word, '/' );
+        }
+
+        $pattern = '/(' . implode( '|', $patterns ) . ')/i';
+
+        // Highlight ALL instances of keywords
+        $highlighted = preg_replace(
+            $pattern,
+            '<strong>$1</strong>',
+            $trimmed_escaped
+        );
+
+        return $highlighted;
     }
 
-    $search = ' AND (' . implode( ' OR ', $like_conditions ) . ') ';
+    // Extract 25 words before + 25 words after keyword
+    $words_array = preg_split( '/\s+/', $searchable_text, -1, PREG_SPLIT_NO_EMPTY );
+    $keyword_word_position = 0;
+    $current_char_pos = 0;
 
-    return $search;
+    // Find which word index contains our keyword
+    foreach( $words_array as $index => $word ) {
+        if( $current_char_pos <= $keyword_position && $current_char_pos + strlen( $word ) > $keyword_position ) {
+            $keyword_word_position = $index;
+            break;
+        }
+        $current_char_pos += strlen( $word ) + 1; // +1 for space
+    }
+
+    $start_word = max( 0, $keyword_word_position - 25 );
+    $end_word = min( count( $words_array ) - 1, $keyword_word_position + 25 );
+
+    $snippet_words = array_slice( $words_array, $start_word, $end_word - $start_word + 1 );
+    $snippet = implode( ' ', $snippet_words );
+
+    // Escape HTML first, then add highlights
+    $snippet_escaped = esc_html( $snippet );
+
+    // Add ellipsis at start/end if truncated
+    $ellipsis_start = $start_word > 0 ? '... ' : '';
+    $ellipsis_end = $end_word < count( $words_array ) - 1 ? ' ...' : '';
+
+    // Build regex pattern to match ALL keywords (case-insensitive)
+    $patterns = [];
+    foreach( $search_words as $word ) {
+        $patterns[] = preg_quote( $word, '/' );
+    }
+
+    $pattern = '/(' . implode( '|', $patterns ) . ')/i';
+
+    // Highlight ALL instances of all keywords in the snippet
+    $snippet_highlighted = preg_replace(
+        $pattern,
+        '<strong>$1</strong>',
+        $snippet_escaped
+    );
+
+    return $ellipsis_start . $snippet_highlighted . $ellipsis_end;
 }
+

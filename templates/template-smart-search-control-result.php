@@ -75,25 +75,31 @@ if( !defined( 'ABSPATH' ) ) {
                 <div class="ssc-post-content-wrapper">
                     <h2 class="search-title">
                         <a href="<?php the_permalink(); ?>">
-                            <?php the_title(); ?>
+                            <?php
+                            if( null !== $search_query ) {
+                                echo wp_kses_post( smarseco_highlight_keywords( get_the_title(), $search_query ) );
+                            } else {
+                                the_title();
+                            }
+                            ?>
                         </a>
                     </h2>
 
                     <div class="search-excerpt">
                         <?php
-                        if( has_excerpt() ) {
-                            echo esc_html( wp_trim_words( get_the_excerpt(), 25, '...' ) );
+                        if( null !== $search_query ) {
+                            // Use smart excerpt that shows context around keyword
+                            echo wp_kses_post( smarseco_get_smart_excerpt( $search_query, get_the_ID() ) );
                         } else {
-                            echo esc_html( wp_trim_words( get_the_content(), 25, '...' ) );
+                            // Fallback if no search query
+                            if( has_excerpt() ) {
+                                echo esc_html( wp_trim_words( get_the_excerpt(), 25, '...' ) );
+                            } else {
+                                echo esc_html( wp_trim_words( get_the_content(), 25, '...' ) );
+                            }
                         }
                         ?>
                     </div>
-
-                    <?php if( null !== $search_query ) { ?>
-                    <div class="search-keyword-display">
-                        <?php echo wp_kses_post( smarseco_get_search_keyword_display( $search_query, get_the_ID() ) ); ?>
-                    </div>
-                    <?php } ?>
                 </div>
             </div>
             <?php
