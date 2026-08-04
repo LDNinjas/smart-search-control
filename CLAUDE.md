@@ -210,6 +210,21 @@ return $result;
 - Call `wp_cache_delete( $cache_key, $cache_group )` whenever the underlying data is written or updated.
 - Do not cache user-specific data under a shared key — include `$user_id` in the key when the result varies per user.
 
+#### Shared cache keys — one key, one value shape
+
+A cache key is shared across every file that uses it. If two call sites store different value shapes under the same key, the second reader gets the first writer's shape and fatals. This is invisible locally (no persistent object cache) and only shows up on sites running Redis/Memcached.
+
+Known shared keys and their required shape:
+
+| Key | Group | Stored value |
+|-----|-------|--------------|
+| `ssc_data_{$ssc_id}` | `smart_search_control` | The **row object** from `$wpdb->get_row( "SELECT data FROM ...smart_search_control_parameters WHERE id = %d" )` — not `$result->data`, not the decoded JSON. |
+
+Rules:
+- Before adding a `wp_cache_set()`, grep the key prefix across the plugin and match the existing shape exactly.
+- Read through `isset( $result->data )` and only `json_decode()` a value confirmed to be a string; never decode a cached value blindly.
+- `ssc_data_{$ssc_id}` must be deleted on entry edit and delete in `includes/admin/smart-search-control-admin-menu.php` — an entry cached for 12 hours otherwise serves stale settings after a save.
+
 ### 8.6 Naming conventions
 
 | Thing | Convention | Example |
@@ -250,3 +265,31 @@ Before finishing a task:
 2. Follow the mandatory style rules above.
 3. Sanitize and escape any new input/output.
 4. Verify the change does not break the shortcode, AJAX flow, or admin UI.
+
+## 11. Releasing a New Version
+
+The version number lives in exactly three places and all three must match:
+
+1. smart-search-control.php — the `Version:` plugin header
+2. smart-search-control.php — `define( 'SMARSECO_VERSION', '...' )`
+3. readme.txt — `Stable tag:`
+
+Confirm with `git grep -n "<old version>"` before and after the bump.
+
+Changelog entries go in three files and must stay in sync:
+
+- readme.txt — `== Changelog ==`, `= 1.0.8 =` heading, `*` bullets
+- readme.txt — `== Upgrade Notice ==`, one short paragraph for the new version
+- README.md — `## Changelog`, `- **1.0.8**` heading, indented `-` bullets
+
+Write changelog entries in user-facing terms (what broke, what now works), not in terms of internal function or cache-key names.
+
+readme.txt is parsed by WordPress.org and is stricter than README.md:
+
+- Header fields start on line 2 — no blank line after `=== Plugin Name ===`.
+- Sections use `== Section ==`; sub-headings use `= Heading =`.
+- Recognized section names matter: use `== Installation ==`, not `== Installation & Usage ==`.
+- Section order: Description → Installation → Frequently Asked Questions → any custom sections → Changelog → Upgrade Notice.
+- Short description (the line above `== Description ==`) must be 150 characters or fewer.
+- Maximum of 5 entries on the `Tags:` line.
+- `Tested up to:` must not exceed the current WordPress release or the upload is rejected.

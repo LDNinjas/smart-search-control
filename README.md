@@ -5,7 +5,7 @@ Contributors: LDNinjas, farooqabdullah
 Tags: search, woocommerce search, custom post types, product search, category search
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.0.6
+Stable tag: 1.0.8
 Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -79,6 +79,25 @@ A: Yes! Each search form (shortcode or Gutenberg block) can be scoped to specifi
 A: No. If you don't select a dedicated Search Results Page in the settings, results display instantly on the same page, directly below the search bar.
 
 ## Changelog
+
+- **1.0.8**
+    - Fix: Fixed a fatal error on the search results page.
+    - Fix: Search form and search result caches now use the same stored value, so both read the saved settings correctly.
+    - Fix: Cached search settings are now cleared when a search form is edited or deleted, so changes take effect immediately instead of after the cache expires.
+
+- **1.0.7**
+    - New: Enhanced search result descriptions to display the portion containing search keywords with context.
+    - New: Fixed LifterLMS favorites count display in search result descriptions.
+    - Security: Fixed SQL prepared statement in pagination query for proper parameter binding.
+    - Security: Changed loose comparisons to strict comparisons in template files.
+    - Security: Fixed output escaping for display text in result templates.
+    - Security: Added plugin prefix to template variables for WordPress naming conventions compliance.
+    - Improve: Refactored repetitive keyword highlighting code into reusable helper function.
+    - Improve: Removed unnecessary md5 hashing in cache keys for improved performance.
+    - Improve: Standardized cache TTL values across the plugin.
+    - Improve: Removed unused variables and cleaned up code formatting.
+    - Performance: Eliminated code duplication in keyword highlighting logic.
+    - Quality: Resolved PHPCS warnings and improved code maintainability.
 
 - **1.0.6**
     - New: Added a global setting to enable or disable AJAX live search suggestions across all searches.

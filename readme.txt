@@ -1,10 +1,9 @@
 === Smart Search Control – Advanced Search for WooCommerce, Custom Post Types ===
-
 Contributors: LDNinjas, farooqabdullah
 Tags: search, woocommerce search, custom post types, product search, category search
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -51,7 +50,7 @@ We believe in flexibility.
 * **Widget Support:** Add to sidebars or footers easily. (coming soon)
 * **Shortcode:** Use [smart_search_control id="123"] inside page builders like Elementor, Divi, or Beaver Builder.
 
-== Installation & Usage ==
+== Installation ==
 
 1. Install and Activate Smart Search Control.
 2. Go to Smart Search Control > Add New Search.
@@ -60,10 +59,6 @@ We believe in flexibility.
 5. (Optional) Narrow it further by selecting specific Categories or Tags to search within.
 6. Click Save and copy the generated Shortcode OR use the Gutenberg Block on any page.
 7. (Optional) Go to Settings to define a custom Search Results Page — if skipped, results display on the same page.
-
-== Support ==
-
-For support, please visit our support forums or contact us through [our website](https://ldninjas.com).
 
 == Frequently Asked Questions ==
 
@@ -82,7 +77,16 @@ Yes! Each search form (shortcode or Gutenberg block) can be scoped to specific c
 = Do search results have to open on a separate page? =
 No. If you don't select a dedicated Search Results Page in the settings, results display instantly on the same page, directly below the search bar.
 
+== Support ==
+
+For support, please visit our support forums or contact us through [our website](https://ldninjas.com).
+
 == Changelog ==
+
+= 1.0.8 =
+* Fix: Fixed a fatal error on the search results page.
+* Fix: Search form and search result caches now use the same stored value, so both read the saved settings correctly.
+* Fix: Cached search settings are now cleared when a search form is edited or deleted, so changes take effect immediately instead of after the cache expires.
 
 = 1.0.7 =
 * New: Enhanced search result descriptions to display the portion containing search keywords with context.
@@ -138,3 +142,8 @@ No. If you don't select a dedicated Search Results Page in the settings, results
 
 = 1.0.0 =
 * Initial release
+
+== Upgrade Notice ==
+
+= 1.0.8 =
+Fixes a fatal error on the search results page and makes edited search settings apply immediately.
