@@ -1,0 +1,30 @@
+# Logs
+debug.log
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*~
+
+# Dependencies and build output
+node_modules/
+vendor/
+build/
+dist/
+
+# Local environment
+.env
+.env.local
+
+# Release archives
+*.zip
+*.tar.gz
