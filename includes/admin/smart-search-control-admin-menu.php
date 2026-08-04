@@ -394,6 +394,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         );
 
         if( !empty( $result) ) {
+            wp_cache_delete( 'ssc_data_' . $id, 'smart_search_control' );
             wp_cache_delete( 'ssc_table_exists_' . md5( $table_name ), 'smart_search_control' );
             wp_cache_delete( 'ssc_total_items_count', 'smart_search_control' );
             wp_cache_delete( "ssc_entries_page_1", 'smart_search_control' );
@@ -469,6 +470,7 @@ class SMARSECO_Smart_Search_Control_Admin_Menu {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $result =  $wpdb->delete( $table_name, [ 'id' => $id ], [ '%d' ] ) ;
         if( !empty( $result ) ) {
+            wp_cache_delete( 'ssc_data_' . $id, 'smart_search_control' );
             wp_cache_delete( 'ssc_table_exists_' . md5( $table_name ), 'smart_search_control' );
             wp_cache_delete( 'ssc_total_items_count', 'smart_search_control' );
             wp_cache_delete( "ssc_entries_page_1", 'smart_search_control' );

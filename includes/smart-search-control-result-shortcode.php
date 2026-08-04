@@ -115,19 +115,17 @@ class SMARSECO_Smart_Search_Control_Result {
                 $cache_key = 'ssc_data_' . $ssc_id;
                 $cache_group = 'smart_search_control';
 
-                $data_cached = wp_cache_get( $cache_key, $cache_group );
+                $result = wp_cache_get( $cache_key, $cache_group );
 
-                if( false === $data_cached ) {
+                if( false === $result ) {
                     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
                     $result = $wpdb->get_row( $wpdb->prepare( "SELECT data FROM `{$wpdb->prefix}smart_search_control_parameters` WHERE id = %d", $ssc_id ) );
-
-                    if( !empty( $result ) && isset( $result->data ) ) {
-                        wp_cache_set( $cache_key, $result->data, $cache_group, 12 * HOUR_IN_SECONDS );
-                        $data_cached = $result->data;
-                    }
+                    wp_cache_set( $cache_key, $result, $cache_group, 12 * HOUR_IN_SECONDS );
                 }
 
-                if( !empty( $data_cached ) ) {
+                $data_cached = is_object( $result ) && isset( $result->data ) ? $result->data : $result;
+
+                if( !empty( $data_cached ) && is_string( $data_cached ) ) {
                     $data = json_decode( $data_cached );
 
                     $categories = isset( $data->categories ) ? $data->categories : [];
